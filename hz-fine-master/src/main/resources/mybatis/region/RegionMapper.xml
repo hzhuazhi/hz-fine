@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.RegionMapper">
+    <!-- 属性映射 -->
+    <resultMap type="com.hz.fine.master.core.model.region.RegionModel" id="dataMap">
+        <id property="id" column="id" />
+        <result property="startIp" column="start_ip" />
+        <result property="endIp" column="end_ip" />
+        <result property="province" column="province" />
+        <result property="city" column="city" />
+        <result property="isp" column="isp" />
+    </resultMap>
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.start_ip,a.end_ip,a.province,a.city,a.isp
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="ipValue != 0 and ipValue > 0">
+                and #{ipValue} between a.start_ip and a.end_ip
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != 0 and id >0 " >
+                and a.id = #{id}
+            </if>
+        </trim>
+    </sql>
+
+
+    <!-- 不分页显示所有数据 -->
+    <select id="findAll" resultMap="dataMap">
+        select
+        <include refid="Base_Column_List" />
+        from tb_ga_base_gateway a
+        <!-- <include refid="Example_Where_Clause"/>-->
+    </select>
+
+
+    <!-- 查询列表-无分页 -->
+    <select id="findByCondition" parameterType="Map" resultMap="dataMap">
+        select
+        <include refid="Base_Column_List" />
+        from tb_ga_base_gateway a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="java.lang.Object"
+            resultMap="dataMap">
+        select
+        <include refid="Base_Column_List" />
+        from tb_ga_base_gateway a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long"
+            resultMap="dataMap">
+        select
+        <include refid="Base_Column_List" />
+        from tb_ga_base_gateway a
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </select>
+
+</mapper>
