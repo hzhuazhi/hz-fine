@@ -18,5 +18,14 @@ public class ComponentUtil {
     public static QuestionDService questionDService;
     public static TaskService taskService;
     public static TaskHodgepodgeService taskHodgepodgeService;
+    public static DidService didService;
+    public static DidLevelService didLevelService;
+    public static DidCollectionAccountService didCollectionAccountService;
+    public static MobileCardService mobileCardService;
+    public static MobileCardDataService mobileCardDataService;
+    public static BankService bankService;
+    public static BankTransferService bankTransferService;
+    public static StrategyService strategyService;
+    public static DidRechargeService didRechargeService;
 
 }

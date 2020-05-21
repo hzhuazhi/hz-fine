@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.StrategyMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.stg_name,a.stg_type,a.stg_key,a.stg_num_value,a.stg_value,a.stg_big_value,a.data_type,a.stg_explain,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="stgType != null and stgType != '' " >
+                and a.stg_type = #{stgType}
+            </if>
+            <if test="stgKey != null and stgKey != '' " >
+                and a.stg_key = #{stgKey}
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                and a.data_type = #{dataType}
+            </if>
+            and a.yn = 0
+
+        </trim>
+    </sql>
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.strategy.StrategyModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_strategy a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.strategy.StrategyModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_strategy a
+        <include refid="Example_Where_Clause"/>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.strategy.StrategyModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_strategy a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.strategy.StrategyModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_strategy a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.strategy.StrategyModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_strategy
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="stgName != null and stgName != '' " >
+                stg_name,
+            </if>
+            <if test="stgType != null and stgType != '' " >
+                stg_type,
+            </if>
+            <if test="stgKey != null and stgKey != '' " >
+                stg_key,
+            </if>
+            <if test="stgNumValue != null and stgNumValue != '' " >
+                stg_num_value,
+            </if>
+            <if test="stgValue != null and stgValue != '' " >
+                stg_value,
+            </if>
+            <if test="stgBigValue != null and stgBigValue != '' " >
+                stg_big_value,
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                data_type,
+            </if>
+            <if test="stgExplain != null and stgExplain != '' " >
+                stg_explain,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="stgName != null and stgName != '' " >
+                <![CDATA[  #{stgName}, ]]>
+            </if>
+            <if test="stgType != null and stgType != '' " >
+                <![CDATA[  #{stgType}, ]]>
+            </if>
+            <if test="stgKey != null and stgKey != '' " >
+                <![CDATA[  #{stgKey}, ]]>
+            </if>
+            <if test="stgNumValue != null and stgNumValue != '' " >
+                <![CDATA[  #{stgNumValue}, ]]>
+            </if>
+            <if test="stgValue != null and stgValue != '' " >
+                <![CDATA[  #{stgValue}, ]]>
+            </if>
+            <if test="stgBigValue != null and stgBigValue != '' " >
+                <![CDATA[  #{stgBigValue}, ]]>
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                <![CDATA[  #{dataType}, ]]>
+            </if>
+            <if test="stgExplain != null and stgExplain != '' " >
+                <![CDATA[  #{stgExplain}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.strategy.StrategyModel">
+        UPDATE tb_fn_strategy a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="stgName != null and stgName != '' " >
+                a.stg_name = #{stgName},
+            </if>
+            <if test="stgType != null and stgType != '' " >
+                a.stg_type = #{stgType},
+            </if>
+            <if test="stgKey != null and stgKey != '' " >
+                a.stg_key = #{stgKey},
+            </if>
+            <if test="stgNumValue != null and stgNumValue != '' " >
+                a.stg_num_value = #{stgNumValue},
+            </if>
+            <if test="stgValue != null and stgValue != '' " >
+                a.stg_value = #{stgValue},
+            </if>
+            <if test="stgBigValue != null and stgBigValue != '' " >
+                a.stg_big_value = #{stgBigValue},
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                a.data_type = #{dataType},
+            </if>
+            <if test="stgExplain != null and stgExplain != '' " >
+                a.stg_explain = #{stgExplain},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_strategy a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+
+
+</mapper>

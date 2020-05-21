@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.BankMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.mobile_card_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.province,a.city,a.bank_type,
+        a.sms_num,a.last_num,a.sms_content,a.start_key,a.end_key,a.special_type,a.open_type,a.day_switch,a.month_switch,a.total_switch,a.use_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="mobileCardId != null and mobileCardId != '' " >
+                and a.mobile_card_id = #{mobileCardId}
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                and a.bank_name = #{bankName}
+            </if>
+            <if test="bankType != null and bankType != '' " >
+                and a.bank_type = #{bankType}
+            </if>
+            <if test="smsNum != null and smsNum != '' " >
+                and a.sms_num = #{smsNum}
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                and a.last_num = #{lastNum}
+            </if>
+            <if test="startKey != null and startKey != '' " >
+                and a.start_key = #{startKey}
+            </if>
+            <if test="endKey != null and endKey != '' " >
+                and a.end_key = #{endKey}
+            </if>
+            <if test="specialType != null and specialType != '' " >
+                and a.special_type = #{specialType}
+            </if>
+            <if test="openType != null and openType != '' " >
+                and a.open_type = #{openType}
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                and a.day_switch = #{daySwitch}
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                and a.month_switch = #{monthSwitch}
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                and a.total_switch = #{totalSwitch}
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                and a.use_status = #{useStatus}
+            </if>
+            <if test="mobileCardIdList != null and mobileCardIdList.size()>0">
+                and a.mobile_card_id in
+                <foreach item="item" index="index" collection="mobileCardIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="openTypeList != null and openTypeList.size()>0">
+                and a.open_type in
+                <foreach item="item" index="index" collection="openTypeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_bank a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.bank.BankModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_bank
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="mobileCardId != null and mobileCardId != '' " >
+                mobile_card_id,
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                bank_name,
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                bank_card,
+            </if>
+            <if test="subbranchName != null and subbranchName != '' " >
+                subbranch_name,
+            </if>
+            <if test="accountName != null and accountName != '' " >
+                account_name,
+            </if>
+            <if test="province != null and province != '' " >
+                province,
+            </if>
+            <if test="city != null and city != '' " >
+                city,
+            </if>
+            <if test="bankType != null and bankType != '' " >
+                bank_type,
+            </if>
+            <if test="smsNum != null and smsNum != '' " >
+                sms_num,
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                last_num,
+            </if>
+            <if test="smsContent != null and smsContent != '' " >
+                sms_content,
+            </if>
+            <if test="startKey != null and startKey != '' " >
+                start_key,
+            </if>
+            <if test="endKey != null and endKey != '' " >
+                end_key,
+            </if>
+            <if test="specialType != null and specialType != '' " >
+                special_type,
+            </if>
+            <if test="openType != null and openType != '' " >
+                open_type,
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                day_switch,
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                month_switch,
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                total_switch,
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                use_status,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="mobileCardId != null and mobileCardId != '' " >
+                <![CDATA[  #{mobileCardId}, ]]>
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                <![CDATA[  #{bankName}, ]]>
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                <![CDATA[  #{bankCard}, ]]>
+            </if>
+            <if test="subbranchName != null and subbranchName != '' " >
+                <![CDATA[  #{subbranchName}, ]]>
+            </if>
+            <if test="accountName != null and accountName != '' " >
+                <![CDATA[  #{accountName}, ]]>
+            </if>
+            <if test="province != null and province != '' " >
+                <![CDATA[  #{province}, ]]>
+            </if>
+            <if test="city != null and city != '' " >
+                <![CDATA[  #{city}, ]]>
+            </if>
+            <if test="bankType != null and bankType != '' " >
+                <![CDATA[  #{bankType}, ]]>
+            </if>
+            <if test="smsNum != null and smsNum != '' " >
+                <![CDATA[  #{smsNum}, ]]>
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                <![CDATA[  #{lastNum}, ]]>
+            </if>
+            <if test="smsContent != null and smsContent != '' " >
+                <![CDATA[  #{smsContent}, ]]>
+            </if>
+            <if test="startKey != null and startKey != '' " >
+                <![CDATA[  #{startKey}, ]]>
+            </if>
+            <if test="endKey != null and endKey != '' " >
+                <![CDATA[  #{endKey}, ]]>
+            </if>
+            <if test="specialType != null and specialType != '' " >
+                <![CDATA[  #{specialType}, ]]>
+            </if>
+            <if test="openType != null and openType != '' " >
+                <![CDATA[  #{openType}, ]]>
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                <![CDATA[  #{daySwitch}, ]]>
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                <![CDATA[  #{monthSwitch}, ]]>
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                <![CDATA[  #{totalSwitch}, ]]>
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                <![CDATA[  #{useStatus}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.bank.BankModel">
+        UPDATE tb_fn_bank a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="mobileCardId != null and mobileCardId != '' " >
+                a.mobile_card_id = #{mobileCardId},
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                a.bank_name = #{bankName},
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                a.bank_card = #{bankCard},
+            </if>
+            <if test="subbranchName != null and subbranchName != '' " >
+                a.subbranch_name = #{subbranchName},
+            </if>
+            <if test="accountName != null and accountName != '' " >
+                a.account_name = #{accountName},
+            </if>
+            <if test="province != null and province != '' " >
+                a.province = #{province},
+            </if>
+            <if test="city != null and city != '' " >
+                a.city = #{city},
+            </if>
+            <if test="bankType != null and bankType != '' " >
+                a.bank_type = #{bankType},
+            </if>
+            <if test="smsNum != null and smsNum != '' " >
+                a.sms_num = #{smsNum},
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                a.last_num = #{lastNum},
+            </if>
+            <if test="smsContent != null and smsContent != '' " >
+                a.sms_content = #{smsContent},
+            </if>
+            <if test="startKey != null and startKey != '' " >
+                a.start_key = #{startKey},
+            </if>
+            <if test="startKey != null and startKey != '' " >
+                a.start_key = #{startKey},
+            </if>
+            <if test="endKey != null and endKey != '' " >
+                a.end_key = #{endKey},
+            </if>
+            <if test="specialType != null and specialType != '' " >
+                a.special_type = #{specialType},
+            </if>
+            <if test="openType != null and openType != '' " >
+                a.open_type = #{openType},
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                a.day_switch = #{daySwitch},
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                a.month_switch = #{monthSwitch},
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                a.total_switch = #{totalSwitch},
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_bank a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+</mapper>

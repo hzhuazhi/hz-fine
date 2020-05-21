@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.BankTransferMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.bank_id,a.order_no,a.tran_name,a.operation_name,a.bank_name,a.bank_card,a.account_name,a.money,
+        a.transfer_time,a.curday,a.curhour,a.curminute,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="bankId != null and bankId != '' " >
+                and a.bank_id = #{bankId}
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                and a.order_no = #{orderNo}
+            </if>
+            <if test="startTransferTime != null and startTransferTime != '' and endTransferTime != null and endTransferTime != ''" >
+                and a.transfer_time >= #{startTransferTime} and a.transfer_time &lt;= #{endTransferTime}
+            </if>
+            <if test="curdayStart != null and curdayStart != '' and curdayEnd != null and curdayEnd != '' " >
+                and a.curday >= #{curdayStart} and a.curday &lt;= #{curdayEnd}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.bank.BankTransferModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank_transfer a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.bank.BankTransferModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank_transfer a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.bank.BankTransferModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank_transfer a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.bank.BankTransferModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank_transfer a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_bank_transfer a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.bank.BankTransferModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_bank_transfer a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.bank.BankTransferModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_bank_transfer
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="bankId != null and bankId != '' " >
+                bank_id,
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                order_no,
+            </if>
+            <if test="tranName != null and tranName != '' " >
+                tran_name,
+            </if>
+            <if test="operationName != null and operationName != '' " >
+                operation_name,
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                bank_name,
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                bank_card,
+            </if>
+            <if test="accountName != null and accountName != '' " >
+                account_name,
+            </if>
+            <if test="money != null and money != '' " >
+                money,
+            </if>
+            <if test="transferTime != null and transferTime != '' " >
+                transfer_time,
+            </if>
+            <if test="curday != null and curday != '' " >
+                curday,
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                curhour,
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                curminute,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="bankId != null and bankId != '' " >
+                <![CDATA[  #{bankId}, ]]>
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                <![CDATA[  #{orderNo}, ]]>
+            </if>
+            <if test="tranName != null and tranName != '' " >
+                <![CDATA[  #{tranName}, ]]>
+            </if>
+            <if test="operationName != null and operationName != '' " >
+                <![CDATA[  #{operationName}, ]]>
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                <![CDATA[  #{bankName}, ]]>
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                <![CDATA[  #{bankCard}, ]]>
+            </if>
+            <if test="accountName != null and accountName != '' " >
+                <![CDATA[  #{accountName}, ]]>
+            </if>
+            <if test="money != null and money != '' " >
+                <![CDATA[  #{money}, ]]>
+            </if>
+            <if test="transferTime != null and transferTime != '' " >
+                <![CDATA[  #{transferTime}, ]]>
+            </if>
+            <if test="curday != null and curday != '' " >
+                <![CDATA[  #{curday}, ]]>
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                <![CDATA[  #{curhour}, ]]>
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                <![CDATA[  #{curminute}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.bank.BankTransferModel">
+        UPDATE tb_fn_bank_transfer a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="bankId != null and bankId != '' " >
+                a.bank_id = #{bankId},
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                a.order_no = #{orderNo},
+            </if>
+            <if test="tranName != null and tranName != '' " >
+                a.tran_name = #{tranName},
+            </if>
+            <if test="operationName != null and operationName != '' " >
+                a.operation_name = #{operationName},
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                a.bank_name = #{bankName},
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                a.bank_card = #{bankCard},
+            </if>
+            <if test="accountName != null and accountName != '' " >
+                a.account_name = #{accountName},
+            </if>
+            <if test="money != null and money != '' " >
+                a.money = #{money},
+            </if>
+            <if test="transferTime != null and transferTime != '' " >
+                a.transfer_time = #{transferTime},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_bank_transfer a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+</mapper>

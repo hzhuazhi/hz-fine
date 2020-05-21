@@ -73,6 +73,45 @@ public class ServerConstant {
     }
 
 
+    /**
+     * 策略的枚举
+     * 策略类型：1充值金额列表
+     */
+    public enum StrategyEnum{
+        MONEY(1, ""),
+        BANK_WORK(2,""),
+        BANK_LIST(3,""),
+        BANK_LIMIT(4,""),
+        MONEY_ADD_SUBTRACT_LIST(5,""),
+        ORDER_INVALID_TIME(6,""),
+
+        ;
+        private int stgType;
+        private String stgKey;
+
+        private StrategyEnum(int stgType, String stgKey) {
+            this.stgType = stgType;
+            this.stgKey = stgKey;
+        }
+
+        public int getStgType() {
+            return stgType;
+        }
+
+        public void setStgType(int stgType) {
+            this.stgType = stgType;
+        }
+
+        public String getStgKey() {
+            return stgKey;
+        }
+
+        public void setStgKey(String stgKey) {
+            this.stgKey = stgKey;
+        }
+    }
+
+
 
 
 

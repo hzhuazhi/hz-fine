@@ -8,8 +8,7 @@ package com.hz.fine.master.core.common.utils.constant;
  */
 public enum SystemKeysEnum {
 
-    KEY_GATHER("GER", "500集合"),
-    KEY_PF("PF", "支付业务"),
+    FINE("FN", "美好"),
 
 
     ;

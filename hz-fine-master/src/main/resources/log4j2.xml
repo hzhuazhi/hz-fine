@@ -7,7 +7,7 @@
     <Properties>
         <!-- 配置日志文件输出目录,此处为项目根目录下的logs文件夹  生产环境注意目录位置  Linux: ${catalina.home}-->
         <Property name="LOG_HOME">/opt/app/logs</Property>
-        <property name="FILE_NAME">hz-source</property>
+        <property name="FILE_NAME">hz-fine</property>
     </Properties>
     <Appenders>
         <!--这个输出控制台的配置 -->

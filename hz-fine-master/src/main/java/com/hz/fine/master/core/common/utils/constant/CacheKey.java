@@ -8,107 +8,69 @@ package com.hz.fine.master.core.common.utils.constant;
 public interface CacheKey {
 
     /**
-     * 电话号码号码
+     * 手机发送验证码
      */
-    String PHONE_INFO = "-1";
+    String PHONE_VCODE = "-1";
 
     /**
-     * deviceId
+     * 策略数据
      */
-    String DEVICE_INFO = "-2";
+    String STRATEGY = "-2";
 
     /**
-     * 微信号
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的日金额已经到达多少钱 - 日上限金额
      */
-    String WX_INFO = "-3";
+    String SHARE_BANK_MONEY_DAY = "-3";
 
     /**
-     * token
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的月金额已经到达多少钱 - 月上限金额
      */
-    String TOKEN_INFO = "-4";
+    String SHARE_BANK_MONEY_MONTH = "-4";
 
     /**
-     * 邀请码
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的总金额已经到达多少钱 - 总上限金额
      */
-    String INVITE_INFO = "-5";
-
-    /**
-     * 交易地址
-     */
-    String TRADING_ADDRESS_INFO = "-6";
-
-
-    /***
-     * 用户id
-     */
-    String MEMBER_ID_INFO = "-7";
-
-    /**
-     * PW_TOKEN
-     */
-    String PW_TOKEN= "-8";
-
+    String SHARE_BANK_MONEY_TOTAL = "-5";
 
 
     /**
-     * 注册_SMS
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的日次数已经到达多少次 - 日上限次数
      */
-    String REGISTER_SMS = "reg-sms-";
+    String SHARE_BANK_NUM_DAY = "-6";
 
     /**
-     * 忘记密码_sms
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的月次数已经到达多少次 - 月上限次数
      */
-    String FORGET_SMS  = "forget-sms-";
+    String SHARE_BANK_NUM_MONTH = "-7";
 
     /**
-     * 登陆_sms
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的总次数已经到达多少次 - 总上限次数
      */
-    String SIGN_IN_SMS  = "signin-sms-";
+    String SHARE_BANK_NUM_TOTAL = "-8";
 
     /**
-     * 修改支付密码_sms
+     * 挂单金额
+     * <p>银行卡具体的挂单金额</p>
      */
-    String UPDATE_PAYPW_SMS  = "paypw-sms-";
+    String HANG_MONEY = "-9";
 
     /**
-     * task操作支付宝转账
-     * 如果多台服务器运行，会出现问题，所以在变量名称前加了lock
+     * 需要锁的金额
+     * 锁住带分（元，分）的金额
      */
-    String LOCK_TRANSFER = "-9";
+    String LOCK_MONEY_CENT = "-10";
 
     /**
-     * task跑阿里支付宝订单同步数据时：锁住这条任务
+     * 用户调起充值订单的失效时间
+     * 为了避免用户重复频繁调起充值设置的
+     * 当用户充值完毕：这个值需要进行删除（task跑时间时）
      */
-    String LOCK_TASK_ALIPAY_NOTIFY = "-10";
+    String LOCK_DID_ORDER_INVALID_TIME = "-11";
 
-    /**
-     * 密保
-     */
-    String ITEM_BANK = "-11";
-
-    /**
-     * 密保：已通过密保问答
-     */
-    String ITEM_BANK_ANSWER = "-12";
-
-    /**
-     * 系统通知，系统公告，传播、扩散的通知
-     */
-    String SPREAD_NOTICE = "-13";
-
-    /**
-     * 系统通知，系统公告，传播、扩散的通知-详情
-     */
-    String SPREAD_NOTICE_INFO = "-14";
-
-    /**
-     * 阿里支付：用户频繁调起支付宝转账
-     */
-    String ALIPAY_MEMBER = "-15";
-
-    /**
-     * task操作支付宝转账结果操作
-     * 如果多台服务器运行，会出现问题，所以在变量名称前加了lock
-     */
-    String LOCK_TRANSFER_RESULT = "-17";
 }

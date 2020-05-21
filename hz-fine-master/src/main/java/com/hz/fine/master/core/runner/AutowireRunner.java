@@ -46,7 +46,6 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private QuestionDService questionDService;
 
-
     @Autowired
     private TaskService taskService;
 
@@ -55,6 +54,33 @@ public class AutowireRunner implements ApplicationRunner {
 
     @Autowired
     private RegionService regionService;
+
+    @Autowired
+    private DidService didService;
+
+    @Autowired
+    private DidLevelService didLevelService;
+
+    @Autowired
+    private DidCollectionAccountService didCollectionAccountService;
+
+    @Autowired
+    private MobileCardService mobileCardService;
+
+    @Autowired
+    private MobileCardDataService mobileCardDataService;
+
+    @Autowired
+    private BankService bankService;
+
+    @Autowired
+    private BankTransferService bankTransferService;
+
+    @Autowired
+    private StrategyService strategyService;
+
+    @Autowired
+    private DidRechargeService didRechargeService;
 
 
 
@@ -76,6 +102,15 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskService = taskService;
         ComponentUtil.taskHodgepodgeService = taskHodgepodgeService;
         ComponentUtil.regionService = regionService;
+        ComponentUtil.didService = didService;
+        ComponentUtil.didLevelService = didLevelService;
+        ComponentUtil.didCollectionAccountService = didCollectionAccountService;
+        ComponentUtil.mobileCardService = mobileCardService;
+        ComponentUtil.mobileCardDataService = mobileCardDataService;
+        ComponentUtil.bankService = bankService;
+        ComponentUtil.bankTransferService = bankTransferService;
+        ComponentUtil.strategyService = strategyService;
+        ComponentUtil.didRechargeService = didRechargeService;
 
         runThread = new RunThread();
         runThread.start();

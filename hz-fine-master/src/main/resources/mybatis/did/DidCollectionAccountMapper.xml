@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.DidCollectionAccountMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.did,a.ac_name,a.ac_type,a.ac_num,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
+        a.wx_qr_code_ads,a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="did != null and did != '' " >
+                and a.did = #{did}
+            </if>
+            <if test="acName != null and acName != '' " >
+                and a.ac_name = #{acName}
+            </if>
+            <if test="acType != null and acType != '' " >
+                and a.ac_type = #{acType}
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                and a.ac_num = #{acNum}
+            </if>
+            <if test="mmQrCode != null and mmQrCode != '' " >
+                and a.mm_qr_code = #{mmQrCode}
+            </if>
+            <if test="ddQrCode != null and ddQrCode != '' " >
+                and a.dd_qr_code = #{ddQrCode}
+            </if>
+            <if test="payee != null and payee != '' " >
+                and a.payee = #{payee}
+            </if>
+            <if test="businessType != null and businessType != '' " >
+                and a.business_type = #{businessType}
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                and a.day_switch = #{daySwitch}
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                and a.month_switch = #{monthSwitch}
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                and a.total_switch = #{totalSwitch}
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                and a.check_status = #{checkStatus}
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                and a.use_status = #{useStatus}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time asc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel" >
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_fn_did_collection_account
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="did != null and did != '' " >
+                did,
+            </if>
+            <if test="acName != null and acName != '' " >
+                ac_name,
+            </if>
+            <if test="acType != null and acType != '' " >
+                ac_type,
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                ac_num,
+            </if>
+            <if test="mmQrCode != null and mmQrCode != '' " >
+                mm_qr_code,
+            </if>
+            <if test="ddQrCode != null and ddQrCode != '' " >
+                dd_qr_code,
+            </if>
+            <if test="payee != null and payee != '' " >
+                payee,
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                bank_name,
+            </if>
+            <if test="businessType != null and businessType != '' " >
+                business_type,
+            </if>
+            <if test="wxQrCodeAds != null and wxQrCodeAds != '' " >
+                wx_qr_code_ads,
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                day_switch,
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                month_switch,
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                total_switch,
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                check_status,
+            </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                check_info,
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                use_status,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="did != null and did != '' " >
+                <![CDATA[  #{did}, ]]>
+            </if>
+            <if test="acName != null and acName != '' " >
+                <![CDATA[  #{acName}, ]]>
+            </if>
+            <if test="acType != null and acType != '' " >
+                <![CDATA[  #{acType}, ]]>
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                <![CDATA[  #{acNum}, ]]>
+            </if>
+            <if test="mmQrCode != null and mmQrCode != '' " >
+                <![CDATA[  #{mmQrCode}, ]]>
+            </if>
+            <if test="ddQrCode != null and ddQrCode != '' " >
+                <![CDATA[  #{ddQrCode}, ]]>
+            </if>
+            <if test="payee != null and payee != '' " >
+                <![CDATA[  #{payee}, ]]>
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                <![CDATA[  #{bankName}, ]]>
+            </if>
+            <if test="businessType != null and businessType != '' " >
+                <![CDATA[  #{businessType}, ]]>
+            </if>
+            <if test="wxQrCodeAds != null and wxQrCodeAds != '' " >
+                <![CDATA[  #{wxQrCodeAds}, ]]>
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                <![CDATA[  #{daySwitch}, ]]>
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                <![CDATA[  #{monthSwitch}, ]]>
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                <![CDATA[  #{totalSwitch}, ]]>
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                <![CDATA[  #{checkStatus}, ]]>
+            </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                <![CDATA[  #{checkInfo}, ]]>
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                <![CDATA[  #{useStatus}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        UPDATE tb_fn_did_collection_account a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="acName != null and acName != '' " >
+                a.ac_name = #{acName},
+            </if>
+            <if test="acType != null and acType != '' " >
+                a.ac_type = #{acType},
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                a.ac_num = #{acNum},
+            </if>
+            <if test="mmQrCode != null and mmQrCode != '' " >
+                a.mm_qr_code = #{mmQrCode},
+            </if>
+            <if test="ddQrCode != null and ddQrCode != '' " >
+                a.dd_qr_code = #{ddQrCode},
+            </if>
+            <if test="payee != null and payee != '' " >
+                a.payee = #{payee},
+            </if>
+            <if test="bankName != null and bankName != '' " >
+                a.bank_name = #{bankName},
+            </if>
+            <if test="businessType != null and businessType != '' " >
+                a.business_type = #{businessType},
+            </if>
+            <if test="wxQrCodeAds != null and wxQrCodeAds != '' " >
+                a.wx_qr_code_ads = #{wxQrCodeAds},
+            </if>
+            <if test="daySwitch != null and daySwitch != '' " >
+                a.day_switch = #{daySwitch},
+            </if>
+            <if test="monthSwitch != null and monthSwitch != '' " >
+                a.month_switch = #{monthSwitch},
+            </if>
+            <if test="totalSwitch != null and totalSwitch != '' " >
+                a.total_switch = #{totalSwitch},
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                a.check_status = #{checkStatus},
+            </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                a.check_info = #{checkInfo},
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_did_collection_account a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+            <if test="yn != null and yn != '' " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+    <!-- 更新收款账号基本信息 -->
+    <update id="updateBasic" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        UPDATE tb_fn_did_collection_account a
+        <trim prefix="set" suffixOverrides=",">
+            a.ac_name = #{acName},
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.did = #{did}
+        and a.id = #{id}
+    </update>
+
+
+    <!-- 更新用户收款账号信息 -->
+    <update id="updateDidCollectionAccount" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        UPDATE tb_fn_did_collection_account a
+        <trim prefix="set" suffixOverrides=",">
+            a.ac_type = #{acType},
+            a.ac_num = #{acNum},
+            a.mm_qr_code = #{mmQrCode},
+            a.payee = #{payee},
+            a.bank_name = #{bankName},
+            a.business_type = #{businessType},
+            a.wx_qr_code_ads = #{wxQrCodeAds},
+            a.check_status = #{checkStatus},
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.did = #{did}
+        and a.id = #{id}
+    </update>
+
+
+
+</mapper>

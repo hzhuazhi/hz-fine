@@ -1398,6 +1398,31 @@ public class StringUtil {
         return str;
     }
 
+
+	/**
+	 * @Description: 计算两数相减
+	 * @param x
+	*@param y
+	 * @return java.lang.String
+	 * @author yoko
+	 * @date 2019/11/28 22:24
+	 */
+	public static String getBigDecimalSubtractByStr(String x, String y){
+//		BigDecimal resDoble;
+//		resDoble = x.subtract(y);
+//		DecimalFormat sb = new DecimalFormat("###.##");
+//		String str = sb.format(resDoble);
+//		BigDecimal res = new BigDecimal(str);
+
+		BigDecimal resDoble;
+		BigDecimal xx = new BigDecimal(x);
+		BigDecimal yy = new BigDecimal(y);
+		resDoble = xx.subtract(yy);
+		DecimalFormat sb = new DecimalFormat("###.##");
+		String str = sb.format(resDoble);
+		return str;
+	}
+
 	/**
 	 * @Description: 计算两数相减
 	 * <p>值相减，如果不为负数，则返回true；反之则返回fasle</p>
@@ -1521,6 +1546,9 @@ public class StringUtil {
 		System.out.println("subtract:" + subtract);
 		System.out.println("multiply:" + multiply);
 		System.out.println("divide:" + divide);
+
+		String strAdd = getBigDecimalAdd("5000.000", "1");// 相加
+		System.out.println("strAdd:" + strAdd);
 	}
 
 }

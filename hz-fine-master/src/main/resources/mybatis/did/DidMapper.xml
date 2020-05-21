@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.DidMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,
+        a.total_direct_profit,a.total_indirect_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.is_notify,a.notify_url,a.own_id,a.use_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                and a.ac_num = #{acNum}
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                and a.phone_num = #{phoneNum}
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                and a.pass_wd = #{passWd}
+            </if>
+            <if test="operateWd != null and operateWd != '' " >
+                and a.operate_wd = #{operateWd}
+            </if>
+            <if test="icode != null and icode != '' " >
+                and a.icode = #{icode}
+            </if>
+            <if test="vipType != null and vipType != '' " >
+                and a.vip_type = #{vipType}
+            </if>
+            <if test="ownId != null and ownId != '' " >
+                and a.own_id = #{ownId}
+            </if>
+            and a.use_status = 1
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time asc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_did a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.did.DidModel" >
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+        SELECT LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_fn_did
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="nickname != null and nickname != '' " >
+                nickname,
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                ac_num,
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                phone_num,
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                pass_wd,
+            </if>
+            <if test="operateWd != null and operateWd != '' " >
+                operate_wd,
+            </if>
+            <if test="icode != null and icode != '' " >
+                icode,
+            </if>
+            <if test="totalMoney != null and totalMoney != '' " >
+                total_money,
+            </if>
+            <if test="balance != null and balance != '' " >
+                balance,
+            </if>
+            <if test="lockMoney != null and lockMoney != '' " >
+                lock_money,
+            </if>
+            <if test="vipType != null and vipType != '' " >
+                vip_type,
+            </if>
+            <if test="totalDirectProfit != null and totalDirectProfit != '' " >
+                total_direct_profit,
+            </if>
+            <if test="totalIndirectProfit != null and totalIndirectProfit != '' " >
+                total_indirect_profit,
+            </if>
+            <if test="totalDirectNum != null and totalDirectNum != '' " >
+                total_direct_num,
+            </if>
+            <if test="totalIndirectNum != null and totalIndirectNum != '' " >
+                total_indirect_num,
+            </if>
+            <if test="totalProfit != null and totalProfit != '' " >
+                total_profit,
+            </if>
+            <if test="isNotify != null and isNotify != '' " >
+                is_notify,
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                notify_url,
+            </if>
+            <if test="ownId != null and ownId != '' " >
+                own_id,
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                use_status,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="nickname != null and nickname != '' " >
+                <![CDATA[  #{nickname}, ]]>
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                <![CDATA[  #{acNum}, ]]>
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                <![CDATA[  #{phoneNum}, ]]>
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                <![CDATA[  #{passWd}, ]]>
+            </if>
+            <if test="operateWd != null and operateWd != '' " >
+                <![CDATA[  #{operateWd}, ]]>
+            </if>
+            <if test="icode != null and icode != '' " >
+                <![CDATA[  #{icode}, ]]>
+            </if>
+            <if test="totalMoney != null and totalMoney != '' " >
+                <![CDATA[  #{totalMoney}, ]]>
+            </if>
+            <if test="balance != null and balance != '' " >
+                <![CDATA[  #{balance}, ]]>
+            </if>
+            <if test="lockMoney != null and lockMoney != '' " >
+                <![CDATA[  #{lockMoney}, ]]>
+            </if>
+            <if test="vipType != null and vipType != '' " >
+                <![CDATA[  #{vipType}, ]]>
+            </if>
+            <if test="totalDirectProfit != null and totalDirectProfit != '' " >
+                <![CDATA[  #{totalDirectProfit}, ]]>
+            </if>
+            <if test="totalIndirectProfit != null and totalIndirectProfit != '' " >
+                <![CDATA[  #{totalIndirectProfit}, ]]>
+            </if>
+            <if test="totalDirectNum != null and totalDirectNum != '' " >
+                <![CDATA[  #{totalDirectNum}, ]]>
+            </if>
+            <if test="totalIndirectNum != null and totalIndirectNum != '' " >
+                <![CDATA[  #{totalIndirectNum}, ]]>
+            </if>
+            <if test="totalProfit != null and totalProfit != '' " >
+                <![CDATA[  #{totalProfit}, ]]>
+            </if>
+            <if test="isNotify != null and isNotify != '' " >
+                <![CDATA[  #{isNotify}, ]]>
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                <![CDATA[  #{notifyUrl}, ]]>
+            </if>
+            <if test="ownId != null and ownId != '' " >
+                <![CDATA[  #{ownId}, ]]>
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                <![CDATA[  #{useStatus}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.did.DidModel">
+        UPDATE tb_fn_did a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="nickname != null and nickname != '' " >
+                a.nickname = #{nickname},
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                a.phone_num = #{phoneNum},
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                a.pass_wd = #{passWd},
+            </if>
+            <if test="newPassWd != null and newPassWd != '' " >
+                a.pass_wd = #{newPassWd},
+            </if>
+            <if test="operateWd != null and operateWd != '' " >
+                a.operate_wd = #{operateWd},
+            </if>
+            <if test="totalMoney != null and totalMoney != '' " >
+                a.total_money = #{totalMoney},
+            </if>
+            <if test="balance != null and balance != '' " >
+                a.balance = #{balance},
+            </if>
+            <if test="lockMoney != null and lockMoney != '' " >
+                a.lock_money = #{lockMoney},
+            </if>
+            <if test="vipType != null and vipType != '' " >
+                a.vip_type = #{vipType},
+            </if>
+            <if test="totalDirectProfit != null and totalDirectProfit != '' " >
+                a.total_direct_profit = #{totalDirectProfit},
+            </if>
+            <if test="totalIndirectProfit != null and totalIndirectProfit != '' " >
+                a.total_indirect_profit = #{totalIndirectProfit},
+            </if>
+            <if test="totalDirectNum != null and totalDirectNum != '' " >
+                a.total_direct_num = #{totalDirectNum},
+            </if>
+            <if test="totalIndirectNum != null and totalIndirectNum != '' " >
+                a.total_indirect_num = #{totalIndirectNum},
+            </if>
+            <if test="totalProfit != null and totalProfit != '' " >
+                a.total_profit = #{totalProfit},
+            </if>
+            <if test="isNotify != null and isNotify != '' " >
+                a.is_notify = #{isNotify},
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                a.notify_url = #{notifyUrl},
+            </if>
+            <if test="ownId != null and ownId != '' " >
+                a.own_id = #{ownId},
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_did a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+
+
+</mapper>
