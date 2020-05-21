@@ -82,6 +82,12 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private DidRechargeService didRechargeService;
 
+    @Autowired
+    private BankCollectionService bankCollectionService;
+
+    @Autowired
+    private DidRewardService didRewardService;
+
 
 
 
@@ -111,6 +117,8 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.bankTransferService = bankTransferService;
         ComponentUtil.strategyService = strategyService;
         ComponentUtil.didRechargeService = didRechargeService;
+        ComponentUtil.bankCollectionService = bankCollectionService;
+        ComponentUtil.didRewardService = didRewardService;
 
         runThread = new RunThread();
         runThread.start();

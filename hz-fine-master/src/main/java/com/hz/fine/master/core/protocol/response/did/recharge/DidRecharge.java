@@ -41,6 +41,11 @@ public class DidRecharge implements Serializable {
      */
     public Integer orderStatus;
 
+    /**
+     * 创建时间
+     */
+    public String createTime;
+
     public DidRecharge(){
 
     }
@@ -92,5 +97,13 @@ public class DidRecharge implements Serializable {
 
     public void setOrderStatus(Integer orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

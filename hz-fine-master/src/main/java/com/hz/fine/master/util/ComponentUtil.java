@@ -27,5 +27,7 @@ public class ComponentUtil {
     public static BankTransferService bankTransferService;
     public static StrategyService strategyService;
     public static DidRechargeService didRechargeService;
+    public static BankCollectionService bankCollectionService;
+    public static DidRewardService didRewardService;
 
 }

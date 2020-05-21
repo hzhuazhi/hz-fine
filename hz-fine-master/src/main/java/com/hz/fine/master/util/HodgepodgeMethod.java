@@ -9,10 +9,7 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
-import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
-import com.hz.fine.master.core.model.did.DidLevelModel;
-import com.hz.fine.master.core.model.did.DidModel;
-import com.hz.fine.master.core.model.did.DidRechargeModel;
+import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
 import com.hz.fine.master.core.model.question.QuestionMModel;
@@ -22,6 +19,7 @@ import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
+import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.response.ResponseData;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
@@ -29,6 +27,8 @@ import com.hz.fine.master.core.protocol.response.did.collectionaccount.ResponseD
 import com.hz.fine.master.core.protocol.response.did.recharge.DidRecharge;
 import com.hz.fine.master.core.protocol.response.did.recharge.RechargeInfo;
 import com.hz.fine.master.core.protocol.response.did.recharge.ResponseDidRecharge;
+import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
+import com.hz.fine.master.core.protocol.response.did.reward.ResponseDidReward;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
 import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
@@ -1549,6 +1549,143 @@ public class HodgepodgeMethod {
         ResponseDidRecharge dataModel = new ResponseDidRecharge();
         if (didRechargeModel != null){
             DidRecharge data = BeanUtils.copy(didRechargeModel, DidRecharge.class);
+            dataModel.dataModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取用户奖励记录集合时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidRewardListData(RequestReward requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.R00001.geteCode(), ErrorCode.ENUM_ERROR.R00001.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 根据条件查询用户奖励纪录的数据-集合
+     * @param requestModel - 基本查询条件
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidRewardModel assembleDidRewardListByDid(RequestReward requestModel, long did){
+        DidRewardModel resBean = BeanUtils.copy(requestModel, DidRewardModel.class);
+        resBean.setDid(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户奖励记录数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didRechargeList - 用户奖励记录集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidRewardListResult(long stime, String sign, List<DidRewardModel> didRechargeList, Integer rowCount){
+        ResponseDidReward dataModel = new ResponseDidReward();
+        if (didRechargeList != null && didRechargeList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<DidReward> dataList = BeanUtils.copyList(didRechargeList, DidReward.class);
+            dataModel.dataList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取用户奖励订单记录详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidRewardData(RequestReward requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.R00002.geteCode(), ErrorCode.ENUM_ERROR.R00002.geteDesc());
+        }
+
+        if (requestModel.id == null || requestModel.id <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.R00003.geteCode(), ErrorCode.ENUM_ERROR.R00003.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装根据用户以及奖励纪录的ID查询用户奖励纪录的详情的查询条件
+     * @param did - 用户ID
+     * @param id - 奖励纪录的主键ID
+     * @return com.hz.fine.master.core.model.did.DidRechargeModel
+     * @author yoko
+     * @date 2020/5/18 11:41
+     */
+    public static DidRewardModel assembleDidRewardByDidAndId(long did, long id){
+        DidRewardModel resBean = new DidRewardModel();
+        resBean.setDid(did);
+        resBean.setId(id);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户奖励记录-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didRewardModel - 用户奖励纪录的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidRewardDataResult(long stime, String sign, DidRewardModel didRewardModel){
+        ResponseDidReward dataModel = new ResponseDidReward();
+        if (didRewardModel != null){
+            DidReward data = BeanUtils.copy(didRewardModel, DidReward.class);
             dataModel.dataModel = data;
         }
         dataModel.setStime(stime);

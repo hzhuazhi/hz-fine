@@ -34,7 +34,14 @@ public class RequestDidRecharge extends BaseRequest implements Serializable {
      */
     public Integer orderStatus;
 
+    /**
+     * 根据日期查询-开始时间
+     */
     public Integer curdayStart;
+
+    /**
+     * 根据日期查询-结束时间
+     */
     public Integer curdayEnd;
 
 
