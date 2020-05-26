@@ -133,6 +133,14 @@ public class DidModel extends BasePage implements Serializable {
      */
     private Integer yn;
 
+    /**
+     *支付类型：1微信，2支付宝，3银行卡
+     * <p>
+     *     这里查询账号下面的收款账号的类型
+     * </p>
+     */
+    private Integer acType;
+
 
     public Long getId() {
         return id;
@@ -324,5 +332,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setNewPassWd(String newPassWd) {
         this.newPassWd = newPassWd;
+    }
+
+    public Integer getAcType() {
+        return acType;
+    }
+
+    public void setAcType(Integer acType) {
+        this.acType = acType;
     }
 }

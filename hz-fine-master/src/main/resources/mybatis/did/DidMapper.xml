@@ -329,6 +329,22 @@
 
 
 
+    <!-- 查询分页列表 -->
+    <select id="getEffectiveDidList" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        where  1=1
+        and a.balance >= #{balance} and a.lock_money = '' and a.use_status =1 and a.yn = 0
+        and a.id in (
+        select a.did from tb_fn_did_collection_account a
+        where 1=1
+        and a.ac_type = #{acType} and a.day_switch = 1 and a.month_switch = 1 and a.total_switch = 1 and a.check_status = 3 and a.use_status=1 and a.yn =0
+        )
+    </select>
+
+
+
 
 
 </mapper>

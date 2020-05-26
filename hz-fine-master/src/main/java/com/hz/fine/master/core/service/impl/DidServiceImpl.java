@@ -3,9 +3,12 @@ package com.hz.fine.master.core.service.impl;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.mapper.DidMapper;
+import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.service.DidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description 用户Service层的实现层
@@ -27,5 +30,10 @@ public class DidServiceImpl<T> extends BaseServiceImpl<T> implements DidService<
 
     public BaseDao<T> getDao() {
         return didMapper;
+    }
+
+    @Override
+    public List<DidModel> getEffectiveDidList(DidModel model) {
+        return didMapper.getEffectiveDidList(model);
     }
 }

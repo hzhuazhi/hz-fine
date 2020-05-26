@@ -20,6 +20,7 @@ import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
+import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.response.ResponseData;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
@@ -1691,6 +1692,46 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: check校验数据当派发订单的时候
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkOrderAdd(RequestOrder requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00001.geteCode(), ErrorCode.ENUM_ERROR.OR00001.geteDesc());
+        }
+
+        // 校验金额是否为空
+        if (StringUtils.isBlank(requestModel.money)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00002.geteCode(), ErrorCode.ENUM_ERROR.OR00002.geteDesc());
+        }
+
+        // 校验支付类型为空
+        if (requestModel.payType == null || requestModel.payType == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00003.geteCode(), ErrorCode.ENUM_ERROR.OR00003.geteDesc());
+        }
+    }
+
+    /**
+     * @Description: 组装查询可以进行派发订单的用户查询条件的方法
+     * @param requestModel - 金额跟支付类型
+     * @return 
+     * @author yoko
+     * @date 2020/5/25 14:15 
+    */
+    public static DidModel assembleEffectiveDid(RequestOrder requestModel){
+        DidModel resBean = new DidModel();
+        resBean.setBalance(requestModel.money);
+        resBean.setAcType(requestModel.payType);
+        return resBean;
     }
 
 

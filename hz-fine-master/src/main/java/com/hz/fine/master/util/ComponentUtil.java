@@ -29,5 +29,14 @@ public class ComponentUtil {
     public static DidRechargeService didRechargeService;
     public static BankCollectionService bankCollectionService;
     public static DidRewardService didRewardService;
+    public static OrderService orderService;
+    public static WxService wxService;
+    public static WxClerkService wxClerkService;
+    public static WxClerkDataService wxClerkDataService;
+    public static CatAllDataService catAllDataService;
+    public static CatDataService catDataService;
+
+
+
 
 }

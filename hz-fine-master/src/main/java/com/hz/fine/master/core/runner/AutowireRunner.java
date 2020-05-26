@@ -88,6 +88,24 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private DidRewardService didRewardService;
 
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private WxService wxService;
+
+    @Autowired
+    private WxClerkService wxClerkService;
+
+    @Autowired
+    private WxClerkDataService wxClerkDataService;
+
+    @Autowired
+    private CatAllDataService catAllDataService;
+
+    @Autowired
+    private CatDataService catDataService;
+
 
 
 
@@ -119,6 +137,12 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.didRechargeService = didRechargeService;
         ComponentUtil.bankCollectionService = bankCollectionService;
         ComponentUtil.didRewardService = didRewardService;
+        ComponentUtil.orderService = orderService;
+        ComponentUtil.wxService = wxService;
+        ComponentUtil.wxClerkService = wxClerkService;
+        ComponentUtil.wxClerkDataService = wxClerkDataService;
+        ComponentUtil.catAllDataService = catAllDataService;
+        ComponentUtil.catDataService = catDataService;
 
         runThread = new RunThread();
         runThread.start();
