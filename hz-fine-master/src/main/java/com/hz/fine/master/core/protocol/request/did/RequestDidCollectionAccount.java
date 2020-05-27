@@ -39,7 +39,7 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
     public String mmQrCode;
 
     /**
-     * 收款人
+     * 收款人：微信昵称、支付宝昵称、银行卡持有人名称
      */
     public String payee;
 

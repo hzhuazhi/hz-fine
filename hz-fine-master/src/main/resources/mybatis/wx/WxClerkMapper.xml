@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.wx_id,a.collection_account_id,a.online_time,a.offline_time,a.use_status,
+        a.id,a.wx_id,a.did,a.collection_account_id,a.online_time,a.offline_time,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -21,6 +21,9 @@
             </if>
             <if test="wxId != null and wxId != '' " >
                 and a.wx_id = #{wxId}
+            </if>
+            <if test="did != null and did != '' " >
+                and a.did = #{did}
             </if>
             <if test="collectionAccountId != null and collectionAccountId != '' " >
                 and a.collection_account_id = #{collectionAccountId}
@@ -117,6 +120,9 @@
             <if test="wxId != null and wxId != '' " >
                 wx_id,
             </if>
+            <if test="did != null and did != '' " >
+                did,
+            </if>
             <if test="collectionAccountId != null and collectionAccountId != '' " >
                 collection_account_id,
             </if>
@@ -135,6 +141,9 @@
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="wxId != null and wxId != '' " >
                 <![CDATA[  #{wxId}, ]]>
+            </if>
+            <if test="did != null and did != '' " >
+                <![CDATA[  #{did}, ]]>
             </if>
             <if test="collectionAccountId != null and collectionAccountId != '' " >
                 <![CDATA[  #{collectionAccountId}, ]]>

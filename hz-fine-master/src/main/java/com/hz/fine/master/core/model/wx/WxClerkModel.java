@@ -24,6 +24,11 @@ public class WxClerkModel extends BasePage implements Serializable {
     private String wxId;
 
     /**
+     * 用户账号ID
+     */
+    private Long did;
+
+    /**
      * 用户收款账号ID：对应表tb_fn_did_collection_account的主键ID
      */
     private Long collectionAccountId;
@@ -128,5 +133,13 @@ public class WxClerkModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public Long getDid() {
+        return did;
+    }
+
+    public void setDid(Long did) {
+        this.did = did;
     }
 }

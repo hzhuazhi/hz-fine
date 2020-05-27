@@ -44,6 +44,11 @@ public class WxModel extends BasePage implements Serializable {
     private String totalLink;
 
     /**
+     * 手机号具体与手机型号绑定
+     */
+    private String bindingMobile;
+
+    /**
      * 使用状态:1初始化有效正常使用，2无效暂停使用
      */
     private Integer useStatus;
@@ -141,5 +146,13 @@ public class WxModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public String getBindingMobile() {
+        return bindingMobile;
+    }
+
+    public void setBindingMobile(String bindingMobile) {
+        this.bindingMobile = bindingMobile;
     }
 }

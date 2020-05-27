@@ -121,6 +121,7 @@ public class OrderController {
 
             // 循环筛选有效
 //            段峰
+            ComponentUtil.orderService.screenCollectionAccount(didList, requestModel.money, requestModel.payType);
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();

@@ -71,6 +71,24 @@ public interface CacheKey {
      * 为了避免用户重复频繁调起充值设置的
      * 当用户充值完毕：这个值需要进行删除（task跑时间时）
      */
-    String LOCK_DID_ORDER_INVALID_TIME = "-11";
+    String LOCK_DID_ORDER_INVALID_TIME = "-11";// 当有回执数据时：要使用task需要删除redis缓存
+
+    /**
+     * 判断用户是否有挂单正在进行中
+     * 才正式派单完成之后，需要把这个用户挂单填入缓存中；直到订单成功：把缓存删除、或者订单超过有效期
+     */
+    String LOCK_DID_ORDER_ING = "-12";// 当有回执数据时：要使用task需要删除redis缓存
+
+    /**
+     * 存储用户挂单的具体金额：用于redis锁使用
+     * 因为前提如果取消用户可以同时派发多个单的限制时，则需要加上不同金额才能同时派发多个订单给用户
+     */
+    String LOCK_DID_ORDER_MONEY = "-13";// 当有回执数据时：要使用task需要删除redis缓存
+
+    /**
+     * 在派单的时候，需要先锁住此用户
+     * 高并发避免为题
+     */
+    String LOCK_DID_ORDER = "-14";
 
 }

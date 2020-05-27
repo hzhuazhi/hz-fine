@@ -16,11 +16,13 @@ import com.hz.fine.master.core.model.question.QuestionMModel;
 import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
+import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.core.protocol.request.order.RequestOrder;
+import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.response.ResponseData;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
@@ -33,6 +35,9 @@ import com.hz.fine.master.core.protocol.response.did.reward.ResponseDidReward;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
 import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
+import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
+import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
+import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
 import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -1734,6 +1739,153 @@ public class HodgepodgeMethod {
         return resBean;
     }
 
+
+    /**
+     * @Description: 组装查询有效的收款账号的查询条件
+     * @param did - 用户ID
+     * @param acType - 收款账号类型
+     * @return
+     * @author yoko
+     * @date 2020/5/26 19:21
+    */
+    public static DidCollectionAccountModel assembleDidCollectionAccount(long did, int acType){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setAcType(acType);
+        resBean.setDaySwitch(1);
+        resBean.setMonthSwitch(1);
+        resBean.setTotalSwitch(1);
+        resBean.setCheckStatus(3);
+        resBean.setUseStatus(1);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询小微旗下店员的有效收款账号的查询条件
+     * @param did - 用户ID
+     * @param collectionAccountId - 用户收款账号ID
+     * @return com.hz.fine.master.core.model.wx.WxClerkModel
+     * @author yoko
+     * @date 2020/5/26 19:44
+     */
+    public static WxClerkModel assembleWxClerk(long did, long collectionAccountId){
+        WxClerkModel resBean = new WxClerkModel();
+        resBean.setDid(did);
+        resBean.setCollectionAccountId(collectionAccountId);
+        resBean.setUseStatus(1);
+        return resBean;
+    }
+
+
+
+
+    /**
+     * @Description: check校验数据获取策略：充值金额列表
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkStrategyMoneyListData(RequestStrategy requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00008.geteCode(), ErrorCode.ENUM_ERROR.S00008.geteDesc());
+        }
+    }
+
+
+
+    /**
+     * @Description: 策略：充值金额列表数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param strategyDataList - 充值金额列表
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleStrategyMoneyListResult(long stime, String sign,  List<StrategyData> strategyDataList, Integer rowCount){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        if (strategyDataList != null && strategyDataList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<StrategyMoney> moneyList = new ArrayList<>();
+            for (StrategyData strategyData : strategyDataList){
+                StrategyMoney strategyMoney = new StrategyMoney();
+                strategyMoney.money = strategyData.getStgValue();
+                strategyMoney.rewardRatio = strategyData.getStgValueOne();
+                strategyMoney.seat = strategyData.getStgValueTwo();
+                moneyList.add(strategyMoney);
+            }
+            dataModel.moneyList = moneyList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取策略：总金额充值档次奖励列表
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkStrategyMoneyGradeListData(RequestStrategy requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00009.geteCode(), ErrorCode.ENUM_ERROR.S00009.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 校验策略类型数据
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByMoneyGrade(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00010.geteCode(), ErrorCode.ENUM_ERROR.S00010.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 策略：总金额充值档次奖励列表数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param strategyDataList - 总金额充值档次奖励列表
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleStrategyMoneyGradeListResult(long stime, String sign,  List<StrategyData> strategyDataList, Integer rowCount){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        if (strategyDataList != null && strategyDataList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<StrategyMoneyGrade> moneyGradeList = new ArrayList<>();
+            for (StrategyData strategyData : strategyDataList){
+                StrategyMoneyGrade strategyMoneyGrade = new StrategyMoneyGrade();
+                strategyMoneyGrade.moneyGrade = strategyData.getStgValue();
+                strategyMoneyGrade.rewardRatio = strategyData.getStgValueOne();
+                strategyMoneyGrade.seat = strategyData.getStgValueTwo();
+                moneyGradeList.add(strategyMoneyGrade);
+            }
+            dataModel.moneyGradeList = moneyGradeList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
 
 
 

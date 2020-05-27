@@ -67,10 +67,20 @@ public class VcodeController {
      * @date 2019/11/7 16:58
      * local:http://localhost:8086/fine/cd/getCd
      * 请求的属性类:RequestConsumer
-     * 必填字段:{"phoneNum":"15967171415","vType":1,"agtVer":1,"clientVer":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密值:eyJwaG9uZU51bSI6IjE1OTY3MTcxNDE1IiwidlR5cGUiOjEsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9
-     * 客户端加密字段:ctime+cctime+token+秘钥=sign
+     * 必填字段:{"phoneNum":"15967171415","vType":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密值:{"jsonData":"eyJwaG9uZU51bSI6IjE1OTY3MTcxNDAxIiwidlR5cGUiOjEsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+     * 客户端加密字段:phoneNum+ctime+秘钥=sign
      * 服务端加密字段:stime+token+秘钥=sign
+     *
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiZjY5MDM3MjMwZTkwZjc4ZjA3OTc0NTcxZTJhYzJjNDIiLCJzdGltZSI6MTU5MDU0NzcyNTEwNSwidG9rZW4iOiIxMTExMTEifQ=="
+     *     },
+     *     "sgid": "202005271048410000001",
+     *     "cgid": ""
+     * }
      */
     @RequestMapping(value = "/getCd", method = {RequestMethod.POST})
     public JsonResult<Object> getDataMList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{

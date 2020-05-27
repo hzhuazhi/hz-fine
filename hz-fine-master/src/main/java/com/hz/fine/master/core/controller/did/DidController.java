@@ -73,7 +73,7 @@ public class DidController {
      * 请求的属性类:RequestDid
      * 必填字段:{"nickname":"nickname1","acNum":"15967171415","passWd":"passWd1","operateWd":"operateWd1","icode":"1","vcode":"1111","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJuaWNrbmFtZSI6Im5pY2tuYW1lMSIsImFjTnVtIjoiMTU5NjcxNzE0MTUiLCJwYXNzV2QiOiJwYXNzV2QxIiwib3BlcmF0ZVdkIjoib3BlcmF0ZVdkMSIsImljb2RlIjoiMSIsInZjb2RlIjoiMTExMSIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
-     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 客户端加密字段:acNum+ctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",

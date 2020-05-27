@@ -234,7 +234,7 @@ public class DidRechargeController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJyZWNoYXJnZSI6eyJhY2NvdW50TmFtZSI6IuW8gOaIt+WQjV8yXzIiLCJiYW5rQ2FyZCI6IumTtuihjOWNoeWPt18yXzIiLCJiYW5rTmFtZSI6IuW9kuWxnuW8gOaIt+ihjF8yXzIiLCJkaXN0cmlidXRpb25Nb25leSI6IjEwMDAuMDAiLCJpbnZhbGlkVGltZSI6IjIwMjAtMDUtMjEgMTQ6NTY6NDgiLCJvcmRlck1vbmV5IjoiMTAwMC4wMCIsIm9yZGVyTm8iOiIyMDIwMDUyMTE0NDYwMDAwMDAwMDEiLCJzdWJicmFuY2hOYW1lIjoi5pSv6KGM5ZCN56ewXzJfMiJ9LCJzaWduIjoiYjA2MGFmODFlOTg0M2QwYTM3YzQwY2UzOWFlYzFmYTAiLCJzdGltZSI6MTU5MDA0MzYyMTE5Mn0="
+     *         "jsonData": "eyJzaWduIjoiMWM5ZTA3MjNkYmU5ZTM4NDQ3NWYyZTA4MDU1ZTEyMjQiLCJzdGltZSI6MTU4OTc5MTYyMzY1Nn0="
      *     },
      *     "sgid": "202005211446000000001",
      *     "cgid": ""
@@ -273,9 +273,6 @@ public class DidRechargeController {
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
             resultDataModel.jsonData = encryptionData;
 
-            // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
-            String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
-            ComponentUtil.redisService.set(strKeyCache, sgid, ELEVEN_MIN);
             // 返回数据给客户端
             return JsonResult.successResult(resultDataModel, cgid, sgid);
         }catch (Exception e){
