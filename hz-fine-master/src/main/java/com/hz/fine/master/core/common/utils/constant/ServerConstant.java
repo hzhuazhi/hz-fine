@@ -85,6 +85,7 @@ public class ServerConstant {
         MONEY_ADD_SUBTRACT_LIST(5,""),
         ORDER_INVALID_TIME(6,""),
         MONEY_GRADE_LIST(7,""),
+        SHARE_ADDRESS(8,""),
 
         ;
         private int stgType;

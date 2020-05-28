@@ -39,6 +39,7 @@ import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
 import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
+import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
 import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -1934,6 +1935,83 @@ public class HodgepodgeMethod {
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
     }
+
+
+
+    /**
+     * @Description: check校验数据获取分享链接时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkStrategyShareData(RequestStrategy requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00012.geteCode(), ErrorCode.ENUM_ERROR.S00012.geteDesc());
+        }
+
+        // 校验token值
+        if (!StringUtils.isBlank(requestModel.token)){
+            did = HodgepodgeMethod.getDidByToken(requestModel.token);
+        }
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 校验策略类型数据
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByShare(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00013.geteCode(), ErrorCode.ENUM_ERROR.S00013.geteDesc());
+        }
+    }
+    
+    /**
+     * @Description: 组装根据DID查询用户信息的方法
+     * @param did - 用户ID
+     * @return 
+     * @author yoko
+     * @date 2020/5/28 13:57
+    */
+    public static DidModel assembleDidQuery(long did){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 策略：获取分享链接数据
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param shareAddres - 分享的连接地址
+     * @param icode - 推广码
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleShareResult(long stime, String sign, String shareAddres, String icode){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        StrategyShare share = new StrategyShare();
+        if (!StringUtils.isBlank(icode)){
+            share.shareAddress = shareAddres + icode;
+        }else {
+            share.shareAddress = shareAddres;
+        }
+        dataModel.share = share;
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
 
 
 
