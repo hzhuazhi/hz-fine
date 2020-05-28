@@ -38,15 +38,13 @@ import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
 import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
+import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
 import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -1882,6 +1880,56 @@ public class HodgepodgeMethod {
         if (rowCount != null){
             dataModel.rowCount = rowCount;
         }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据获取七牛云的token
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkStrategyQiNiuTokenData(RequestStrategy requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00011.geteCode(), ErrorCode.ENUM_ERROR.S00011.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+
+    /**
+     * @Description: 策略：获取七牛云的token数据
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param qiNiuToken - 七牛的token
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleStrategyQiNiuResult(long stime, String sign, String qiNiuToken){
+        ResponseStrategy dataModel = new ResponseStrategy();
+
+        QiNiu qiNiu = new QiNiu();
+        qiNiu.key = UUID.randomUUID().toString().replaceAll("\\-", "");
+        qiNiu.token = qiNiuToken;
+        dataModel.qiNiu = qiNiu;
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
