@@ -15,13 +15,39 @@ public class ResponseOrder extends BaseResponse implements Serializable {
     private static final long   serialVersionUID = 1233023131150L;
 
 
-//    public List<DidReward> dataList;
-//    public DidReward dataModel;
+    public List<Order> dataList;
+    public Order dataModel;
     public Integer rowCount;
 
 
 
     public ResponseOrder(){
 
+    }
+
+    public List<Order> getDataList() {
+        return dataList;
+    }
+
+    public void setDataList(List<Order> dataList) {
+        this.dataList = dataList;
+    }
+
+    public Order getDataModel() {
+        return dataModel;
+    }
+
+    public void setDataModel(Order dataModel) {
+        this.dataModel = dataModel;
+    }
+
+    @Override
+    public Integer getRowCount() {
+        return rowCount;
+    }
+
+    @Override
+    public void setRowCount(Integer rowCount) {
+        this.rowCount = rowCount;
     }
 }

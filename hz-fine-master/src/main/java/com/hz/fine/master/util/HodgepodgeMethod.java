@@ -35,6 +35,8 @@ import com.hz.fine.master.core.protocol.response.did.recharge.RechargeInfo;
 import com.hz.fine.master.core.protocol.response.did.recharge.ResponseDidRecharge;
 import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
 import com.hz.fine.master.core.protocol.response.did.reward.ResponseDidReward;
+import com.hz.fine.master.core.protocol.response.order.Order;
+import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
 import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
@@ -2122,6 +2124,142 @@ public class HodgepodgeMethod {
             didBasic.todayProfit = todayProfit;
             didBasic.todayExchange = todayExchange;
             dataModel.dataModel = didBasic;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据获取用户派单信息时-集合
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkOrderListData(RequestOrder requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00010.geteCode(), ErrorCode.ENUM_ERROR.OR00010.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+
+    /**
+     * @Description: 根据条件查询用户派单的数据-集合
+     * @param requestModel - 基本查询条件
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static OrderModel assembleOrderListByDid(RequestOrder requestModel, long did){
+        OrderModel resBean = BeanUtils.copy(requestModel, OrderModel.class);
+        resBean.setDid(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户派单数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderList - 用户派单列表集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderListResult(long stime, String sign, List<OrderModel> orderList, Integer rowCount){
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderList != null && orderList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<Order> dataList = BeanUtils.copyList(orderList, Order.class);
+            dataModel.dataList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据获取用户派单详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkOrderData(RequestOrder requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00011.geteCode(), ErrorCode.ENUM_ERROR.OR00011.geteDesc());
+        }
+
+        if (StringUtils.isBlank(requestModel.orderNo)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00012.geteCode(), ErrorCode.ENUM_ERROR.OR00012.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装根据用户以及派单的订单号查询派单详情的查询条件
+     * @param did - 用户ID
+     * @param orderNo - 派单的订单号
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/18 11:41
+     */
+    public static OrderModel assembleOrderDataByOrderNo(long did, String orderNo){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户派单-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderDataResult(long stime, String sign, OrderModel orderModel){
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null){
+            Order data = BeanUtils.copy(orderModel, Order.class);
+            dataModel.dataModel = data;
         }
         dataModel.setStime(stime);
         dataModel.setSign(sign);

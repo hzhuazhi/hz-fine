@@ -49,7 +49,7 @@ public class DidBasic implements Serializable {
     public String nickname;
 
     /**
-     * 账号
+     * 登录账号
      */
     public String acNum;
 

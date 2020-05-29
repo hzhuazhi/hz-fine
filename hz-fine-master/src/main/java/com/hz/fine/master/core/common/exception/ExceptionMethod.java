@@ -30,7 +30,11 @@ public class ExceptionMethod {
         if (e instanceof ServiceException){
             if (!StringUtils.isBlank(((ServiceException) e).getCode())){
                 dbCode = ((ServiceException) e).getCode();
-                code = ErrorCode.ERROR_CONSTANT.DEFAULT_SERVICE_EXCEPTION_ERROR_CODE;
+                if (dbCode.equals("D00000")){
+                    code = "-1";
+                }else {
+                    code = ErrorCode.ERROR_CONSTANT.DEFAULT_SERVICE_EXCEPTION_ERROR_CODE;
+                }
                 message = e.getMessage();
             }else {
                 code = ErrorCode.ERROR_CONSTANT.DEFAULT_SERVICE_EXCEPTION_ERROR_CODE;
