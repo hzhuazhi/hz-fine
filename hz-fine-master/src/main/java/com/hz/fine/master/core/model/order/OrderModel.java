@@ -127,6 +127,11 @@ public class OrderModel extends BasePage implements Serializable {
      */
     private String acNum;
 
+    /**
+     * 收益
+     */
+    private String profit;
+
 
     public Long getId() {
         return id;
@@ -318,5 +323,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setAcNum(String acNum) {
         this.acNum = acNum;
+    }
+
+    public String getProfit() {
+        return profit;
+    }
+
+    public void setProfit(String profit) {
+        this.profit = profit;
     }
 }

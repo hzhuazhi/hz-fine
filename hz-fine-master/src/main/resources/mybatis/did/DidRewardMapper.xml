@@ -28,6 +28,12 @@
             <if test="rewardType != null and rewardType != '' " >
                 and a.reward_type = #{rewardType}
             </if>
+            <if test="rewardTypeList != null and rewardTypeList.size()>0">
+                and a.reward_type in
+                <foreach item="item" index="index" collection="rewardTypeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
             </if>
@@ -217,6 +223,13 @@
         </trim>
         <include refid="Example_Where_Clause_id"/>
     </update>
+
+
+    <!-- 获取用户收益-->
+    <select id="getProfitByRewardType" parameterType="Object" resultType="java.lang.String">
+        select ifnull(sum(convert(a.money,decimal(19,2))), '0.00') as profit from tb_fn_did_reward a
+        <include refid="Example_Where_Clause"/>
+    </select>
 
 
 </mapper>

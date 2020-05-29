@@ -3,6 +3,7 @@ package com.hz.fine.master.core.service.impl;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.mapper.DidRewardMapper;
+import com.hz.fine.master.core.model.did.DidRewardModel;
 import com.hz.fine.master.core.service.DidRewardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class DidRewardServiceImpl<T> extends BaseServiceImpl<T> implements DidRe
 
     public BaseDao<T> getDao() {
         return didRewardMapper;
+    }
+
+    @Override
+    public String getProfitByRewardType(DidRewardModel model) {
+        return didRewardMapper.getProfitByRewardType(model);
     }
 }

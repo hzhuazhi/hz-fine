@@ -11,6 +11,7 @@ import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
+import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
 import com.hz.fine.master.core.model.question.QuestionMModel;
 import com.hz.fine.master.core.model.region.RegionModel;
@@ -25,6 +26,8 @@ import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.response.ResponseData;
+import com.hz.fine.master.core.protocol.response.did.ResponseDid;
+import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.ResponseDidCollectionAccount;
 import com.hz.fine.master.core.protocol.response.did.recharge.DidRecharge;
@@ -2007,6 +2010,119 @@ public class HodgepodgeMethod {
             share.shareAddress = shareAddres;
         }
         dataModel.share = share;
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取用户账号基本信息时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidGetData(RequestDid requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00022.geteCode(), ErrorCode.ENUM_ERROR.D00022.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装根据did查询用户信息的查询条件
+     * @param did - 用户账号ID
+     * @return
+     * @author yoko
+     * @date 2020/5/15 16:10
+     */
+    public static DidModel assembleDidQueryByDid(long did){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验根据用户did查询用户的数据是否为空
+     * @param didModel - 用户具体收款账号信息
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:25
+     */
+    public static void checkDidData(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00023.geteCode(), ErrorCode.ENUM_ERROR.D00023.geteDesc());
+        }
+    }
+
+    /**
+     * @Description: 组装查询用户今日收益的查询条件
+     * @param did - 用户ID
+     * @return
+     * @author yoko
+     * @date 2020/5/29 11:44
+    */
+    public static DidRewardModel assembleDidRewardTodayProfit(long did){
+        DidRewardModel resBean = new DidRewardModel();
+        resBean.setDid(did);
+        List<Integer> rewardTypeList = new ArrayList<>();
+        rewardTypeList.add(1);
+        rewardTypeList.add(2);
+        rewardTypeList.add(3);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        return resBean;
+    }
+    
+    /**
+     * @Description: 组装查询今天日兑换：今日派发订单成功的查询条件
+     * @param did - 用户ID
+     * @return 
+     * @author yoko
+     * @date 2020/5/29 14:06 
+    */
+    public static OrderModel assembleOrderByTodayExchange(long did){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderStatus(4);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 获取用户账号基本信息的数据组装返回客户端
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didModel - 用户基本信息
+     * @param todayProfit - 今日收益
+     * @param todayExchange - 今日兑换
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange){
+        ResponseDid dataModel = new ResponseDid();
+        if (didModel != null && didModel.getId() > 0){
+            DidBasic didBasic = BeanUtils.copy(didModel, DidBasic.class);
+            didBasic.todayProfit = todayProfit;
+            didBasic.todayExchange = todayExchange;
+            dataModel.dataModel = didBasic;
+        }
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);

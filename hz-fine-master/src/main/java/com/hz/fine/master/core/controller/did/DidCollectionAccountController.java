@@ -104,7 +104,11 @@ public class DidCollectionAccountController {
             requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountAddData(requestModel);
@@ -175,7 +179,11 @@ public class DidCollectionAccountController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountListData(requestModel);
 
@@ -242,7 +250,11 @@ public class DidCollectionAccountController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验请求的数据
             did = HodgepodgeMethod.checkDidCollectionAccountData(requestModel);
 
@@ -316,7 +328,11 @@ public class DidCollectionAccountController {
             requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountUpdateBasic(requestModel);
@@ -391,7 +407,11 @@ public class DidCollectionAccountController {
             requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountUpdateData(requestModel);
@@ -466,7 +486,11 @@ public class DidCollectionAccountController {
             requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountUpdateUseData(requestModel);

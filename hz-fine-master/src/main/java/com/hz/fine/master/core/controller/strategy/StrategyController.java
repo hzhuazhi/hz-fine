@@ -311,7 +311,11 @@ public class StrategyController {
             requestModel  = JSON.parseObject(data, RequestStrategy.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
 
             // check校验数据
             did = HodgepodgeMethod.checkStrategyShareData(requestModel);

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.OrderMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,
+        a.qr_code,a.wx_nickname,a.wx_id,a.notify_url,a.order_status,a.invalid_time,
+        a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="did != null and did != '' " >
+                and a.did = #{did}
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                and a.order_no = #{orderNo}
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                and a.order_money = #{orderMoney}
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                and a.collection_account_id = #{collectionAccountId}
+            </if>
+            <if test="collectionType != null and collectionType != '' " >
+                and a.collection_type = #{collectionType}
+            </if>
+            <if test="wxNickname != null and wxNickname != '' " >
+                and a.wx_nickname = #{wxNickname}
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                and a.wx_id = #{wxId}
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                and a.order_status = #{orderStatus}
+            </if>
+            <if test="curday != null and curday != '' " >
+                and a.curday = #{curday}
+            </if>
+            <if test="curdayStart != null and curdayStart != '' and curdayEnd != null and curdayEnd != '' " >
+                and a.curday >= #{curdayStart} and a.curday &lt;= #{curdayEnd}
+            </if>
+            and a.run_status = 3
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_order a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.order.OrderModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_order
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="did != null and did != '' " >
+                did,
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                order_no,
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                order_money,
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                collection_account_id,
+            </if>
+            <if test="collectionType != null and collectionType != '' " >
+                collection_type,
+            </if>
+            <if test="qrCode != null and qrCode != '' " >
+                qr_code,
+            </if>
+            <if test="wxNickname != null and wxNickname != '' " >
+                wx_nickname,
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                wx_id,
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                notify_url,
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                order_status,
+            </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                invalid_time,
+            </if>
+            <if test="curday != null and curday != '' " >
+                curday,
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                curhour,
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                curminute,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="did != null and did != '' " >
+                <![CDATA[  #{did}, ]]>
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                <![CDATA[  #{orderNo}, ]]>
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                <![CDATA[  #{orderMoney}, ]]>
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                <![CDATA[  #{collectionAccountId}, ]]>
+            </if>
+            <if test="collectionType != null and collectionType != '' " >
+                <![CDATA[  #{collectionType}, ]]>
+            </if>
+            <if test="qrCode != null and qrCode != '' " >
+                <![CDATA[  #{qrCode}, ]]>
+            </if>
+            <if test="wxNickname != null and wxNickname != '' " >
+                <![CDATA[  #{wxNickname}, ]]>
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                <![CDATA[  #{wxId}, ]]>
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                <![CDATA[  #{notifyUrl}, ]]>
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                <![CDATA[  #{orderStatus}, ]]>
+            </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                <![CDATA[  #{invalidTime}, ]]>
+            </if>
+            <if test="curday != null and curday != '' " >
+                <![CDATA[  #{curday}, ]]>
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                <![CDATA[  #{curhour}, ]]>
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                <![CDATA[  #{curminute}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.order.OrderModel">
+        UPDATE tb_fn_order a
+        <trim prefix="set" suffixOverrides=",">
+            <!--<if test="did != null and did != '' " >-->
+                <!--a.did = #{did},-->
+            <!--</if>-->
+            <!--<if test="orderNo != null and orderNo != '' " >-->
+                <!--a.order_no = #{orderNo},-->
+            <!--</if>-->
+            <!--<if test="orderMoney != null and orderMoney != '' " >-->
+                <!--a.order_money = #{orderMoney},-->
+            <!--</if>-->
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                a.collection_account_id = #{collectionAccountId},
+            </if>
+            <if test="collectionType != null and collectionType != '' " >
+                a.collection_type = #{collectionType},
+            </if>
+            <if test="qrCode != null and qrCode != '' " >
+                a.qr_code = #{qrCode},
+            </if>
+            <if test="wxNickname != null and wxNickname != '' " >
+                a.wx_nickname = #{wxNickname},
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                a.wx_id = #{wxId},
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                a.notify_url = #{notifyUrl},
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                a.invalid_time = #{invalidTime},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_order a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+    <!-- 派发订单成功的金额-->
+    <select id="getProfitByCurday" parameterType="Object" resultType="java.lang.String">
+        select ifnull(sum(convert(a.order_money,decimal(19,2))), '0.00') as profit from tb_fn_order a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+
+</mapper>

@@ -1,6 +1,7 @@
 package com.hz.fine.master.core.protocol.response.did;
 
 import com.hz.fine.master.core.protocol.base.BaseResponse;
+import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 
 import java.io.Serializable;
 
@@ -12,8 +13,7 @@ import java.io.Serializable;
  */
 public class ResponseDid extends BaseResponse implements Serializable {
     private static final long   serialVersionUID = 1233023331143L;
-
-
+    public DidBasic dataModel;// 用户的基本信息
     public ResponseDid(){
 
     }

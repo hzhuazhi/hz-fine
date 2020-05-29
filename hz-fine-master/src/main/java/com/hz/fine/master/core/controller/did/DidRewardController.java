@@ -14,6 +14,7 @@ import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,7 +105,11 @@ public class DidRewardController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestReward.class);
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验数据
             did = HodgepodgeMethod.checkDidRewardListData(requestModel);
 
@@ -171,7 +176,11 @@ public class DidRewardController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestReward.class);
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验请求的数据
             did = HodgepodgeMethod.checkDidRewardData(requestModel);
 

@@ -26,6 +26,7 @@ import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.response.did.recharge.ResponseDidRecharge;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,7 +134,11 @@ public class DidRechargeController {
             requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验数据
             did = HodgepodgeMethod.checkRechargeAdd(requestModel);
 
@@ -257,7 +262,11 @@ public class DidRechargeController {
             requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
 
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验数据
             did = HodgepodgeMethod.checkLoadPicture(requestModel);
 
@@ -326,7 +335,11 @@ public class DidRechargeController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验数据
             did = HodgepodgeMethod.checkDidRechargeListData(requestModel);
 
@@ -393,7 +406,11 @@ public class DidRechargeController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
             //#临时数据
-            ComponentUtil.redisService.set(requestModel.token, "1");
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
             // check校验请求的数据
             did = HodgepodgeMethod.checkDidRechargeData(requestModel);
 

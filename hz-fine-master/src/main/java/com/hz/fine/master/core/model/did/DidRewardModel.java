@@ -3,6 +3,7 @@ package com.hz.fine.master.core.model.did;
 import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description 用户奖励纪录的实体属性Bean
@@ -91,6 +92,16 @@ public class DidRewardModel extends BasePage implements Serializable {
 
     private Integer curdayStart;
     private Integer curdayEnd;
+
+    /**
+     * 收益
+     */
+    private String profit;
+
+    /**
+     * 类型集合
+     */
+    private List<Integer> rewardTypeList;
 
     public Long getId() {
         return id;
@@ -226,5 +237,21 @@ public class DidRewardModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public String getProfit() {
+        return profit;
+    }
+
+    public void setProfit(String profit) {
+        this.profit = profit;
+    }
+
+    public List<Integer> getRewardTypeList() {
+        return rewardTypeList;
+    }
+
+    public void setRewardTypeList(List<Integer> rewardTypeList) {
+        this.rewardTypeList = rewardTypeList;
     }
 }

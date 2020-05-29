@@ -3,6 +3,7 @@ package com.hz.fine.master.core.service;
 import com.hz.fine.master.core.common.service.BaseService;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.order.OrderModel;
 
 import java.util.List;
 
@@ -24,4 +25,15 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/5/26 15:58
     */
     public DidCollectionAccountModel screenCollectionAccount(List<DidModel> didList, String orderMoney, int payType);
+
+
+    /**
+     * @Description: 派发订单成功的金额
+     * <p>sum查询出来的数据</p>
+     * @param model - 根据用户，订单状态，日期查询总派发订单成功金额
+     * @return
+     * @author yoko
+     * @date 2020/5/29 11:23
+     */
+    public String getProfitByCurday(OrderModel model);
 }

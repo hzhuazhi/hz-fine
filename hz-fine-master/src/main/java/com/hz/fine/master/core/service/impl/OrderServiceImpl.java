@@ -8,6 +8,7 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.mapper.OrderMapper;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.service.OrderService;
@@ -100,6 +101,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         return null;
     }
 
+    @Override
+    public String getProfitByCurday(OrderModel model) {
+        return orderMapper.getProfitByCurday(model);
+    }
+
 
     /**
      * @Description: 组装缓存key查询缓存中存在的数据
@@ -140,6 +146,10 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             return str;
         }
     }
+
+
+
+
 
 
 }
