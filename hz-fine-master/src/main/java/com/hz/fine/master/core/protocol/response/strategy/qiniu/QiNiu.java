@@ -14,6 +14,8 @@ public class QiNiu implements Serializable {
     public String token;
     public String key;
 
+    public String url;
+
 
     public QiNiu(){
 
@@ -33,5 +35,13 @@ public class QiNiu implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

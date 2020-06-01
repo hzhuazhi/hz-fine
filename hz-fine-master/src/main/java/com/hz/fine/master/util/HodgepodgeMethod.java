@@ -2093,6 +2093,26 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: 策略：七牛云空间图片上传之后图片url组装返回给前端
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param httpUrl - 图片地址
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleStrategyQiNiuUploadResult(long stime, String sign, String httpUrl){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        QiNiu qiNiu = new QiNiu();
+        qiNiu.url = httpUrl;
+        dataModel.qiNiu = qiNiu;
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
 
     /**
      * @Description: check校验数据获取分享链接时
