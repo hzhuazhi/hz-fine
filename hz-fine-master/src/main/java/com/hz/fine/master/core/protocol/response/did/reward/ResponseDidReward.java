@@ -17,6 +17,8 @@ public class ResponseDidReward extends BaseResponse implements Serializable {
 
     public List<DidReward> dataList;
     public DidReward dataModel;
+    public List<DidShare> shareList;
+
     public Integer rowCount;
 
 
@@ -50,5 +52,14 @@ public class ResponseDidReward extends BaseResponse implements Serializable {
     @Override
     public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
+    }
+
+
+    public List<DidShare> getShareList() {
+        return shareList;
+    }
+
+    public void setShareList(List<DidShare> shareList) {
+        this.shareList = shareList;
     }
 }

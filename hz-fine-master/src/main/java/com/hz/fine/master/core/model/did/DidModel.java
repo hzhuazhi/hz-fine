@@ -79,6 +79,16 @@ public class DidModel extends BasePage implements Serializable {
     private Integer vipType;
 
     /**
+     * 充值总收益：充多少送多少
+     */
+    private String totalRechargeProfit;
+
+    /**
+     * 档次总收益：达到的档次之后的总奖励
+     */
+    private String totalGradeProfit;
+
+    /**
      * 直推总奖励收益
      */
     private String totalDirectProfit;
@@ -354,5 +364,21 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setNewOperateWd(String newOperateWd) {
         this.newOperateWd = newOperateWd;
+    }
+
+    public String getTotalRechargeProfit() {
+        return totalRechargeProfit;
+    }
+
+    public void setTotalRechargeProfit(String totalRechargeProfit) {
+        this.totalRechargeProfit = totalRechargeProfit;
+    }
+
+    public String getTotalGradeProfit() {
+        return totalGradeProfit;
+    }
+
+    public void setTotalGradeProfit(String totalGradeProfit) {
+        this.totalGradeProfit = totalGradeProfit;
     }
 }

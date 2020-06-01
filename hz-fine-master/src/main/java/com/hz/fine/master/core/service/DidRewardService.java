@@ -3,6 +3,8 @@ package com.hz.fine.master.core.service;
 import com.hz.fine.master.core.common.service.BaseService;
 import com.hz.fine.master.core.model.did.DidRewardModel;
 
+import java.util.List;
+
 /**
  * @Description 用户奖励纪录的Service层
  * @Author yoko
@@ -20,4 +22,15 @@ public interface DidRewardService<T> extends BaseService<T> {
      * @date 2020/5/29 11:23
      */
     public String getProfitByRewardType(DidRewardModel model);
+
+
+    /**
+     * @Description: 获取用户直推奖励的数据集合
+     * <p>数据要根据直推人的名称进行group by</p>
+     * @param model - 根据用户获取分享奖励（直推奖励的数据集合）
+     * @return
+     * @author yoko
+     * @date 2020/6/1 16:30
+    */
+    public List<DidRewardModel> getShareList(DidRewardModel model);
 }

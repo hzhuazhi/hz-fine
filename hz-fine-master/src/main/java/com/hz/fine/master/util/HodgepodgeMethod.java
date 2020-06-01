@@ -34,6 +34,7 @@ import com.hz.fine.master.core.protocol.response.did.recharge.DidRecharge;
 import com.hz.fine.master.core.protocol.response.did.recharge.RechargeInfo;
 import com.hz.fine.master.core.protocol.response.did.recharge.ResponseDidRecharge;
 import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
+import com.hz.fine.master.core.protocol.response.did.reward.DidShare;
 import com.hz.fine.master.core.protocol.response.did.reward.ResponseDidReward;
 import com.hz.fine.master.core.protocol.response.order.Order;
 import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
@@ -1114,46 +1115,46 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00021.geteCode(), ErrorCode.ENUM_ERROR.DC00021.geteDesc());
         }
 
-        // 校验收款账号类型
-        if (requestModel.acType == null || requestModel.acType == 0){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00016.geteCode(), ErrorCode.ENUM_ERROR.DC00016.geteDesc());
-        }
-
-        // 校验收款的具体账号：类型为微信则微信账号，支付宝为支付宝账号；怕后期有其它冲突
-        if (requestModel.acType != 3){
-            if (StringUtils.isBlank(requestModel.acNum)){
-                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00017.geteCode(), ErrorCode.ENUM_ERROR.DC00017.geteDesc());
-            }
-        }
-
-        if (StringUtils.isBlank(requestModel.mmQrCode)){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00018.geteCode(), ErrorCode.ENUM_ERROR.DC00018.geteDesc());
-        }
+//        // 校验收款账号类型
+//        if (requestModel.acType == null || requestModel.acType == 0){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00016.geteCode(), ErrorCode.ENUM_ERROR.DC00016.geteDesc());
+//        }
+//
+//        // 校验收款的具体账号：类型为微信则微信账号，支付宝为支付宝账号；怕后期有其它冲突
+//        if (requestModel.acType != 3){
+//            if (StringUtils.isBlank(requestModel.acNum)){
+//                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00017.geteCode(), ErrorCode.ENUM_ERROR.DC00017.geteDesc());
+//            }
+//        }
+//
+//        if (StringUtils.isBlank(requestModel.mmQrCode)){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00018.geteCode(), ErrorCode.ENUM_ERROR.DC00018.geteDesc());
+//        }
 
         // check收款人
         if (StringUtils.isBlank(requestModel.payee)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00019.geteCode(), ErrorCode.ENUM_ERROR.DC00019.geteDesc());
         }
 
-        if (requestModel.acType == 3){
-            // check银行名称/银行卡开户行
-            if (StringUtils.isBlank(requestModel.bankName)){
-                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00006.geteCode(), ErrorCode.ENUM_ERROR.DC00006.geteDesc());
-            }
-        }
-
-
-        // check经营范围类型
-        if (requestModel.businessType == null || requestModel.businessType == 0){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00007.geteCode(), ErrorCode.ENUM_ERROR.DC00007.geteDesc());
-        }
-
-        // check小微商户二维码图片地址
-        if (requestModel.acType == 1){
-            if (StringUtils.isBlank(requestModel.wxQrCodeAds)){
-                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00020.geteCode(), ErrorCode.ENUM_ERROR.DC00020.geteDesc());
-            }
-        }
+//        if (requestModel.acType == 3){
+//            // check银行名称/银行卡开户行
+//            if (StringUtils.isBlank(requestModel.bankName)){
+//                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00006.geteCode(), ErrorCode.ENUM_ERROR.DC00006.geteDesc());
+//            }
+//        }
+//
+//
+//        // check经营范围类型
+//        if (requestModel.businessType == null || requestModel.businessType == 0){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00007.geteCode(), ErrorCode.ENUM_ERROR.DC00007.geteDesc());
+//        }
+//
+//        // check小微商户二维码图片地址
+//        if (requestModel.acType == 1){
+//            if (StringUtils.isBlank(requestModel.wxQrCodeAds)){
+//                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00020.geteCode(), ErrorCode.ENUM_ERROR.DC00020.geteDesc());
+//            }
+//        }
 
         // 校验token值
         if (StringUtils.isBlank(requestModel.token)){
@@ -1776,6 +1777,75 @@ public class HodgepodgeMethod {
         if (didRechargeList != null && didRechargeList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
             List<DidReward> dataList = BeanUtils.copyList(didRechargeList, DidReward.class);
             dataModel.dataList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: 根据条件查询用户分享奖励纪录的数据-集合
+     * @param requestModel - 基本查询条件
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidRewardModel assembleDidShareRewardListByDid(RequestReward requestModel, long did){
+        DidRewardModel resBean = BeanUtils.copy(requestModel, DidRewardModel.class);
+        resBean.setDid(did);
+        resBean.setRewardType(3);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验数据获取用户分享奖励记录集合时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidShareRewardListData(RequestReward requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.R00004.geteCode(), ErrorCode.ENUM_ERROR.R00004.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 用户分享奖励记录数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didRechargeList - 用户分享奖励记录集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidShareRewardListResult(long stime, String sign, List<DidRewardModel> didRechargeList, Integer rowCount){
+        ResponseDidReward dataModel = new ResponseDidReward();
+        if (didRechargeList != null && didRechargeList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<DidShare> dataList = BeanUtils.copyList(didRechargeList, DidShare.class);
+            dataModel.shareList = dataList;
         }
         if (rowCount != null){
             dataModel.rowCount = rowCount;

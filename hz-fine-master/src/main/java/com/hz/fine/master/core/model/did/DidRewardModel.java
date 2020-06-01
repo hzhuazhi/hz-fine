@@ -49,6 +49,11 @@ public class DidRewardModel extends BasePage implements Serializable {
      */
     private String origin;
 
+    /**
+     * 发生来由的did：专门存储哪个触发的用户ID
+     */
+    private Long originIid;
+
 
     /**
      * 创建日期：存的日期格式20160530
@@ -102,6 +107,11 @@ public class DidRewardModel extends BasePage implements Serializable {
      * 类型集合
      */
     private List<Integer> rewardTypeList;
+
+    private String nickname;
+    private String acNum;
+    private String shareTime;
+
 
     public Long getId() {
         return id;
@@ -253,5 +263,37 @@ public class DidRewardModel extends BasePage implements Serializable {
 
     public void setRewardTypeList(List<Integer> rewardTypeList) {
         this.rewardTypeList = rewardTypeList;
+    }
+
+    public Long getOriginIid() {
+        return originIid;
+    }
+
+    public void setOriginIid(Long originIid) {
+        this.originIid = originIid;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getAcNum() {
+        return acNum;
+    }
+
+    public void setAcNum(String acNum) {
+        this.acNum = acNum;
+    }
+
+    public String getShareTime() {
+        return shareTime;
+    }
+
+    public void setShareTime(String shareTime) {
+        this.shareTime = shareTime;
     }
 }

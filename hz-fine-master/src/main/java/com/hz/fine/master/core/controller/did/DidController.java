@@ -422,9 +422,9 @@ public class DidController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiYWNOdW0iOiJ6aF8xIiwiYmFsYW5jZSI6IjEwMDAiLCJpY29kZSI6IjEiLCJsb2NrTW9uZXkiOiIiLCJuaWNrbmFtZSI6IuaYteensF8xIiwidG9kYXlFeGNoYW5nZSI6IjMzMC4yMSIsInRvZGF5UHJvZml0IjoiMjEwLjEzIiwidG90YWxNb25leSI6IjEwMDAwIiwidG90YWxQcm9maXQiOiIifSwic2lnbiI6ImE0MjJkMzJhNDI2MGIzNjY0MGNmNTVkNzBmMjkwYmMyIiwic3RpbWUiOjE1OTA3MzU1Mjg1MDd9"
+     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiYWNOdW0iOiJ6aF8xIiwiYmFsYW5jZSI6IjEwMDAiLCJpY29kZSI6IjEiLCJsb2NrTW9uZXkiOiIiLCJuaWNrbmFtZSI6IuaYteensF8xIiwidG9kYXlFeGNoYW5nZSI6IjAuMDAiLCJ0b2RheVByb2ZpdCI6IjAuMDAiLCJ0b3RhbERpcmVjdE51bSI6MTAwLCJ0b3RhbERpcmVjdFByb2ZpdCI6IjMwMDAiLCJ0b3RhbEdyYWRlUHJvZml0IjoiMjAwMCIsInRvdGFsTW9uZXkiOiIxMDAwMCIsInRvdGFsUHJvZml0IjoiMTAwMDAiLCJ0b3RhbFJlY2hhcmdlUHJvZml0IjoiMTAwMCJ9LCJzaWduIjoiYTBmYzk3NjM4ZGZjNGMwMWZhMDJiMjUzYzk2NzlhNmMiLCJzdGltZSI6MTU5MTAwNjMzMjUxNn0="
      *     },
-     *     "sgid": "202005291458460000001",
+     *     "sgid": "202006011812120000001",
      *     "cgid": ""
      * }
      */

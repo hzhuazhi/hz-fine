@@ -58,6 +58,26 @@ public class DidBasic implements Serializable {
      */
     public String icode;
 
+    /**
+     * 直推总人数
+     */
+    public Integer totalDirectNum;
+
+    /**
+     * 直推总奖励收益
+     */
+    public String totalDirectProfit;
+
+    /**
+     * 充值总收益：充多少送多少
+     */
+    public String totalRechargeProfit;
+
+    /**
+     * 档次总收益：达到的档次之后的总奖励
+     */
+    public String totalGradeProfit;
+
     public DidBasic(){
 
     }
@@ -132,5 +152,37 @@ public class DidBasic implements Serializable {
 
     public void setIcode(String icode) {
         this.icode = icode;
+    }
+
+    public Integer getTotalDirectNum() {
+        return totalDirectNum;
+    }
+
+    public void setTotalDirectNum(Integer totalDirectNum) {
+        this.totalDirectNum = totalDirectNum;
+    }
+
+    public String getTotalDirectProfit() {
+        return totalDirectProfit;
+    }
+
+    public void setTotalDirectProfit(String totalDirectProfit) {
+        this.totalDirectProfit = totalDirectProfit;
+    }
+
+    public String getTotalRechargeProfit() {
+        return totalRechargeProfit;
+    }
+
+    public void setTotalRechargeProfit(String totalRechargeProfit) {
+        this.totalRechargeProfit = totalRechargeProfit;
+    }
+
+    public String getTotalGradeProfit() {
+        return totalGradeProfit;
+    }
+
+    public void setTotalGradeProfit(String totalGradeProfit) {
+        this.totalGradeProfit = totalGradeProfit;
     }
 }

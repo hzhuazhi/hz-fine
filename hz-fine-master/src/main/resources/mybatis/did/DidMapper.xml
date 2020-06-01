@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,
+        a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
         a.total_direct_profit,a.total_indirect_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.is_notify,a.notify_url,a.own_id,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -158,6 +158,12 @@
             <if test="vipType != null and vipType != '' " >
                 vip_type,
             </if>
+            <if test="totalRechargeProfit != null and totalRechargeProfit != '' " >
+                total_recharge_profit,
+            </if>
+            <if test="totalGradeProfit != null and totalGradeProfit != '' " >
+                total_grade_profit,
+            </if>
             <if test="totalDirectProfit != null and totalDirectProfit != '' " >
                 total_direct_profit,
             </if>
@@ -218,6 +224,12 @@
             </if>
             <if test="vipType != null and vipType != '' " >
                 <![CDATA[  #{vipType}, ]]>
+            </if>
+            <if test="totalRechargeProfit != null and totalRechargeProfit != '' " >
+                <![CDATA[  #{totalRechargeProfit}, ]]>
+            </if>
+            <if test="totalGradeProfit != null and totalGradeProfit != '' " >
+                <![CDATA[  #{totalGradeProfit}, ]]>
             </if>
             <if test="totalDirectProfit != null and totalDirectProfit != '' " >
                 <![CDATA[  #{totalDirectProfit}, ]]>
@@ -283,6 +295,12 @@
             </if>
             <if test="vipType != null and vipType != '' " >
                 a.vip_type = #{vipType},
+            </if>
+            <if test="totalRechargeProfit != null and totalRechargeProfit != '' " >
+                a.total_recharge_profit = #{totalRechargeProfit},
+            </if>
+            <if test="totalGradeProfit != null and totalGradeProfit != '' " >
+                a.total_grade_profit = #{totalGradeProfit},
             </if>
             <if test="totalDirectProfit != null and totalDirectProfit != '' " >
                 a.total_direct_profit = #{totalDirectProfit},
