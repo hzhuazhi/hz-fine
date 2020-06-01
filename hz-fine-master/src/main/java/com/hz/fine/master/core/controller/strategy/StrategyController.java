@@ -246,7 +246,8 @@ public class StrategyController {
             HodgepodgeMethod.checkStrategyQiNiuTokenData(requestModel);
             String accessKey = "Wq4cE6asPKv7uPtfkYoqVTaIRa2lUzbnJ1jP-hHt";
             String secretKey = "H6q-QO36ryrmThHqN_W6o0FUjSHc5yio3VRXv1wR";
-            String bucket = "qyx";
+//            String bucket = "qyx";
+            String bucket = "gtptest";
             long expireSeconds = 600;   //过期时间
             StringMap putPolicy = new StringMap();
             Auth auth = Auth.create(accessKey, secretKey);

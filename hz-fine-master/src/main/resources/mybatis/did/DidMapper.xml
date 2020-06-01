@@ -269,6 +269,9 @@
             <if test="operateWd != null and operateWd != '' " >
                 a.operate_wd = #{operateWd},
             </if>
+            <if test="newOperateWd != null and newOperateWd != '' " >
+                a.operate_wd = #{newOperateWd},
+            </if>
             <if test="totalMoney != null and totalMoney != '' " >
                 a.total_money = #{totalMoney},
             </if>

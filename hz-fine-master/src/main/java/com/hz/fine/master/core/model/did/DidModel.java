@@ -49,6 +49,11 @@ public class DidModel extends BasePage implements Serializable {
     private String operateWd;
 
     /**
+     * 新操作密码/安全密码：在修改密码的时候使用
+     */
+    private String newOperateWd;
+
+    /**
      * 邀请码
      */
     private String icode;
@@ -340,5 +345,14 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setAcType(Integer acType) {
         this.acType = acType;
+    }
+
+
+    public String getNewOperateWd() {
+        return newOperateWd;
+    }
+
+    public void setNewOperateWd(String newOperateWd) {
+        this.newOperateWd = newOperateWd;
     }
 }

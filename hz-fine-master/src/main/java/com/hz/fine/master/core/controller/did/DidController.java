@@ -487,4 +487,166 @@ public class DidController {
         }
     }
 
+
+
+
+    /**
+     * @Description: 用户修改安全密码/操作密码
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/did/changeOperatePassword
+     * 请求的属性类:RequestDid
+     * 必填字段:{"operateWd":"czmm_1","newOperateWd":"czmm_1_1","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJvcGVyYXRlV2QiOiJjem1tXzEiLCJuZXdPcGVyYXRlV2QiOiJjem1tXzFfMSIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiN2RlZjRkY2Y1ODQ0YWVkMzc2NWIwZTc4YTQ3Y2I3MTYiLCJzdGltZSI6MTU5MDk4MjM5MDM2MX0="
+     *     },
+     *     "sgid": "202006011133080000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/changeOperatePassword", method = {RequestMethod.POST})
+    public JsonResult<Object> changeOperatePassword(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestDid requestModel = new RequestDid();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDid.class);
+
+            //#临时数据
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
+
+            // check校验数据
+            did = HodgepodgeMethod.checkChangeOperatePassword(requestModel);
+
+
+            // 校验账号安全密码是否正确
+            DidModel diddQuery = HodgepodgeMethod.assembleDidByAcNumAndOperateWd(did, requestModel.operateWd);
+            DidModel didData = (DidModel) ComponentUtil.didService.findByObject(diddQuery);
+            // check校验用户输入的操作密码/安全密码是否正确
+            HodgepodgeMethod.checkOperateWd(didData);
+
+            // 正式修改密码
+            DidModel updatePassWdData = HodgepodgeMethod.assembleUpdateOperateWdData(did, requestModel.newOperateWd);
+            ComponentUtil.didService.update(updatePassWdData);
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidController.changeOperatePassword() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+
+    /**
+     * @Description: 用户忘记安全密码/重新设置安全密码
+     * <p>
+     *     用户忘记安全密码：所以用户需要重新设置安全密码；
+     *     1.用户发起手机短信验证码
+     *     2.短信验证码通过之后，则可以重新设置安全密码
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/did/setUpOperateWd
+     * 请求的属性类:RequestDid
+     * 必填字段:{"acNum":"zh_1","newOperateWd":"czmm_1","vcode":"1111","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhY051bSI6InpoXzEiLCJuZXdPcGVyYXRlV2QiOiJjem1tXzEiLCJ2Y29kZSI6IjExMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiZWVhZDZkOTExZjg4MDgyNDU1ZWYyNWI4ZTAwODA0NzciLCJzdGltZSI6MTU5MDk4MzcwMzE4NX0="
+     *     },
+     *     "sgid": "202006011155010000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/setUpOperateWd", method = {RequestMethod.POST})
+    public JsonResult<Object> setUpOperateWd(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestDid requestModel = new RequestDid();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDid.class);
+
+            // check校验数据
+            HodgepodgeMethod.checkSetUpOperateWdData(requestModel);
+
+
+            // 校验账号查询是否有账号信息的数据
+            DidModel didByAcNumQuery = HodgepodgeMethod.assembleDidByAcNumForFindPassWd(requestModel.acNum);
+            DidModel didByAcNumData = (DidModel) ComponentUtil.didService.findByObject(didByAcNumQuery);
+            // check校验用户是否有这个账号存在
+            HodgepodgeMethod.checkSetUpOperateWd(didByAcNumData);
+
+            // 正式修改安全密码
+            DidModel updatePassWdData = HodgepodgeMethod.assembleSetUpOperateWdData(didByAcNumData.getId(), requestModel.newOperateWd);
+            ComponentUtil.didService.update(updatePassWdData);
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidController.setUpOperateWd() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
 }

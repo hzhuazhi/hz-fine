@@ -19,7 +19,7 @@ public class RequestVcode extends BaseRequest implements Serializable {
     public String phoneNum;
 
     /**
-     * 发送验证码的具体类型：1注册，2忘记密码需要找回密码
+     * 发送验证码的具体类型：1注册，2忘记密码需要找回密码，3忘记安全密码需要找回安全密码
      */
     public Integer vType;
 

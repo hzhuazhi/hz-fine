@@ -39,6 +39,11 @@ public class RequestDid extends BaseRequest implements Serializable {
     public String operateWd;
 
     /**
+     * 新操作密码/安全密码：在修改密码的时候使用
+     */
+    public String newOperateWd;
+
+    /**
      * 邀请码
      */
     public String icode;
@@ -108,5 +113,13 @@ public class RequestDid extends BaseRequest implements Serializable {
 
     public void setNewPassWd(String newPassWd) {
         this.newPassWd = newPassWd;
+    }
+
+    public String getNewOperateWd() {
+        return newOperateWd;
+    }
+
+    public void setNewOperateWd(String newOperateWd) {
+        this.newOperateWd = newOperateWd;
     }
 }

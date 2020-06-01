@@ -528,6 +528,91 @@ public class HodgepodgeMethod {
 
 
 
+
+    /**
+     * @Description: check校验数据当用户修改操作密码/安全密码的时候
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkChangeOperatePassword(RequestDid requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00024.geteCode(), ErrorCode.ENUM_ERROR.D00024.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        // 校验账号原始操作密码/安全密码
+        if (StringUtils.isBlank(requestModel.operateWd)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00025.geteCode(), ErrorCode.ENUM_ERROR.D00025.geteDesc());
+        }
+
+        // 校验账号新操作密码/安全密码
+        if (StringUtils.isBlank(requestModel.newOperateWd)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00026.geteCode(), ErrorCode.ENUM_ERROR.D00026.geteDesc());
+        }
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装根据用户ID以及用户操作密码查询用户信息的方法
+     * <p>用户修改操作密码时：用户处于登录状态，获取用户的ID加上用户输入的操作密码就可以查到这个账号的信息</p>
+     * @param did - 用户的ID
+     * @param operateWd - 用户的操作密码
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:20
+     */
+    public static DidModel assembleDidByAcNumAndOperateWd(long did, String operateWd){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setOperateWd(operateWd);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验原始安全密码/操作密码是否与数据库的原始安全密码匹配
+     * @param didModel
+     * @return
+     * @author yoko
+     * @date 2020/5/14 19:54
+     */
+    public static void checkOperateWd(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00027.geteCode(), ErrorCode.ENUM_ERROR.D00027.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 组装更新用户操作密码/安全密码的方法
+     * @param did - 用户的ID
+     * @param newOperateWd - 用户要更新的新安全密码
+     * @return
+     * @author yoko
+     * @date 2020/5/14 19:56
+     */
+    public static DidModel assembleUpdateOperateWdData(long did, String newOperateWd){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setNewOperateWd(newOperateWd);
+        return resBean;
+    }
+
+
+
     /**
      * @Description: check校验数据当用户登录的时候
      * @param requestModel
@@ -647,6 +732,72 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.D00021.geteCode(), ErrorCode.ENUM_ERROR.D00021.geteDesc());
         }
     }
+
+
+
+    /**
+     * @Description: check校验数据当重新设置安全密码的时候/忘记安全密码需要重新设置安全密码
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkSetUpOperateWdData(RequestDid requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00028.geteCode(), ErrorCode.ENUM_ERROR.D00028.geteDesc());
+        }
+
+        // 校验账号是否为空
+        if (StringUtils.isBlank(requestModel.acNum)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00029.geteCode(), ErrorCode.ENUM_ERROR.D00029.geteDesc());
+        }
+
+        // 校验新安全密码是否为空
+        if (StringUtils.isBlank(requestModel.newOperateWd)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00030.geteCode(), ErrorCode.ENUM_ERROR.D00030.geteDesc());
+        }
+
+        // 校验安全密码时的验证码
+        if (StringUtils.isBlank(requestModel.vcode)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00031.geteCode(), ErrorCode.ENUM_ERROR.D00031.geteDesc());
+        }
+
+        // 校验验证码-忘记安全密码的验证码
+//        HodgepodgeMethod.checkVcode(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE, requestModel.acNum, requestModel.vcode);
+    }
+
+
+    /**
+     * @Description: check校验用户账号是否存在
+     * @param didModel
+     * @return
+     * @author yoko
+     * @date 2020/5/14 19:54
+     */
+    public static void checkSetUpOperateWd(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00032.geteCode(), ErrorCode.ENUM_ERROR.D00032.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 组装更新用户安全密码的方法
+     * @param did - 用户的ID
+     * @param newOperateWd - 用户要更新的新安全密码
+     * @return
+     * @author yoko
+     * @date 2020/5/14 19:56
+     */
+    public static DidModel assembleSetUpOperateWdData(long did, String newOperateWd){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setNewOperateWd(newOperateWd);
+        return resBean;
+    }
+
+
 
 
 
