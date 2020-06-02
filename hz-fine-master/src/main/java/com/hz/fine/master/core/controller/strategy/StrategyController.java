@@ -12,11 +12,10 @@ import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.did.DidModel;
-import com.hz.fine.master.core.model.did.DidRewardModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
-import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
+import com.hz.fine.master.core.protocol.request.strategy.upload.RequestUpload;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
 import com.qiniu.util.Auth;
@@ -30,9 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @Description 策略表：关于一些策略配置的部署的Controller层
@@ -420,6 +417,155 @@ public class StrategyController {
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
             // #添加异常
             log.error(String.format("this StrategyController.qiniuUploud() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+    /**
+     * @Description: 策略：七牛云上传-多文件上传
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/stg/qiniuUploadArray
+     * 请求的属性类:RequestReward
+     * 必填字段:image
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJxaU5pdSI6eyJ1cmwiOiJodHRwOi8vZ3RwcW4udGlhb2NoZW5nLXRlY2guY29tLzdlYjk1ZGNhNDQyOTRkNDlhZGU5Njk5NzBkODc4NTFhLmpwZyJ9LCJzaWduIjoiNGQ5OTVkMGY0YWMyYjBjNDY3Y2ViOWY1YjcwZGRiYTkiLCJzdGltZSI6MTU5MDk5NjAzMTI5N30="
+     *     },
+     *     "sgid": "202005272008170000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/qiniuUploadArray", method = {RequestMethod.POST})
+    public JsonResult<Object> qiniuUploadArray(HttpServletRequest request, HttpServletResponse response, @RequestParam MultipartFile [] image) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestStrategy requestModel = new RequestStrategy();
+        try{
+            // 解密
+//            data = StringUtil.decoderBase64(requestData.jsonData);
+//            requestModel  = JSON.parseObject(data, RequestStrategy.class);
+
+            if (image == null){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.S00014.geteCode(), ErrorCode.ENUM_ERROR.S00014.geteDesc());
+            }
+
+            List<Map> list = new ArrayList<>();
+            for (int i = 0 ; i < image.length; i++){
+                String httpUrl = "http://gtpqn.tiaocheng-tech.com/";
+                String suffix = image[i].getOriginalFilename().substring(image[i].getOriginalFilename().lastIndexOf(".") + 1);
+                byte[] bytes = image[i].getBytes();
+                String imageName = UUID.randomUUID().toString().replaceAll("\\-", "") + "." + suffix;
+
+                QiniuCloudUtil qiniuUtil = new QiniuCloudUtil();
+                String resStr = qiniuUtil.put64image(bytes, imageName);
+                if (StringUtils.isBlank(resStr)){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.S00015.geteCode(), ErrorCode.ENUM_ERROR.S00015.geteDesc());
+                }
+                httpUrl = httpUrl + resStr;
+                Map<String, String> map = new HashMap<>();
+                map.put("name", image[i].getOriginalFilename());
+                map.put("httpUrl", httpUrl);
+                list.add(map);
+            }
+
+
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleStrategyQiNiuUploadResult(stime, sign, "1");
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this StrategyController.qiniuUploadArray() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+    /**
+     * @Description: 策略：七牛云上传-二选一上传
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/stg/qiniuUploadMany
+     * 请求的属性类:RequestUpload
+     * 必填字段:image
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJxaU5pdSI6eyJ1cmwiOiJodHRwOi8vZ3RwcW4udGlhb2NoZW5nLXRlY2guY29tLzdlYjk1ZGNhNDQyOTRkNDlhZGU5Njk5NzBkODc4NTFhLmpwZyJ9LCJzaWduIjoiNGQ5OTVkMGY0YWMyYjBjNDY3Y2ViOWY1YjcwZGRiYTkiLCJzdGltZSI6MTU5MDk5NjAzMTI5N30="
+     *     },
+     *     "sgid": "202005272008170000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/qiniuUploadMany", method = {RequestMethod.POST})
+    public JsonResult<Object> qiniuUploadMany(HttpServletRequest request, HttpServletResponse response, RequestUpload fileModel) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestStrategy requestModel = new RequestStrategy();
+        try{
+            // 解密
+//            data = StringUtil.decoderBase64(requestData.jsonData);
+//            requestModel  = JSON.parseObject(data, RequestStrategy.class);
+
+            if (fileModel.getImage() == null && fileModel.getImage1() == null){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.S00014.geteCode(), ErrorCode.ENUM_ERROR.S00014.geteDesc());
+            }
+            String httpUrl = "";
+            if (fileModel.getImage() != null){
+                httpUrl = HodgepodgeMethod.qiNiuUpload(fileModel.getImage());
+            }
+            if (fileModel.getImage1() != null){
+                httpUrl = HodgepodgeMethod.qiNiuUpload(fileModel.getImage1());
+            }
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleStrategyQiNiuUploadResult(stime, sign, httpUrl);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this StrategyController.qiniuUploadMany() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }

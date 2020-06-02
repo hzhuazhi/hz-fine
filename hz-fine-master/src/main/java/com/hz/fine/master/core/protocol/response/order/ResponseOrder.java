@@ -17,6 +17,7 @@ public class ResponseOrder extends BaseResponse implements Serializable {
 
     public List<Order> dataList;
     public Order dataModel;
+    public OrderDistribution order;// 正式派单成功的数据
     public Integer rowCount;
 
 
@@ -49,5 +50,13 @@ public class ResponseOrder extends BaseResponse implements Serializable {
     @Override
     public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public OrderDistribution getOrder() {
+        return order;
+    }
+
+    public void setOrder(OrderDistribution order) {
+        this.order = order;
     }
 }

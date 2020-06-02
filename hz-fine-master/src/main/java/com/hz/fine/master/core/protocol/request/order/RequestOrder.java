@@ -3,6 +3,7 @@ package com.hz.fine.master.core.protocol.request.order;
 import com.hz.fine.master.core.protocol.base.BaseRequest;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @Description 协议：任务订单（平台派发订单）
@@ -22,6 +23,16 @@ public class RequestOrder extends BaseRequest implements Serializable {
      * 支付类型：1微信，2支付宝，3银行卡
      */
     public Integer payType;
+
+    /**
+     * 商家订单号
+     */
+    public String outTradeNo;
+
+    /**
+     * 同步地址
+     */
+    public String notifyUrl;
 
 
     /**
@@ -95,5 +106,21 @@ public class RequestOrder extends BaseRequest implements Serializable {
 
     public void setPayType(Integer payType) {
         this.payType = payType;
+    }
+
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public void setNotifyUrl(String notifyUrl) {
+        this.notifyUrl = notifyUrl;
+    }
+
+    public String getOutTradeNo() {
+        return outTradeNo;
+    }
+
+    public void setOutTradeNo(String outTradeNo) {
+        this.outTradeNo = outTradeNo;
     }
 }

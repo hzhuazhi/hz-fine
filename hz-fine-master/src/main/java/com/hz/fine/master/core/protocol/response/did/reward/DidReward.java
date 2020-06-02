@@ -47,6 +47,21 @@ public class DidReward implements Serializable {
      */
     public String createTime;
 
+    /**
+     * 创建日期-Int
+     */
+    public Integer curday;
+
+    /**
+     * 创建小时
+     */
+    public Integer curhour;
+
+    /**
+     * 创建分钟
+     */
+    public Integer curminute;
+
     public DidReward(){
 
     }
@@ -105,5 +120,30 @@ public class DidReward implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+
+    public Integer getCurday() {
+        return curday;
+    }
+
+    public void setCurday(Integer curday) {
+        this.curday = curday;
+    }
+
+    public Integer getCurhour() {
+        return curhour;
+    }
+
+    public void setCurhour(Integer curhour) {
+        this.curhour = curhour;
+    }
+
+    public Integer getCurminute() {
+        return curminute;
+    }
+
+    public void setCurminute(Integer curminute) {
+        this.curminute = curminute;
     }
 }

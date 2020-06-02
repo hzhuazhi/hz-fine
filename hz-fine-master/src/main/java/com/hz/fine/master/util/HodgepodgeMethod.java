@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.utils.BeanUtils;
 import com.hz.fine.master.core.common.utils.DateUtil;
+import com.hz.fine.master.core.common.utils.QiniuCloudUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
@@ -37,6 +38,7 @@ import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
 import com.hz.fine.master.core.protocol.response.did.reward.DidShare;
 import com.hz.fine.master.core.protocol.response.did.reward.ResponseDidReward;
 import com.hz.fine.master.core.protocol.response.order.Order;
+import com.hz.fine.master.core.protocol.response.order.OrderDistribution;
 import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
@@ -50,7 +52,9 @@ import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -1950,6 +1954,22 @@ public class HodgepodgeMethod {
         }
     }
 
+
+
+    /**
+     * @Description: check校验数据当派发订单的时候：是否有可以派单的用户数据
+     * @param didList
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkEffectiveDidData(List<DidModel> didList) throws Exception{
+        if (didList == null || didList.size() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00005.geteCode(), ErrorCode.ENUM_ERROR.OR00005.geteDesc());
+        }
+    }
+
+
     /**
      * @Description: 组装查询可以进行派发订单的用户查询条件的方法
      * @param requestModel - 金额跟支付类型
@@ -1961,7 +1981,89 @@ public class HodgepodgeMethod {
         DidModel resBean = new DidModel();
         resBean.setBalance(requestModel.money);
         resBean.setAcType(requestModel.payType);
+//        resBean.setMoney(Double.parseDouble(requestModel.money));
+        BigDecimal bd = new BigDecimal(requestModel.money);
+        resBean.setMoney(bd);
         return resBean;
+    }
+
+
+    /**
+     * @Description: check校验是否筛选出收款账号
+     * @param didCollectionAccountModel - 用户收款账号
+     * @return
+     * @author yoko
+     * @date 2020/6/2 14:13
+    */
+    public static void checkDidCollectionAccountByAddOrder(DidCollectionAccountModel didCollectionAccountModel) throws Exception{
+        if (didCollectionAccountModel == null || didCollectionAccountModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00004.geteCode(), ErrorCode.ENUM_ERROR.OR00004.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 组装添加派单数据的方法
+     * @param did -  用户ID
+     * @param orderNo - 订单号
+     * @param orderMoney - 订单金额
+     * @param outTradeNo - 商家订单号
+     * @param notifyUlr - 同步地址
+     * @param didCollectionAccountModel - 用户收款账号信息
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/6/2 14:53
+     */
+    public static OrderModel assembleOrderByAdd(long did, String orderNo, String orderMoney, String notifyUlr, String outTradeNo,
+                                                DidCollectionAccountModel didCollectionAccountModel){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        resBean.setOrderMoney(orderMoney);
+        resBean.setCollectionAccountId(didCollectionAccountModel.getId());
+        resBean.setCollectionType(didCollectionAccountModel.getAcType());
+        resBean.setQrCode(didCollectionAccountModel.getDdQrCode());
+        resBean.setWxNickname(didCollectionAccountModel.getPayee());
+        resBean.setWxId(didCollectionAccountModel.getWxId());
+        if (!StringUtils.isBlank(outTradeNo)){
+            resBean.setOutTradeNo(outTradeNo);
+        }
+        if (!StringUtils.isBlank(notifyUlr)){
+            resBean.setNotifyUrl(notifyUlr);
+        }
+        // 订单失效时间
+        String invalidTime = DateUtil.addDateMinute(10);// 目前默认10分钟：后续可以从策略取数据
+        resBean.setInvalidTime(invalidTime);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+
+    /**
+     * @Description: 用户派单成功的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderAddDataResult(long stime, String sign, OrderModel orderModel){
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null){
+            OrderDistribution order = new OrderDistribution();
+            order.orderNo = orderModel.getOrderNo();
+            order.qrCode = orderModel.getQrCode();
+            order.orderMoney = orderModel.getOrderMoney();
+            order.invalidTime = orderModel.getInvalidTime();
+            dataModel.order = order;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
     }
 
 
@@ -2505,6 +2607,22 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+
+    public static String qiNiuUpload(MultipartFile image) throws Exception{
+        String httpUrl = "http://gtpqn.tiaocheng-tech.com/";
+        String suffix = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+        byte[] bytes = image.getBytes();
+        String imageName = UUID.randomUUID().toString().replaceAll("\\-", "") + "." + suffix;
+
+        QiniuCloudUtil qiniuUtil = new QiniuCloudUtil();
+        String resStr = qiniuUtil.put64image(bytes, imageName);
+        if (StringUtils.isBlank(resStr)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00015.geteCode(), ErrorCode.ENUM_ERROR.S00015.geteDesc());
+        }
+        httpUrl = httpUrl + resStr;
+        return httpUrl;
     }
 
 

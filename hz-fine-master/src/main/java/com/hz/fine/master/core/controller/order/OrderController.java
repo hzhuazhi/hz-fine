@@ -8,6 +8,7 @@ import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidLevelModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.order.OrderModel;
@@ -84,17 +85,17 @@ public class OrderController {
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/order/add
      * 请求的属性类:RequestOrder
-     * 必填字段:{"money":"1111","payType":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密字段:{"jsonData":"eyJuaWNrbmFtZSI6Im5pY2tuYW1lMSIsImFjTnVtIjoiMTU5NjcxNzE0MTUiLCJwYXNzV2QiOiJwYXNzV2QxIiwib3BlcmF0ZVdkIjoib3BlcmF0ZVdkMSIsImljb2RlIjoiMSIsInZjb2RlIjoiMTExMSIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+     * 必填字段:{"money":"1111","payType":1,"outTradeNo":"outTradeNo1","notifyUrl":"notify_url","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJtb25leSI6IjExMTEiLCJwYXlUeXBlIjoxLCJub3RpZnlVcmwiOiJub3RpZnlfdXJsIiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJzaWduIjoiMzRlMGIyY2I1OWI5Y2UzN2NjMGJmOGRhZjY4NTUzMDkiLCJzdGltZSI6MTU4OTQ1NjAxNjkwMSwidG9rZW4iOiI2MWY0ZDE3YmZmNDU3MTMwZTZhYTAyMDdhYmUwZTc5YSJ9"
+     *         "jsonData": "eyJvcmRlciI6eyJpbnZhbGlkVGltZSI6IjIwMjAtMDYtMDIgMTY6MTk6MjkiLCJvcmRlck1vbmV5IjoiMTExMSIsIm9yZGVyTm8iOiIyMDIwMDYwMjE2MDYzODAwMDAwMDEiLCJxckNvZGUiOiJkZF9xcl9jb2RlMyJ9LCJzaWduIjoiIiwic3RpbWUiOjE1OTEwODUzNjkzMTB9"
      *     },
-     *     "sgid": "202005141933350000001",
+     *     "sgid": "202006021606380000001",
      *     "cgid": ""
      * }
      */
@@ -120,15 +121,22 @@ public class OrderController {
             // 获取可派单的用户集合
             DidModel didQuery = HodgepodgeMethod.assembleEffectiveDid(requestModel);
             List<DidModel> didList = ComponentUtil.didService.getEffectiveDidList(didQuery);
+            // check校验是否有有效的用户
+            HodgepodgeMethod.checkEffectiveDidData(didList);
 
             // 循环筛选有效
-//            段峰
-            ComponentUtil.orderService.screenCollectionAccount(didList, requestModel.money, requestModel.payType);
+            DidCollectionAccountModel didCollectionAccountModel = ComponentUtil.orderService.screenCollectionAccount(didList, requestModel.money, requestModel.payType);
+            // check校验
+            HodgepodgeMethod.checkDidCollectionAccountByAddOrder(didCollectionAccountModel);
+
+            // 组装派发订单的数据
+            OrderModel orderModel = HodgepodgeMethod.assembleOrderByAdd(did, sgid, requestModel.money, requestModel.notifyUrl, requestModel.outTradeNo, didCollectionAccountModel);
+            ComponentUtil.orderService.add(orderModel);
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            String strData = HodgepodgeMethod.assembleOrderAddDataResult(stime, token, orderModel);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

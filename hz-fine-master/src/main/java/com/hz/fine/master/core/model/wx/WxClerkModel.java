@@ -21,7 +21,7 @@ public class WxClerkModel extends BasePage implements Serializable {
     /**
      * 归属小微管理的主键ID：对应表tb_fn_wx的主键ID
      */
-    private String wxId;
+    private Long wxId;
 
     /**
      * 用户账号ID
@@ -71,11 +71,11 @@ public class WxClerkModel extends BasePage implements Serializable {
         this.id = id;
     }
 
-    public String getWxId() {
+    public Long getWxId() {
         return wxId;
     }
 
-    public void setWxId(String wxId) {
+    public void setWxId(Long wxId) {
         this.wxId = wxId;
     }
 

@@ -113,6 +113,11 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
      */
     private Integer yn;
 
+    /**
+     * 小微管理员主键ID
+     */
+    private Long wxId;
+
 
     public Long getId() {
         return id;
@@ -272,5 +277,13 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setCheckInfo(String checkInfo) {
         this.checkInfo = checkInfo;
+    }
+
+    public Long getWxId() {
+        return wxId;
+    }
+
+    public void setWxId(Long wxId) {
+        this.wxId = wxId;
     }
 }

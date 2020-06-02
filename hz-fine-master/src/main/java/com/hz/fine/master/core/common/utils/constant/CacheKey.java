@@ -91,4 +91,16 @@ public interface CacheKey {
      */
     String LOCK_DID_ORDER = "-14";
 
+    /**
+     * 存储用户下的收款账号挂单：用于redis锁使用
+     * 才正式派单完成之后，需要把这个用户挂单填入缓存中；直到订单成功：把缓存删除、或者订单超过有效期
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT = "-15";// 当有回执数据时：要使用task需要删除redis缓存
+
+    /**
+     * 存储用户下的收款账号挂单的具体金额：用于redis锁使用
+     * 才正式派单完成之后，需要把这个用户挂单填入缓存中；直到订单成功：把缓存删除、或者订单超过有效期
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_MONEY = "-16";// 当有回执数据时：要使用task需要删除redis缓存
+
 }

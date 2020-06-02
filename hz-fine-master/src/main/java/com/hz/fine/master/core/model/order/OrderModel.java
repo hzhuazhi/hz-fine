@@ -59,6 +59,11 @@ public class OrderModel extends BasePage implements Serializable {
     private Long wxId;
 
     /**
+     * 商家订单号
+     */
+    private String outTradeNo;
+
+    /**
      * 同步的接口地址:我方的同步地址
      */
     private String notifyUrl;
@@ -331,5 +336,14 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setProfit(String profit) {
         this.profit = profit;
+    }
+
+
+    public String getOutTradeNo() {
+        return outTradeNo;
+    }
+
+    public void setOutTradeNo(String outTradeNo) {
+        this.outTradeNo = outTradeNo;
     }
 }

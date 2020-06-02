@@ -3,6 +3,7 @@ package com.hz.fine.master.core.model.did;
 import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @Description 用户的基本属性实体Bean
@@ -156,6 +157,10 @@ public class DidModel extends BasePage implements Serializable {
      */
     private Integer acType;
 
+    /**
+     * 金额
+     */
+    private BigDecimal money;
 
     public Long getId() {
         return id;
@@ -380,5 +385,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setTotalGradeProfit(String totalGradeProfit) {
         this.totalGradeProfit = totalGradeProfit;
+    }
+
+    public BigDecimal getMoney() {
+        return money;
+    }
+
+    public void setMoney(BigDecimal money) {
+        this.money = money;
     }
 }
