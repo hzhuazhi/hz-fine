@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
+import com.hz.fine.master.core.common.utils.BeanUtils;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
@@ -62,13 +63,12 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
                 noSpecialList.add(bankModel);
             }
         }
-
         // 优先消耗
         if (yesSpecialList != null && yesSpecialList.size() > 0){
             map = checkDataAndGetMoney(yesSpecialList, strategyBankLimitList, strategyMoneyAddSubtractList, orderMoney);
         }
 
-        if (map == null){
+        if (map == null || map.isEmpty()){
             map = checkDataAndGetMoney(noSpecialList, strategyBankLimitList, strategyMoneyAddSubtractList, orderMoney);
         }
 
@@ -331,6 +331,11 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
         BankModel dataModel = new BankModel();
         if (bankList != null && bankList.size() > 0){
             for (BankModel bankModel : bankList){
+                // 每次循环，重新给这个金额加减规则赋值：因为在后面调用的时候使用了金额规则删除，会导致这个集合的数据会被全部删除；所以这里每次循环的时候重新赋值
+//                List<StrategyData> strategyMoneyAddSubtractList_initial = new ArrayList<>();
+//                strategyMoneyAddSubtractList_initial = strategyMoneyAddSubtractList;
+                List<StrategyData> strategyMoneyAddSubtractList_initial = BeanUtils.copyList(strategyMoneyAddSubtractList, StrategyData.class);
+
                 StrategyBankLimit strategyBankLimitData = new StrategyBankLimit();
                 for (StrategyBankLimit strategyBankLimit : strategyBankLimitList){
                     if (bankModel.getBankType() == strategyBankLimit.getStgKey()){
@@ -372,7 +377,7 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
                     continue;
                 }
                 // 筛选此银行卡可用的金额
-                money = getUseMoney(strategyMoneyAddSubtractList, CacheKey.HANG_MONEY, bankModel.getId(), orderMoney);
+                money = getUseMoney(strategyMoneyAddSubtractList_initial, CacheKey.HANG_MONEY, bankModel.getId(), orderMoney);
                 if (!StringUtils.isBlank(money)){
                     dataModel = bankModel;
                     break;

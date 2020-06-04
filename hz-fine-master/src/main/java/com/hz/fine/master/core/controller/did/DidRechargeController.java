@@ -143,7 +143,7 @@ public class DidRechargeController {
             did = HodgepodgeMethod.checkRechargeAdd(requestModel);
 
             // 判断是否还有未完成的订单
-            HodgepodgeMethod.checkDidOrderByRedis(did);
+//            #HodgepodgeMethod.checkDidOrderByRedis(did);
 
             // 查询策略里面的金额列表
             StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY.getStgType());
