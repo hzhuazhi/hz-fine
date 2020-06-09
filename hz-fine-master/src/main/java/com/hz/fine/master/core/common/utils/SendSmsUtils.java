@@ -46,7 +46,7 @@ public class SendSmsUtils {
         if (smsCode.startsWith("0")){
             smsCode = smsCode.replaceFirst("0" , "1");
         }
-        smsCode = "1111";
+//        smsCode = "1111";
         boolean flag = SendSms.aliSendSms(phoneNum, smsCode);
         if (flag){
             // redis存储验证码

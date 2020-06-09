@@ -383,7 +383,7 @@ public class HodgepodgeMethod {
         }
 
         // 校验验证码
-//        HodgepodgeMethod.checkVcode(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE, requestModel.acNum, requestModel.vcode);
+        HodgepodgeMethod.checkVcode(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE, requestModel.acNum, requestModel.vcode);
 
     }
 
