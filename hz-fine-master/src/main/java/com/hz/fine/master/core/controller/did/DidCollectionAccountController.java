@@ -114,7 +114,7 @@ public class DidCollectionAccountController {
             did = HodgepodgeMethod.checkDidCollectionAccountAddData(requestModel);
 
             // 校验收款账号是否存在：收款账号只能存在唯一
-            DidCollectionAccountModel didCollectionAccountByAcNumQuery = HodgepodgeMethod.assembleDidCollectionAccountByAcNum(requestModel.acNum);
+            DidCollectionAccountModel didCollectionAccountByAcNumQuery = HodgepodgeMethod.assembleDidCollectionAccountByPayee(requestModel.payee);
             DidCollectionAccountModel didCollectionAccountByAcNumData = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountByAcNumQuery);
             // check校验收款具体账号是否已被录入过
             HodgepodgeMethod.checkDidCollectionAccountAddByAcNum(didCollectionAccountByAcNumData);

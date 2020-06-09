@@ -938,14 +938,14 @@ public class HodgepodgeMethod {
 
     /**
      * @Description: 组装根据收款具体账号查询的查询条件
-     * @param acNum - 收款具体账号
+     * @param payee - 收款账号昵称
      * @return
      * @author yoko
      * @date 2020/5/15 16:10
     */
-    public static DidCollectionAccountModel assembleDidCollectionAccountByAcNum(String acNum){
+    public static DidCollectionAccountModel assembleDidCollectionAccountByPayee(String payee){
         DidCollectionAccountModel resBean = new DidCollectionAccountModel();
-        resBean.setAcNum(acNum);
+        resBean.setPayee(payee);
         return resBean;
     }
 
@@ -2082,7 +2082,7 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderByAdd(long did, String orderNo, String orderMoney, String notifyUlr, String outTradeNo,
                                                 DidCollectionAccountModel didCollectionAccountModel){
         OrderModel resBean = new OrderModel();
-        resBean.setDid(did);
+        resBean.setDid(didCollectionAccountModel.getDid());
         resBean.setOrderNo(orderNo);
         resBean.setOrderMoney(orderMoney);
         resBean.setCollectionAccountId(didCollectionAccountModel.getId());
@@ -2218,7 +2218,7 @@ public class HodgepodgeMethod {
      */
     public static WxClerkModel assembleWxClerk(long did, long collectionAccountId){
         WxClerkModel resBean = new WxClerkModel();
-        resBean.setDid(did);
+//        resBean.setDid(did);
         resBean.setCollectionAccountId(collectionAccountId);
         resBean.setUseStatus(1);
         return resBean;
@@ -2501,6 +2501,7 @@ public class HodgepodgeMethod {
         StrategyShare share = new StrategyShare();
         if (!StringUtils.isBlank(icode)){
             share.shareAddress = shareAddres + icode;
+            share.icode = icode;
         }else {
             share.shareAddress = shareAddres;
         }
@@ -2616,35 +2617,35 @@ public class HodgepodgeMethod {
 
             DidBasic didBasic = BeanUtils.copy(didModel, DidBasic.class);
             if (StringUtils.isBlank(didModel.getBalance())){
-                didBasic.balance = "0.0";
+                didBasic.balance = "0.00";
             }
             if (StringUtils.isBlank(didModel.getBalance())){
-                didBasic.lockMoney = "0.0";
+                didBasic.lockMoney = "0.00";
             }else {
                 if (didModel.getBalance().equals("0")){
-                    didBasic.lockMoney = "0.0";
+                    didBasic.lockMoney = "0.00";
                 }
             }
             if (StringUtils.isBlank(didModel.getTotalMoney())){
-                didBasic.totalMoney = "0.0";
+                didBasic.totalMoney = "0.00";
             }
             if (StringUtils.isBlank(didModel.getTotalProfit())){
-                didBasic.totalProfit = "0.0";
+                didBasic.totalProfit = "0.00";
             }
             if (didModel.getTotalDirectNum() == null || didModel.getTotalDirectNum() == 0){
                 didBasic.totalDirectNum = 0;
             }
             if (StringUtils.isBlank(didModel.getTotalDirectProfit())){
-                didBasic.totalDirectProfit = "0.0";
+                didBasic.totalDirectProfit = "0.00";
             }
             if (StringUtils.isBlank(didModel.getTotalTeamProfit())){
-                didBasic.totalTeamProfit = "0.0";
+                didBasic.totalTeamProfit = "0.00";
             }
             if (StringUtils.isBlank(didModel.getTotalRechargeProfit())){
-                didBasic.totalRechargeProfit = "0.0";
+                didBasic.totalRechargeProfit = "0.00";
             }
             if (StringUtils.isBlank(didModel.getTotalGradeProfit())){
-                didBasic.totalGradeProfit = "0.0";
+                didBasic.totalGradeProfit = "0.00";
             }
             didBasic.todayProfit = todayProfit;
             didBasic.todayExchange = todayExchange;

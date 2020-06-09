@@ -16,6 +16,11 @@ public class StrategyShare implements Serializable {
      */
     public String shareAddress;
 
+    /**
+     * 邀请码
+     */
+    public String icode;
+
 
     public StrategyShare(){
 
@@ -27,5 +32,13 @@ public class StrategyShare implements Serializable {
 
     public void setShareAddress(String shareAddress) {
         this.shareAddress = shareAddress;
+    }
+
+    public String getIcode() {
+        return icode;
+    }
+
+    public void setIcode(String icode) {
+        this.icode = icode;
     }
 }
