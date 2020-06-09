@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.order_no,a.money_id,a.order_money,a.distribution_money,a.bank_id,a.picture_ads,a.invalid_time,a.order_status,
+        a.id,a.did,a.order_no,a.money_id,a.order_money,a.distribution_money,a.bank_id,a.picture_ads,a.invalid_time,a.order_status,a.appeal_status,a.appeal_origin,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -254,6 +254,32 @@
             </if>
         </trim>
         <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+    <!-- 充值订单申诉 -->
+    <update id="updateDidRechargeByAppeal" parameterType="com.hz.fine.master.core.model.did.DidRechargeModel">
+        UPDATE tb_fn_did_recharge a
+        <trim prefix="set" suffixOverrides=",">
+
+            <if test="pictureAds != null and pictureAds != '' " >
+                a.picture_ads = #{pictureAds},
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="appealStatus != null and appealStatus != '' " >
+                a.appeal_status = #{appealStatus},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.order_no = #{orderNo}
+        <if test="id != null and id != '' " >
+            and a.id = #{id}
+        </if>
+        and a.yn = 0
     </update>
 
 

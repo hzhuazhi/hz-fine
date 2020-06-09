@@ -3,6 +3,7 @@ package com.hz.fine.master.core.service.impl;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.mapper.DidRechargeMapper;
+import com.hz.fine.master.core.model.did.DidRechargeModel;
 import com.hz.fine.master.core.service.DidRechargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class DidRechargeServiceImpl <T> extends BaseServiceImpl<T> implements Di
 
     public BaseDao<T> getDao() {
         return didRechargeMapper;
+    }
+
+    @Override
+    public int updateDidRechargeByAppeal(DidRechargeModel model) {
+        return didRechargeMapper.updateDidRechargeByAppeal(model);
     }
 }

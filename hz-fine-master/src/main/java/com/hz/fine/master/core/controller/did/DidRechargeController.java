@@ -220,7 +220,7 @@ public class DidRechargeController {
 
 
     /**
-     * @Description: 用户上传图片
+     * @Description: 用户上传图片-申诉
      * <p>
      *     用户上传银行转账的截图纪录
      * </p>
@@ -229,7 +229,7 @@ public class DidRechargeController {
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8086/fine/recharge/loadPicture
+     * local:http://localhost:8086/fine/recharge/appeal
      * 请求的属性类:RequestDidRecharge
      * 必填字段:{"orderNo":"202005211450200000001","pictureAds":"http://www.baidu.com","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA1MjExNDUwMjAwMDAwMDAxIiwicGljdHVyZUFkcyI6Imh0dHA6Ly93d3cuYmFpZHUuY29tIiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
@@ -245,8 +245,8 @@ public class DidRechargeController {
      *     "cgid": ""
      * }
      */
-    @RequestMapping(value = "/loadPicture", method = {RequestMethod.POST})
-    public JsonResult<Object> loadPicture(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+    @RequestMapping(value = "/appeal", method = {RequestMethod.POST})
+    public JsonResult<Object> appeal(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
         String sgid = ComponentUtil.redisIdService.getNewId();
         String cgid = "";
         String token = "";
@@ -270,8 +270,8 @@ public class DidRechargeController {
             // check校验数据
             did = HodgepodgeMethod.checkLoadPicture(requestModel);
 
-            DidRechargeModel didRechargeUpdate = HodgepodgeMethod.assembleLoadPictureUpdate(requestModel, did);
-            ComponentUtil.didRechargeService.update(didRechargeUpdate);
+            DidRechargeModel didRechargeUpdate = HodgepodgeMethod.assembleLoadPictureAndAppealUpdate(requestModel, did);
+            ComponentUtil.didRechargeService.updateDidRechargeByAppeal(didRechargeUpdate);
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();

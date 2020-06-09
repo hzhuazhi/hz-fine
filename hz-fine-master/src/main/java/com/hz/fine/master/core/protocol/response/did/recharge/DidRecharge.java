@@ -37,9 +37,19 @@ public class DidRecharge implements Serializable {
     public String invalidTime;
 
     /**
-     * 订单状态：1初始化，2超时/失败，3成功
+     * 订单状态：-1申诉状态，1初始化，2超时/失败，3成功
      */
     public Integer orderStatus;
+
+    /**
+     * 申诉状态：1初始化，2申诉中，3申诉失败，4申诉成功
+     */
+    public Integer appealStatus;
+
+    /**
+     * 申诉失败原因：描述申诉结果的原因
+     */
+    public String appealOrigin;
 
     /**
      * 创建时间
@@ -144,5 +154,21 @@ public class DidRecharge implements Serializable {
 
     public void setCurminute(Integer curminute) {
         this.curminute = curminute;
+    }
+
+    public Integer getAppealStatus() {
+        return appealStatus;
+    }
+
+    public void setAppealStatus(Integer appealStatus) {
+        this.appealStatus = appealStatus;
+    }
+
+    public String getAppealOrigin() {
+        return appealOrigin;
+    }
+
+    public void setAppealOrigin(String appealOrigin) {
+        this.appealOrigin = appealOrigin;
     }
 }

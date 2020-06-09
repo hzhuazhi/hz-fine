@@ -1,6 +1,7 @@
 package com.hz.fine.master.core.mapper;
 
 import com.hz.fine.master.core.common.dao.BaseDao;
+import com.hz.fine.master.core.model.did.DidRechargeModel;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -11,5 +12,14 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface DidRechargeMapper<T> extends BaseDao<T> {
+
+    /**
+     * @Description: 充值订单申诉
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/6/9 12:06
+     */
+    public int updateDidRechargeByAppeal(DidRechargeModel model);
 
 }

@@ -1574,18 +1574,20 @@ public class HodgepodgeMethod {
     }
 
     /**
-     * @Description: 组装更新用户上传转账图片凭证的方法
+     * @Description: 组装更新用户上传转账图片凭证的方法-申诉
      * @param requestModel - 用户的银行转账图片凭证
      * @param did - 用户ID
      * @return
      * @author yoko
      * @date 2020/5/21 15:57
     */
-    public static DidRechargeModel assembleLoadPictureUpdate(RequestDidRecharge requestModel, long did){
+    public static DidRechargeModel assembleLoadPictureAndAppealUpdate(RequestDidRecharge requestModel, long did){
         DidRechargeModel resBean = new DidRechargeModel();
         resBean.setDid(did);
         resBean.setOrderNo(requestModel.orderNo);
         resBean.setPictureAds(requestModel.pictureAds);
+        resBean.setOrderStatus(-1);
+        resBean.setAppealStatus(2);
         return resBean;
     }
 

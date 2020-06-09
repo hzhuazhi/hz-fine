@@ -64,6 +64,16 @@ public class DidRechargeModel extends BasePage implements Serializable {
     private Integer orderStatus;
 
     /**
+     * 申诉状态：1初始化，2申诉中，3申诉失败，4申诉成功
+     */
+    private Integer appealStatus;
+
+    /**
+     * 申诉失败原因：描述申诉结果的原因
+     */
+    private String appealOrigin;
+
+    /**
      * 创建日期：存的日期格式20160530
      */
     private Integer curday;
@@ -264,5 +274,22 @@ public class DidRechargeModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+
+    public Integer getAppealStatus() {
+        return appealStatus;
+    }
+
+    public void setAppealStatus(Integer appealStatus) {
+        this.appealStatus = appealStatus;
+    }
+
+    public String getAppealOrigin() {
+        return appealOrigin;
+    }
+
+    public void setAppealOrigin(String appealOrigin) {
+        this.appealOrigin = appealOrigin;
     }
 }
