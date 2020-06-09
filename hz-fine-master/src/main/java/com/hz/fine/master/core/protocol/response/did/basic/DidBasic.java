@@ -69,6 +69,11 @@ public class DidBasic implements Serializable {
     public String totalDirectProfit;
 
     /**
+     * 团队总收益
+     */
+    public String totalTeamProfit;
+
+    /**
      * 充值总收益：充多少送多少
      */
     public String totalRechargeProfit;
@@ -184,5 +189,13 @@ public class DidBasic implements Serializable {
 
     public void setTotalGradeProfit(String totalGradeProfit) {
         this.totalGradeProfit = totalGradeProfit;
+    }
+
+    public String getTotalTeamProfit() {
+        return totalTeamProfit;
+    }
+
+    public void setTotalTeamProfit(String totalTeamProfit) {
+        this.totalTeamProfit = totalTeamProfit;
     }
 }

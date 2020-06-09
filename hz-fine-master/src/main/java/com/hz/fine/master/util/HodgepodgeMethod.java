@@ -2613,9 +2613,43 @@ public class HodgepodgeMethod {
     public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange){
         ResponseDid dataModel = new ResponseDid();
         if (didModel != null && didModel.getId() > 0){
+
             DidBasic didBasic = BeanUtils.copy(didModel, DidBasic.class);
+            if (StringUtils.isBlank(didModel.getBalance())){
+                didBasic.balance = "0.0";
+            }
+            if (StringUtils.isBlank(didModel.getBalance())){
+                didBasic.lockMoney = "0.0";
+            }else {
+                if (didModel.getBalance().equals("0")){
+                    didBasic.lockMoney = "0.0";
+                }
+            }
+            if (StringUtils.isBlank(didModel.getTotalMoney())){
+                didBasic.totalMoney = "0.0";
+            }
+            if (StringUtils.isBlank(didModel.getTotalProfit())){
+                didBasic.totalProfit = "0.0";
+            }
+            if (didModel.getTotalDirectNum() == null || didModel.getTotalDirectNum() == 0){
+                didBasic.totalDirectNum = 0;
+            }
+            if (StringUtils.isBlank(didModel.getTotalDirectProfit())){
+                didBasic.totalDirectProfit = "0.0";
+            }
+            if (StringUtils.isBlank(didModel.getTotalTeamProfit())){
+                didBasic.totalTeamProfit = "0.0";
+            }
+            if (StringUtils.isBlank(didModel.getTotalRechargeProfit())){
+                didBasic.totalRechargeProfit = "0.0";
+            }
+            if (StringUtils.isBlank(didModel.getTotalGradeProfit())){
+                didBasic.totalGradeProfit = "0.0";
+            }
             didBasic.todayProfit = todayProfit;
             didBasic.todayExchange = todayExchange;
+
+
             dataModel.dataModel = didBasic;
         }
         dataModel.setStime(stime);

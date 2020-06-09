@@ -94,6 +94,7 @@ public class DidModel extends BasePage implements Serializable {
      */
     private String totalDirectProfit;
 
+
     /**
      * 裂变总奖励收益
      */
