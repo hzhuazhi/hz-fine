@@ -366,6 +366,23 @@
     </select>
 
 
+    <!-- 修改用户金额信息-根据派单 -->
+    <update id="updateDidMoneyByOrder" parameterType="com.hz.fine.master.core.model.did.DidModel">
+        UPDATE tb_fn_did a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="orderMoney != null and orderMoney != '' " >
+                a.balance = a.balance - #{orderMoney},
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                a.lock_money = a.lock_money + #{orderMoney},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+    </update>
+
+
 
 
 

@@ -167,6 +167,11 @@ public class DidModel extends BasePage implements Serializable {
      */
     private BigDecimal money;
 
+    /**
+     * 要进行更改的金额
+     */
+    private String orderMoney;
+
     public Long getId() {
         return id;
     }
@@ -406,5 +411,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setTotalTeamProfit(String totalTeamProfit) {
         this.totalTeamProfit = totalTeamProfit;
+    }
+
+    public String getOrderMoney() {
+        return orderMoney;
+    }
+
+    public void setOrderMoney(String orderMoney) {
+        this.orderMoney = orderMoney;
     }
 }

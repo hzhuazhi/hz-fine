@@ -19,6 +19,7 @@ import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
+import com.hz.fine.master.core.model.wx.WxModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
@@ -2157,6 +2158,35 @@ public class HodgepodgeMethod {
         resBean.setDid(did);
         resBean.setCollectionAccountId(collectionAccountId);
         resBean.setUseStatus(1);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询小微管理的查询条件
+     * @param id - 小微管理的主键ID
+     * @return
+     * @author yoko
+     * @date 2020/6/9 10:08
+    */
+    public static WxModel assembleWxQuery(long id){
+        WxModel resBean = new WxModel();
+        resBean.setId(id);
+        resBean.setUseStatus(1);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装更新用户金额的方法
+     * @param did - 用户ID
+     * @param orderMoney - 派单的具体金额
+     * @return com.hz.fine.master.core.model.did.DidModel
+     * @author yoko
+     * @date 2020/6/9 10:47
+     */
+    public static DidModel assembleUpdateDidMoneyByOrder(long did, String orderMoney){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setOrderMoney(orderMoney);
         return resBean;
     }
 
