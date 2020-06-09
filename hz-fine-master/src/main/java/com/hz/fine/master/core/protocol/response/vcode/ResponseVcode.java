@@ -15,8 +15,20 @@ import java.io.Serializable;
 public class ResponseVcode extends BaseResponse implements Serializable {
     private static final long   serialVersionUID = 1233023331141L;
 
+    /**
+     * 验证码-通过的的token
+     */
+    public Vcode dataModel;
 
     public ResponseVcode(){
 
+    }
+
+    public Vcode getDataModel() {
+        return dataModel;
+    }
+
+    public void setDataModel(Vcode dataModel) {
+        this.dataModel = dataModel;
     }
 }

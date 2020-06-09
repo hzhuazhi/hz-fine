@@ -53,6 +53,11 @@ public class RequestDid extends BaseRequest implements Serializable {
      */
     public String vcode;
 
+    /**
+     * 提交验证码成功之后返回给客户端的验证码token值
+     */
+    public String vtoken;
+
 
 
     public RequestDid(){
@@ -121,5 +126,14 @@ public class RequestDid extends BaseRequest implements Serializable {
 
     public void setNewOperateWd(String newOperateWd) {
         this.newOperateWd = newOperateWd;
+    }
+
+
+    public String getVtoken() {
+        return vtoken;
+    }
+
+    public void setVtoken(String vtoken) {
+        this.vtoken = vtoken;
     }
 }

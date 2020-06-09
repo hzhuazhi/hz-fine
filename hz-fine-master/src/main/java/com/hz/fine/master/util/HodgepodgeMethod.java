@@ -50,6 +50,7 @@ import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGra
 import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
 import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
 import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
+import com.hz.fine.master.core.protocol.response.vcode.Vcode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,8 +197,8 @@ public class HodgepodgeMethod {
         }
         // 校验是否需要检测是否登录
         boolean flag = false;//值等于false表示无需登录，值等于true表示需要登录
-        if (requestModel.vType == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE){
-            // 类型等于1表示注册，所以无需登录
+        if (requestModel.vType == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE || requestModel.vType == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
+            // 类型等于1表示注册，2忘记登录密码，所以无需登录
             flag = false;
         }
         if (flag){
@@ -211,6 +212,30 @@ public class HodgepodgeMethod {
             did = HodgepodgeMethod.checkIsLogin(requestModel.token);
         }
         return did;
+    }
+
+
+    /**
+     * @Description: check校验提交验证码的方法
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkSubmitCd(RequestVcode requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.V00007.geteCode(), ErrorCode.ENUM_ERROR.V00007.geteDesc());
+        }
+
+        // 校验手机号是否为空
+        if (StringUtils.isBlank(requestModel.phoneNum)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.V00008.geteCode(), ErrorCode.ENUM_ERROR.V00008.geteDesc());
+        }
+
+        if (requestModel.vType == null || requestModel.vType == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.V00009.geteCode(), ErrorCode.ENUM_ERROR.V00009.geteDesc());
+        }
     }
 
     /**
@@ -304,6 +329,25 @@ public class HodgepodgeMethod {
         return JSON.toJSONString(dataModel);
     }
 
+
+    /**
+     * @Description: 提交验证码的返回客户端的方法-返回vtoken
+     * @param stime - 服务器的时间
+     * @param vtoken - 登录token
+     * @param sign - 签名
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/13 21:45
+     */
+    public static String assembleSubmitCdResult(long stime, String vtoken, String sign){
+        ResponseVcode dataModel = new ResponseVcode();
+        Vcode vcode = new Vcode();
+        vcode.vtoken = vtoken;
+        dataModel.dataModel = vcode;
+        dataModel.stime = stime;
+        dataModel.sign = sign;
+        return JSON.toJSONString(dataModel);
+    }
 
     /**
      * @Description: check校验数据当用户注册的时候
@@ -691,8 +735,8 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.D00017.geteCode(), ErrorCode.ENUM_ERROR.D00017.geteDesc());
         }
 
-        // 校验账号是否为空
-        if (StringUtils.isBlank(requestModel.acNum)){
+        // 校验vtoken是否为空
+        if (StringUtils.isBlank(requestModel.vtoken)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.D00018.geteCode(), ErrorCode.ENUM_ERROR.D00018.geteDesc());
         }
 
@@ -701,14 +745,31 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.D00019.geteCode(), ErrorCode.ENUM_ERROR.D00019.geteDesc());
         }
 
-        // 校验注册时的验证码
-        if (StringUtils.isBlank(requestModel.vcode)){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.D00020.geteCode(), ErrorCode.ENUM_ERROR.D00020.geteDesc());
-        }
+//        // 校验注册时的验证码
+//        if (StringUtils.isBlank(requestModel.vcode)){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.D00020.geteCode(), ErrorCode.ENUM_ERROR.D00020.geteDesc());
+//        }
 
         // 校验验证码-忘记密码的验证码
 //        HodgepodgeMethod.checkVcode(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO, requestModel.acNum, requestModel.vcode);
 
+    }
+
+
+    /**
+     * @Description: 根据vtoken获取用户账号
+     * @param vtoken
+     * @return
+     * @author yoko
+     * @date 2020/6/9 15:15
+    */
+    public static String getAcNumByVtoken(String vtoken) throws Exception{
+        String strCache = (String) ComponentUtil.redisService.get(vtoken);
+        if (!StringUtils.isBlank(strCache)){
+            return strCache;
+        }else {
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00020.geteCode(), ErrorCode.ENUM_ERROR.D00020.geteDesc());
+        }
     }
 
 
@@ -827,12 +888,12 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00002.geteCode(), ErrorCode.ENUM_ERROR.DC00002.geteDesc());
         }
 
-        // 校验收款的具体账号：类型为微信则微信账号，支付宝为支付宝账号；怕后期有其它冲突
-        if (requestModel.acType != 3){
-            if (StringUtils.isBlank(requestModel.acNum)){
-                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00003.geteCode(), ErrorCode.ENUM_ERROR.DC00003.geteDesc());
-            }
-        }
+//        // 校验收款的具体账号：类型为微信则微信账号，支付宝为支付宝账号；怕后期有其它冲突
+//        if (requestModel.acType != 3){
+//            if (StringUtils.isBlank(requestModel.acNum)){
+//                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00003.geteCode(), ErrorCode.ENUM_ERROR.DC00003.geteDesc());
+//            }
+//        }
 
         if (StringUtils.isBlank(requestModel.mmQrCode)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00004.geteCode(), ErrorCode.ENUM_ERROR.DC00004.geteDesc());

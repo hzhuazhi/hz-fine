@@ -335,7 +335,8 @@ public class DidController {
      * <p>
      *     用户忘记密码：所以用户需要重新设置密码；
      *     1.用户发起手机短信验证码
-     *     2.短信验证码通过之后，则可以重新设置密码
+     *     2.短信验证码通过之后，则可以重新设置密码（获取vtoken值）
+     *     3.通过vtoken值，确定是具体哪个账户
      * </p>
      * @param request
      * @param response
@@ -344,7 +345,7 @@ public class DidController {
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/did/setUpPassword
      * 请求的属性类:RequestDid
-     * 必填字段:{"acNum":"zh_1","newPassWd":"sb1","vcode":"1111","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 必填字段:{"vtoken":"dfcdf431027ee1ffddbb8e049903afee","newPassWd":"sb1","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJhY051bSI6InpoXzEiLCJuZXdQYXNzV2QiOiJzYjEiLCJ2Y29kZSI6IjExMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
@@ -373,13 +374,14 @@ public class DidController {
             // 解密
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestDid.class);
-
             // check校验数据
             HodgepodgeMethod.checkSetUpPasswordData(requestModel);
 
+            // 通过vtoken获取用户登录账号
+            String acNum = HodgepodgeMethod.getAcNumByVtoken(requestModel.vtoken);
 
             // 校验账号查询是否有账号信息的数据
-            DidModel didByAcNumQuery = HodgepodgeMethod.assembleDidByAcNumForFindPassWd(requestModel.acNum);
+            DidModel didByAcNumQuery = HodgepodgeMethod.assembleDidByAcNumForFindPassWd(acNum);
             DidModel didByAcNumData = (DidModel) ComponentUtil.didService.findByObject(didByAcNumQuery);
             // check校验用户输入的原始密码是否正确
             HodgepodgeMethod.checkSetUpPassword(didByAcNumData);

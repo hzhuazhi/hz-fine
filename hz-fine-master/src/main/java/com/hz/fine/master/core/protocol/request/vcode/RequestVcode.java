@@ -19,9 +19,14 @@ public class RequestVcode extends BaseRequest implements Serializable {
     public String phoneNum;
 
     /**
-     * 发送验证码的具体类型：1注册，2忘记密码需要找回密码，3忘记安全密码需要找回安全密码
+     * 发送验证码的具体类型：1注册，2忘记登录密码需要找回密码，3忘记安全密码需要找回安全密码
      */
     public Integer vType;
+
+    /**
+     * 验证码
+     */
+    public String vcode;
 
     public RequestVcode(){
 
@@ -42,5 +47,13 @@ public class RequestVcode extends BaseRequest implements Serializable {
 
     public void setvType(Integer vType) {
         this.vType = vType;
+    }
+
+    public String getVcode() {
+        return vcode;
+    }
+
+    public void setVcode(String vcode) {
+        this.vcode = vcode;
     }
 }
