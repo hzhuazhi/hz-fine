@@ -282,11 +282,11 @@ public class OrderController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestOrder.class);
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
             // check校验数据
             did = HodgepodgeMethod.checkOrderListData(requestModel);
 
@@ -353,11 +353,11 @@ public class OrderController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestOrder.class);
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
             // check校验请求的数据
             did = HodgepodgeMethod.checkOrderData(requestModel);
 
