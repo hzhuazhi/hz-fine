@@ -23,6 +23,8 @@ public class StrategyData {
 
     private Integer stgValueThree;
 
+    private String stgValueFour;
+
     public Long getId() {
         return id;
     }
@@ -69,5 +71,13 @@ public class StrategyData {
 
     public void setStgValueThree(Integer stgValueThree) {
         this.stgValueThree = stgValueThree;
+    }
+
+    public String getStgValueFour() {
+        return stgValueFour;
+    }
+
+    public void setStgValueFour(String stgValueFour) {
+        this.stgValueFour = stgValueFour;
     }
 }

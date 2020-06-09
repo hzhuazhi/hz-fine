@@ -141,6 +141,8 @@ public class DidController {
                 ComponentUtil.didLevelService.add(didLevelModel);
             }
 
+            // # 修改上级直推的总人数
+
 
             // 生成token
             if (didModel.getId() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){

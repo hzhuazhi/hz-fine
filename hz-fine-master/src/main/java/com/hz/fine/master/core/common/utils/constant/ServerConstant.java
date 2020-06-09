@@ -86,6 +86,9 @@ public class ServerConstant {
         ORDER_INVALID_TIME(6,""),
         MONEY_GRADE_LIST(7,""),
         SHARE_ADDRESS(8,""),
+        MOBILE_CARD_TYPE_LIST(9,""),
+        DIRECT_REWARD(10,""),
+        TEAM_REWARD(11,""),
 
         ;
         private int stgType;

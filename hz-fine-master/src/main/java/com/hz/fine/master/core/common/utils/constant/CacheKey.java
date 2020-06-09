@@ -58,7 +58,7 @@ public interface CacheKey {
      * 挂单金额
      * <p>银行卡具体的挂单金额</p>
      */
-    String HANG_MONEY = "-9";
+    String HANG_MONEY = "-9";// 当有回执数据时：要使用task需要删除redis缓存
 
     /**
      * 需要锁的金额
@@ -102,5 +102,12 @@ public interface CacheKey {
      * 才正式派单完成之后，需要把这个用户挂单填入缓存中；直到订单成功：把缓存删除、或者订单超过有效期
      */
     String LOCK_DID_COLLECTION_ACCOUNT_MONEY = "-16";// 当有回执数据时：要使用task需要删除redis缓存
+
+    /**
+     * 锁住用户：lock
+     * 当只要操作用户金额时，都要调用这个redis的key
+     * 重
+     */
+    String LOCK_DID_MONEY = "-17";
 
 }

@@ -100,6 +100,11 @@ public class DidModel extends BasePage implements Serializable {
     private String totalIndirectProfit;
 
     /**
+     * 团队总收益
+     */
+    private String totalTeamProfit;
+
+    /**
      * 直推总人数
      */
     private Integer totalDirectNum;
@@ -393,5 +398,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setMoney(BigDecimal money) {
         this.money = money;
+    }
+
+    public String getTotalTeamProfit() {
+        return totalTeamProfit;
+    }
+
+    public void setTotalTeamProfit(String totalTeamProfit) {
+        this.totalTeamProfit = totalTeamProfit;
     }
 }

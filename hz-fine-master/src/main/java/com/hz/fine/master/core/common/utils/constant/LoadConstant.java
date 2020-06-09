@@ -36,4 +36,10 @@ public class LoadConstant {
      */
     @Value("${alipay.total.amount}")
     public String totalAmount;
+
+    /**
+     * 二维码支付地址
+     */
+    @Value("${qrCode.url}")
+    public String qrCodeUrl;
 }

@@ -27,8 +27,6 @@ public class AutowireRunner implements ApplicationRunner {
      */
     public long FIVE_MIN = 300;
 
-    @Value("${sp.send.url}")
-    private String spSendUrl;
 
     Thread runThread = null;
 

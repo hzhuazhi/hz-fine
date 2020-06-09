@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -2047,6 +2048,41 @@ public class HodgepodgeMethod {
      * @param stime - 服务器的时间
      * @param sign - 签名
      * @param orderModel - 用户派单的详情
+     * @param returnUrl - 支付完成之后自动跳转的地址
+     * @param qrCodeUrl - 生成的HTML页面的地址
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderQrCodeDataResult(long stime, String sign, OrderModel orderModel, String returnUrl, String qrCodeUrl) throws Exception{
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null){
+            OrderDistribution order = new OrderDistribution();
+            order.orderNo = orderModel.getOrderNo();
+            order.qrCode = orderModel.getQrCode();
+            order.orderMoney = orderModel.getOrderMoney();
+            order.invalidTime = orderModel.getInvalidTime();
+            String resQrCodeUrl = "";
+            if (!StringUtils.isBlank(returnUrl)){
+                resQrCodeUrl = qrCodeUrl + "?" + "orderNo=" +  orderModel.getOrderNo() + "&" + "returnUrl=" + returnUrl;
+            }else {
+                resQrCodeUrl = qrCodeUrl + "?" + "orderNo=" +  orderModel.getOrderNo() + "&" + "returnUrl=";
+            }
+            order.qrCodeUrl = URLEncoder.encode(resQrCodeUrl,"UTF-8");
+            dataModel.order = order;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: 用户派单成功的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
      * @return java.lang.String
      * @author yoko
      * @date 2019/11/25 22:45
@@ -2063,6 +2099,27 @@ public class HodgepodgeMethod {
         }
         dataModel.setStime(stime);
         dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+
+    /**
+     * @Description: 查询派单成功的订单状态数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderStatus - 不等于0表示成功
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderStatusResult(long stime, String sign, int orderStatus){
+        ResponseOrder resBean = new ResponseOrder();
+        Order dataModel = new Order();
+        dataModel.orderStatus = orderStatus;
+        resBean.dataModel = dataModel;
+        resBean.setStime(stime);
+        resBean.setSign(sign);
         return JSON.toJSONString(dataModel);
     }
 
@@ -2623,6 +2680,41 @@ public class HodgepodgeMethod {
         }
         httpUrl = httpUrl + resStr;
         return httpUrl;
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取派单数据-详情-返回码的接口时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkOrderByQrCodeData(RequestOrder requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00013.geteCode(), ErrorCode.ENUM_ERROR.OR00013.geteDesc());
+        }
+
+        if (StringUtils.isBlank(requestModel.orderNo)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00014.geteCode(), ErrorCode.ENUM_ERROR.OR00014.geteDesc());
+        }
+
+    }
+
+
+    /**
+     * @Description: 组装根据派单的订单号查询派单信息
+     * @param orderNo - 派单的订单号
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/18 11:41
+     */
+    public static OrderModel assembleOrderOrderNo(String orderNo){
+        OrderModel resBean = new OrderModel();
+        resBean.setOrderNo(orderNo);
+        return resBean;
     }
 
 

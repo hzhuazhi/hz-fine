@@ -36,4 +36,22 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/5/29 11:23
      */
     public String getProfitByCurday(OrderModel model);
+
+    /**
+     * @Description: 根据订单号获取订单的二维码信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/6/8 19:51
+    */
+    public OrderModel getOrderQrCodeByOrderNo(OrderModel model);
+
+    /**
+     * @Description: 根据订单号查询订单状态
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/6/8 20:00
+    */
+    public int getOrderStatus(OrderModel model);
 }

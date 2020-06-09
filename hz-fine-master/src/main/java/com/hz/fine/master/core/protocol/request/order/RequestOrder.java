@@ -34,6 +34,11 @@ public class RequestOrder extends BaseRequest implements Serializable {
      */
     public String notifyUrl;
 
+    /**
+     * 支付成功之后自动跳转的地址
+     */
+    public String returnUrl;
+
 
     /**
      * 订单号
@@ -122,5 +127,13 @@ public class RequestOrder extends BaseRequest implements Serializable {
 
     public void setOutTradeNo(String outTradeNo) {
         this.outTradeNo = outTradeNo;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 }

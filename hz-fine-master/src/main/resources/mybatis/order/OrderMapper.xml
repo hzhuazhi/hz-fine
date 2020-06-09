@@ -294,4 +294,31 @@
     </select>
 
 
+    <!-- 根据订单号获取订单的二维码信息-->
+    <select id="getOrderQrCodeByOrderNo" parameterType="Object" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,
+        a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+        a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
+        a.create_time,a.update_time,a.yn
+        from tb_fn_order a
+        where 1=1
+        and a.order_no = #{orderNo}
+        and a.order_status = 1
+        and a.yn = 0
+        limit 1
+    </select>
+
+
+    <!-- 根据订单号查询订单状态-->
+    <select id="getOrderStatus" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_order a
+        where 1=1
+        and a.order_no = #{orderNo}
+        and a.order_status = 4
+        and a.yn = 0
+    </select>
+
+
 </mapper>

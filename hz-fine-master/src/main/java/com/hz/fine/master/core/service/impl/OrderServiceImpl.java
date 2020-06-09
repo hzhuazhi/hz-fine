@@ -123,6 +123,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                     // 判断用户收款账号与小微的关系正常：上线状态
                     WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerk(did, didCollectionAccountModel.getId());
                     WxClerkModel wxClerkData = (WxClerkModel) ComponentUtil.wxClerkService.findByObject(wxClerkQuery);
+                    // #段峰：待写判断小微管理是否正常使用
                     if (wxClerkData != null && wxClerkData.getId() > 0){
                         // 这里没有再次做日上总上限的判断了，因为直接用task来跑：如果在这里做了日上月上总上限的话会导致这个收款账号永远不会超，我这边要的是计算好超一次就可以了
 
@@ -156,6 +157,16 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
     @Override
     public String getProfitByCurday(OrderModel model) {
         return orderMapper.getProfitByCurday(model);
+    }
+
+    @Override
+    public OrderModel getOrderQrCodeByOrderNo(OrderModel model) {
+        return orderMapper.getOrderQrCodeByOrderNo(model);
+    }
+
+    @Override
+    public int getOrderStatus(OrderModel model) {
+        return orderMapper.getOrderStatus(model);
     }
 
 

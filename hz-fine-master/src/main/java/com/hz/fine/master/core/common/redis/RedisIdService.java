@@ -103,6 +103,24 @@ public class RedisIdService {
      **/
     public synchronized boolean lock(String lockKey){
         /*该方法会在没有key时，设置key;存在key时返回false；因此可以通过该方法及设置key的有效期，判断是否有其它线程持有锁*/
+        Boolean success = redisTemplate.opsForValue().setIfAbsent(lockKey, LOCKVALUE,5, TimeUnit.SECONDS);
+        if(success != null && success){
+//            redisTemplate.expire(lockKey,5,TimeUnit.SECONDS);
+            locked = true;
+        }else{
+            locked = false;
+        }
+        return locked;
+    }
+
+    /**
+     * @Description: TODO(redis锁)
+     * @author df
+     * @param lockKey-要锁的key
+     * @create 16:37 2019/1/31
+     **/
+    public synchronized boolean oldLock(String lockKey){
+        /*该方法会在没有key时，设置key;存在key时返回false；因此可以通过该方法及设置key的有效期，判断是否有其它线程持有锁*/
         Boolean success = redisTemplate.opsForValue().setIfAbsent(lockKey,LOCKVALUE);
         if(success != null && success){
             redisTemplate.expire(lockKey,5,TimeUnit.SECONDS);
