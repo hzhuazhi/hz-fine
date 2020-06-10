@@ -235,22 +235,55 @@
 
     <!-- 获取用户直推奖励的数据的总行数-分页-->
     <select id="countShare" resultType="java.lang.Integer"  parameterType="Object">
-        select count(1) from (
-          select * from tb_fn_did_reward a
-          <include refid="Example_Where_Clause"/>
-          group by a.origin_did
-        ) a
+        <!--select count(1) from (-->
+          <!--select * from tb_fn_did_reward a-->
+          <!--<include refid="Example_Where_Clause"/>-->
+          <!--group by a.origin_did-->
+        <!--) a-->
+
+        select count(1) from(
+        select a1.id,a1.nickname,a1.ac_num,a1.share_time,ifnull(a2. profit, '0.00') as profit from (
+        select a.nickname,insert(a.ac_num,4,4,'****') as ac_num,a.create_time as share_time, a.id
+        from tb_fn_did a
+        where a.own_id = #{did}
+        ) a1
+        left join (
+        select ifnull(sum(convert(b.money,decimal(19,2))), '0.00') as profit,b.origin_did
+        from tb_fn_did_reward b
+        where b.did = #{did} and b.reward_type = #{rewardType} and b.run_status = 3
+        group by b.origin_did
+        )a2
+        on a1.id = a2.origin_did
+        )a
 
     </select>
 
     <!-- 获取用户直推奖励的数据集合 -->
     <select id="getShareList" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidRewardModel">
-        select ifnull(sum(convert(a.money,decimal(19,2))), '0.00') as profit,
-        b.nickname,insert(b.ac_num,4,4,'****') as ac_num,b.create_time as share_time
-        from tb_fn_did_reward a left join tb_fn_did b on a.origin_did = b.id
-        <include refid="Example_Where_Clause"/>
-        group by a.origin_did
-        order by b.create_time desc
+        <!--select ifnull(sum(convert(a.money,decimal(19,2))), '0.00') as profit,-->
+        <!--b.nickname,insert(b.ac_num,4,4,'****') as ac_num,b.create_time as share_time-->
+        <!--from tb_fn_did_reward a left join tb_fn_did b on a.origin_did = b.id-->
+        <!--<include refid="Example_Where_Clause"/>-->
+        <!--group by a.origin_did-->
+        <!--order by b.create_time desc-->
+        <!--<if test="pageNumber != null and pageNumber != ''" >-->
+            <!--limit #{start},#{end}-->
+        <!--</if>-->
+
+
+        select a1.id,a1.nickname,a1.ac_num,a1.share_time,ifnull(a2. profit, '0.00') as profit from (
+        select a.nickname,insert(a.ac_num,4,4,'****') as ac_num,a.create_time as share_time, a.id
+        from tb_fn_did a
+        where a.own_id = #{did}
+        ) a1
+        left join (
+        select ifnull(sum(convert(b.money,decimal(19,2))), '0.00') as profit,b.origin_did
+        from tb_fn_did_reward b
+        where b.did = #{did} and b.reward_type = #{rewardType} and b.run_status = 3
+        group by b.origin_did
+        )a2
+        on a1.id = a2.origin_did
+        order by a1.share_time desc
         <if test="pageNumber != null and pageNumber != ''" >
             limit #{start},#{end}
         </if>

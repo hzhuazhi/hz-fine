@@ -2580,6 +2580,8 @@ public class HodgepodgeMethod {
         rewardTypeList.add(1);
         rewardTypeList.add(2);
         rewardTypeList.add(3);
+        rewardTypeList.add(4);// 裂变
+        rewardTypeList.add(5);// 团队奖励
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         return resBean;
     }

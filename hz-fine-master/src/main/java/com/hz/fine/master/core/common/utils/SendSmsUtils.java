@@ -25,6 +25,11 @@ public class SendSmsUtils {
      */
     public static long FIVE_MIN = 300;
 
+    /**
+     * 一分钟
+     */
+    public static long ONE_MIN = 60;
+
 
 
     /**
@@ -51,6 +56,9 @@ public class SendSmsUtils {
         if (flag){
             // redis存储验证码
             ComponentUtil.redisService.set(key, smsCode, FIVE_MIN);
+
+//            // 验证频繁请求的redis
+//            ComponentUtil.redisService.set(key, smsCode, FIVE_MIN);
             return smsCode;
         }else {
             return null;
