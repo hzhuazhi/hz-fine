@@ -8,9 +8,7 @@ import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
-import com.hz.fine.master.core.model.did.DidRechargeModel;
 import com.hz.fine.master.core.model.did.DidRewardModel;
-import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -130,6 +128,9 @@ public class DidRewardController {
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
             // #添加异常
             log.error(String.format("this DidRewardController.getDataList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRewardController.getDataList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
@@ -201,6 +202,9 @@ public class DidRewardController {
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
             // 添加异常
             log.error(String.format("this DidRewardController.getData() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRewardController.getData() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
@@ -271,6 +275,9 @@ public class DidRewardController {
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
             // #添加异常
             log.error(String.format("this DidRewardController.getShareDataList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRewardController.getShareDataList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
