@@ -69,6 +69,11 @@ public class ServerConstant {
          */
         public static final int RUN_NUM_FIVE = 5;
 
+        /**
+         * 检测小微二维码失效
+         */
+        public static final String CHECK_INFO = "检测小微二维码失效";
+
 
     }
 

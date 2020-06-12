@@ -940,6 +940,26 @@ public class HodgepodgeMethod {
     }
 
     /**
+     * @Description: check校验用户信息
+     * <p>
+     *     用户只有充值以后才能进行收款账号的添加
+     * </p>
+     * @param didModel
+     * @return
+     * @author yoko
+     * @date 2020/6/12 14:26
+    */
+    public static void checkDidInfo(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00025.geteCode(), ErrorCode.ENUM_ERROR.DC00025.geteDesc());
+        }
+
+        if (didModel.getVipType() == 1){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00026.geteCode(), ErrorCode.ENUM_ERROR.DC00026.geteDesc());
+        }
+    }
+
+    /**
      * @Description: 组装根据收款具体账号查询的查询条件
      * @param payee - 收款账号昵称
      * @return
@@ -1021,6 +1041,26 @@ public class HodgepodgeMethod {
     public static DidCollectionAccountModel assembleDidCollectionAccountListByDid(RequestDidCollectionAccount requestDidCollectionAccount, long did){
         DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
         resBean.setDid(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 根据条件查询用户收款账号的数据-集合
+     * <p>
+     *     查询小微二维码失效的收款账号
+     * </p>
+     * @param requestDidCollectionAccount - 基本查询条件
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountListByDidAndCheck(RequestDidCollectionAccount requestDidCollectionAccount, long did, int checkStatus){
+        DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
+        resBean.setDid(did);
+        resBean.setCheckStatus(checkStatus);
+        resBean.setCheckInfo(ServerConstant.PUBLIC_CONSTANT.CHECK_INFO);
         return resBean;
     }
 
@@ -1239,6 +1279,40 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据当用户更新收款账号的小微二维码时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountUpdateWxQrCodeData(RequestDidCollectionAccount requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00015.geteCode(), ErrorCode.ENUM_ERROR.DC00015.geteDesc());
+        }
+        if (requestModel.id == null || requestModel.id <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00027.geteCode(), ErrorCode.ENUM_ERROR.DC00027.geteDesc());
+        }
+
+        if (StringUtils.isBlank(requestModel.wxQrCodeAds)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00028.geteCode(), ErrorCode.ENUM_ERROR.DC00028.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
 
     /**
      * @Description: 组装用户更新收款账号的信息
@@ -1253,6 +1327,24 @@ public class HodgepodgeMethod {
         resBean.setDid(did);
         resBean.setCheckStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
         resBean.setCheckInfo("用户修改了信息，需重新审核");
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装用户更新收款账号小微二维码的信息
+     * @param did - 用户的ID
+     * @param requestDidCollectionAccount - 要更新的基本信息
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:20
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountUpdateWxQrCode(long did, RequestDidCollectionAccount requestDidCollectionAccount){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setWxQrCodeAds(requestDidCollectionAccount.getWxQrCodeAds());
+        resBean.setCheckStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+        resBean.setCheckInfo("用户修改小微二维码，需重新审核");
         return resBean;
     }
 

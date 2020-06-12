@@ -56,6 +56,9 @@
             <if test="checkStatus != null and checkStatus != '' " >
                 and a.check_status = #{checkStatus}
             </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                and a.check_info = #{checkInfo}
+            </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
             </if>

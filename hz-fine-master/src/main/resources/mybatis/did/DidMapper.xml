@@ -357,7 +357,8 @@
         from tb_fn_did a
         where  1=1
         <!--and a.balance >= #{balance} and a.lock_money = '' and a.use_status =1 and a.yn = 0-->
-        and a.balance >= #{money} and (a.lock_money = '' or a.lock_money = 0) and a.use_status =1 and a.yn = 0
+        <!-- and a.balance >= #{money} and (a.lock_money = '' or a.lock_money = 0) and a.use_status =1 and a.yn = 0 -->
+        and a.balance >= #{money} and a.balance > 0 and a.use_status =1 and a.yn = 0
         and a.id in (
         select a.did from tb_fn_did_collection_account a
         where 1=1

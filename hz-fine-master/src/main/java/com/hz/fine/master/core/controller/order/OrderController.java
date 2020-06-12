@@ -206,6 +206,10 @@ public class OrderController {
             // check校验数据
             HodgepodgeMethod.checkOrderAdd(requestModel);
 
+            if (requestModel.money.indexOf(".") <= -1){
+                requestModel.money = requestModel.money + ".00";
+            }
+
             // 获取可派单的用户集合
             DidModel didQuery = HodgepodgeMethod.assembleEffectiveDid(requestModel);
             List<DidModel> didList = ComponentUtil.didService.getEffectiveDidList(didQuery);
@@ -220,7 +224,6 @@ public class OrderController {
             OrderModel orderModel = HodgepodgeMethod.assembleOrderByAdd(did, sgid, requestModel.money, requestModel.notifyUrl, requestModel.outTradeNo, didCollectionAccountModel);
             ComponentUtil.orderService.add(orderModel);
 
-            // #从余额中扣除对应的订单金额，存放到冻结金额中
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
