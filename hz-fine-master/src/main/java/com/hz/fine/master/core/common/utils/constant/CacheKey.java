@@ -111,4 +111,15 @@ public interface CacheKey {
     String LOCK_DID_MONEY = "-17";
 
 
+    /**
+     * 在派单的时候，需要先锁住此收款账号
+     * 高并发避免为题
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_FOR = "-18";
+
+    /**
+     * 存储用户登录的token
+     */
+    String DID_TOKEN_BY_ID = "-19";
+
 }

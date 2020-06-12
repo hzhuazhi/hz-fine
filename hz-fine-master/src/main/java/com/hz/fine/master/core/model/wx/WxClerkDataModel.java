@@ -21,7 +21,7 @@ public class WxClerkDataModel extends BasePage implements Serializable {
     /**
      * 归属小微管理的主键ID：对应表tb_fn_wx的主键ID
      */
-    private String wxId;
+    private Long wxId;
 
     /**
      * 归属用户ID：对应表tb_fn_did的主键ID
@@ -34,7 +34,7 @@ public class WxClerkDataModel extends BasePage implements Serializable {
     private Long collectionAccountId;
 
     /**
-     * 数据类型;1激活上线，2下线
+     * 数据类型;1激活上线，2下线，3通过解绑小微进行下线，4通过修改微信名称之后在解绑小微下线
      */
     private Integer dataType;
 
@@ -62,11 +62,11 @@ public class WxClerkDataModel extends BasePage implements Serializable {
         this.id = id;
     }
 
-    public String getWxId() {
+    public Long getWxId() {
         return wxId;
     }
 
-    public void setWxId(String wxId) {
+    public void setWxId(Long wxId) {
         this.wxId = wxId;
     }
 

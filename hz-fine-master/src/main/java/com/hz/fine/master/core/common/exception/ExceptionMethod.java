@@ -2,6 +2,8 @@ package com.hz.fine.master.core.common.exception;
 
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +15,9 @@ import java.util.Map;
  * @Version 1.0
  */
 public class ExceptionMethod {
+
+    private static Logger log = LoggerFactory.getLogger(ExceptionMethod.class);
+
     /**
      * @Description: TODO
      * @param e  异常信息，包括自定义异常，未捕捉异常等

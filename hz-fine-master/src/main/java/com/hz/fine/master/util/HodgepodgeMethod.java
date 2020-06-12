@@ -5,6 +5,7 @@ import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.utils.BeanUtils;
 import com.hz.fine.master.core.common.utils.DateUtil;
 import com.hz.fine.master.core.common.utils.QiniuCloudUtil;
+import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
@@ -59,6 +60,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -1249,6 +1252,7 @@ public class HodgepodgeMethod {
         DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
         resBean.setDid(did);
         resBean.setCheckStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+        resBean.setCheckInfo("用户修改了信息，需重新审核");
         return resBean;
     }
 
@@ -2011,7 +2015,21 @@ public class HodgepodgeMethod {
         // 校验金额是否为空
         if (StringUtils.isBlank(requestModel.money)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.OR00002.geteCode(), ErrorCode.ENUM_ERROR.OR00002.geteDesc());
+        }else {
+            // 金额是否有效
+            if (requestModel.money.indexOf(".") > -1){
+                boolean flag = StringUtil.isNumberByMoney(requestModel.money);
+                if (!flag){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.OR00006.geteCode(), ErrorCode.ENUM_ERROR.OR00006.geteDesc());
+                }
+            }else {
+                boolean flag = StringUtil.isNumer(requestModel.money);
+                if (!flag){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.OR00007.geteCode(), ErrorCode.ENUM_ERROR.OR00007.geteDesc());
+                }
+            }
         }
+
 
         // 校验支付类型为空
         if (requestModel.payType == null || requestModel.payType == 0){
@@ -2850,6 +2868,8 @@ public class HodgepodgeMethod {
 
 
 
+
+
     public static void main(String [] args){
         String bankWorkTime = "09:00-14:10";
         int num = getOpenTypeByBankWork(bankWorkTime);
@@ -2893,6 +2913,14 @@ public class HodgepodgeMethod {
         list.add(bean5);
         String str = JSON.toJSONString(list);
         System.out.println(str);
+//        String money = "-552.254";
+        String money = "asdg1";
+        double m1 = Double.parseDouble(money);
+        if (m1 >0){
+            System.out.println("m1大于0:" + m1);
+        }else {
+            System.out.println("m1小于0:" + m1);
+        }
     }
 
 

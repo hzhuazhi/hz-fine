@@ -122,55 +122,60 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.findByCondition(didCollectionAccountQuery);
             if (didCollectionAccountList != null && didCollectionAccountList.size() > 0){
                 for (DidCollectionAccountModel didCollectionAccountModel : didCollectionAccountList){
-                    // 判断用户收款账号与小微的关系正常：上线状态
-                    WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerk(did, didCollectionAccountModel.getId());
-                    WxClerkModel wxClerkData = (WxClerkModel) ComponentUtil.wxClerkService.findByObject(wxClerkQuery);
-                    if (wxClerkData != null && wxClerkData.getId() > 0){
+                    // 锁住这个收款账号
+                    String lockKey_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FOR, didCollectionAccountModel.getId());
+                    boolean flagLock_did_collection_account = ComponentUtil.redisIdService.lock(lockKey_did_collection_account);
+                    if (flagLock_did_collection_account){
+                        // 判断用户收款账号与小微的关系正常：上线状态
+                        WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerk(did, didCollectionAccountModel.getId());
+                        WxClerkModel wxClerkData = (WxClerkModel) ComponentUtil.wxClerkService.findByObject(wxClerkQuery);
+                        if (wxClerkData != null && wxClerkData.getId() > 0){
+                            // 判断小微的使用状态是否正常使用
+                            WxModel wxQuery = HodgepodgeMethod.assembleWxQuery(wxClerkData.getWxId());
+                            WxModel wxData = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
+                            if (wxData != null && wxData.getId() > 0){
+                                // 锁住用户： 因为要对用户的金额进行更改； 更改如下：余额 = 余额 - 派单金额， 冻结金额 = 冻结金额 + 派单金额
+                                String lockKey_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_MONEY, did);
+                                boolean flagLock_did_money = ComponentUtil.redisIdService.lock(lockKey_did_money);
+                                if (flagLock_did_money){
+                                    DidModel didModel = HodgepodgeMethod.assembleUpdateDidMoneyByOrder(did, orderMoney);
+                                    int num  = ComponentUtil.didService.updateDidMoneyByOrder(didModel);
+                                    if (num > 0){
+                                        // 这里没有再次做日上总上限的判断了，因为直接用task来跑：如果在这里做了日上月上总上限的话会导致这个收款账号永远不会超，我这边要的是计算好超一次就可以了
 
-                        // 判断小微的使用状态是否正常使用
-                        WxModel wxQuery = HodgepodgeMethod.assembleWxQuery(wxClerkData.getWxId());
-                        WxModel wxData = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
-                        if (wxData != null && wxData.getId() > 0){
-                            // 锁住用户： 因为要对用户的金额进行更改； 更改如下：余额 = 余额 - 派单金额， 冻结金额 = 冻结金额 + 派单金额
-                            String lockKey_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_MONEY, did);
-                            boolean flagLock_did_money = ComponentUtil.redisIdService.lock(lockKey_did_money);
-                            if (flagLock_did_money){
-                                DidModel didModel = HodgepodgeMethod.assembleUpdateDidMoneyByOrder(did, orderMoney);
-                                int num  = ComponentUtil.didService.updateDidMoneyByOrder(didModel);
-                                if (num > 0){
-                                    // 这里没有再次做日上总上限的判断了，因为直接用task来跑：如果在这里做了日上月上总上限的话会导致这个收款账号永远不会超，我这边要的是计算好超一次就可以了
+                                        didCollectionAccountModel.setWxId(wxClerkData.getWxId());// 赋值归属小微
 
-                                    didCollectionAccountModel.setWxId(wxClerkData.getWxId());// 赋值归属小微
+                                        // 锁住这个用户 - 因为已经给这个用户派单了
+                                        String strKeyCache_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_ING, did);
+                                        ComponentUtil.redisService.set(strKeyCache_did, String.valueOf(did), ELEVEN_MIN);
 
-                                    // 锁住这个用户 - 因为已经给这个用户派单了
-                                    String strKeyCache_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_ING, did);
-                                    ComponentUtil.redisService.set(strKeyCache_did, String.valueOf(did), ELEVEN_MIN);
+                                        // 锁住这个用户以及派单的金额 - 因为已经给这个用户派单了并且纪录金额，因为在用户少的情况下可以支持用户同时挂单多个，但是收款金额不能一样
+                                        String strKeyCache_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_MONEY, did, orderMoney);
+                                        ComponentUtil.redisService.set(strKeyCache_did_money, String.valueOf(did) + "," + orderMoney, ELEVEN_MIN);
 
-                                    // 锁住这个用户以及派单的金额 - 因为已经给这个用户派单了并且纪录金额，因为在用户少的情况下可以支持用户同时挂单多个，但是收款金额不能一样
-                                    String strKeyCache_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_MONEY, did, orderMoney);
-                                    ComponentUtil.redisService.set(strKeyCache_did_money, String.valueOf(did) + "," + orderMoney, ELEVEN_MIN);
+                                        // #锁住这个用户下派发订单的收款账号：目前只是先纪录值； 后续如果收款用户多了，就要把这个锁给加上（加上判断）
+                                        String strKeyCache_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT, didCollectionAccountModel.getId());
+                                        ComponentUtil.redisService.set(strKeyCache_did_collection_account, String.valueOf(didCollectionAccountModel.getId()), ELEVEN_MIN);
 
-                                    // #锁住这个用户下派发订单的收款账号：目前只是先纪录值； 后续如果收款用户多了，就要把这个锁给加上（加上判断）
-                                    String strKeyCache_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT, didCollectionAccountModel.getId());
-                                    ComponentUtil.redisService.set(strKeyCache_did_collection_account, String.valueOf(didCollectionAccountModel.getId()), ELEVEN_MIN);
+                                        // #锁住这个用户下派发订单的收款账号的收款金额：目前只是先纪录值； 后续如果收款用户多了，就要把这个锁给加上（加上判断）；存储纪录用户收款账号派单的具体金额
+                                        String strKeyCache_did_collection_account_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_MONEY, didCollectionAccountModel.getId(), orderMoney);
+                                        ComponentUtil.redisService.set(strKeyCache_did_collection_account_money, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, ELEVEN_MIN);
 
-                                    // #锁住这个用户下派发订单的收款账号的收款金额：目前只是先纪录值； 后续如果收款用户多了，就要把这个锁给加上（加上判断）；存储纪录用户收款账号派单的具体金额
-                                    String strKeyCache_did_collection_account_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_MONEY, didCollectionAccountModel.getId(), orderMoney);
-                                    ComponentUtil.redisService.set(strKeyCache_did_collection_account_money, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, ELEVEN_MIN);
-
-                                    // 解锁
-                                    ComponentUtil.redisIdService.delLock(lockKey_did_money);
-                                    return didCollectionAccountModel;
-                                }else {
-                                    // 解锁
-                                    ComponentUtil.redisIdService.delLock(lockKey_did_money);
+                                        // 解锁
+                                        ComponentUtil.redisIdService.delLock(lockKey_did_money);
+                                        return didCollectionAccountModel;
+                                    }else {
+                                        // 解锁
+                                        ComponentUtil.redisIdService.delLock(lockKey_did_money);
+                                    }
                                 }
                             }
                         }
-
-
+                        // 解锁
+                        ComponentUtil.redisIdService.delLock(lockKey_did_collection_account);
                     }
                 }
+
             }
             // 解锁
             ComponentUtil.redisIdService.delLock(lockKey_did);

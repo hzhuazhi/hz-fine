@@ -5,6 +5,8 @@ import com.hz.fine.master.core.common.exception.ExceptionMethod;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
+import com.hz.fine.master.core.common.utils.constant.CacheKey;
+import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
@@ -220,13 +222,23 @@ public class DidController {
             // check用户是否登录成功
             HodgepodgeMethod.checkLogOn(didLogOnData);
 
+            // 删除之前登陆成功的token（上一次登陆的token）
+            String strKeyCache_token = CachedKeyUtils.getCacheKey(CacheKey.DID_TOKEN_BY_ID, didLogOnData.getId());
+            String strCache_token = (String) ComponentUtil.redisService.get(strKeyCache_token);
+            if (!StringUtils.isBlank(strCache_token)) {
+                // 正式删除之前存的缓存
+                ComponentUtil.redisService.remove(strCache_token);
+            }
+
             // 登录成功设置token，并把token存入缓存
             // 生成token
             if (didLogOnData.getId() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
-                token = SignUtil.getSgin(didLogOnData.getId(), System.currentTimeMillis()); // 用户did+系统时间
+                token = SignUtil.getSgin(didLogOnData.getId(), System.currentTimeMillis(), secretKeyToken); // 用户did+系统时间
                 did = didLogOnData.getId();
                 // 设置用户缓存7天
                 ComponentUtil.redisService.set(token, String.valueOf(did), 7, TimeUnit.DAYS);
+                // 设置这个用户使用的token值：下次登录时可以删除上一次登录的token
+                ComponentUtil.redisService.set(strKeyCache_token, token, 7, TimeUnit.DAYS);
             }
 
             // 组装返回客户端的数据
