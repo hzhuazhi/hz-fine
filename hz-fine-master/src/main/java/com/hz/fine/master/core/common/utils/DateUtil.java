@@ -3065,7 +3065,7 @@ public class DateUtil {
 
 		DateUtil.dateAddDays(new Date(),2);
 		System.out.println(DateUtil.dateAddDays(new Date(),2));
-		String str1 = addDateMinute(10);
+		String str1 = addDateMinute(-10);
 		System.out.println(str1);
 	}
 

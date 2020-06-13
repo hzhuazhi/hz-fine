@@ -1342,6 +1342,7 @@ public class HodgepodgeMethod {
     public static DidCollectionAccountModel assembleDidCollectionAccountUpdateWxQrCode(long did, RequestDidCollectionAccount requestDidCollectionAccount){
         DidCollectionAccountModel resBean = new DidCollectionAccountModel();
         resBean.setDid(did);
+        resBean.setId(requestDidCollectionAccount.getId());
         resBean.setWxQrCodeAds(requestDidCollectionAccount.getWxQrCodeAds());
         resBean.setCheckStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
         resBean.setCheckInfo("用户修改小微二维码，需重新审核");
@@ -1689,12 +1690,16 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2020/5/21 15:38
     */
-    public static void checkDidOrderByRedis(long did) throws Exception{
+    public static String checkDidOrderByRedis(long did) throws Exception{
+
         String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
         String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
         if (!StringUtils.isBlank(strCache)) {
             // 说明还有充值订单未处理
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00005.geteCode(), ErrorCode.ENUM_ERROR.DR00005.geteDesc());
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00005.geteCode(), ErrorCode.ENUM_ERROR.DR00005.geteDesc());
+            return strCache;
+        }else{
+            return null;
         }
     }
 

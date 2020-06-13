@@ -151,7 +151,7 @@ public class RedisIdService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         Date date = new Date();
         String formatDate=sdf.format(date);
-        String key="newKey" + formatDate;
+        String key="fineKey" + formatDate;
         Long incr = getIncr(key, getCurrent2TodayEndMillisTime());
         if(incr==0) {
             incr = getIncr(key, getCurrent2TodayEndMillisTime());//从001开始

@@ -134,73 +134,78 @@ public class DidRechargeController {
 //            }
             // check校验数据
             did = HodgepodgeMethod.checkRechargeAdd(requestModel);
+            String strData = "";
+
 
             // 判断是否还有未完成的订单
-//            #HodgepodgeMethod.checkDidOrderByRedis(did);
+            strData = HodgepodgeMethod.checkDidOrderByRedis(did);
+            if (StringUtils.isBlank(strData)){
+                // 查询策略里面的金额列表
+                StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY.getStgType());
+                StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyByMoney(strategyModel);
 
-            // 查询策略里面的金额列表
-            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY.getStgType());
-            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyByMoney(strategyModel);
+                // 解析金额列表的值
+                List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+                long moneyId = HodgepodgeMethod.checkRechargeMoney(strategyDataList, requestModel.orderMoney);
 
-            // 解析金额列表的值
-            List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
-            long moneyId = HodgepodgeMethod.checkRechargeMoney(strategyDataList, requestModel.orderMoney);
+                // 查询正常使用的手机卡
+                MobileCardModel mobileCardQuery = HodgepodgeMethod.assembleMobileCardQueryByUseStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+                List<MobileCardModel> mobileCardList = ComponentUtil.mobileCardService.findByCondition(mobileCardQuery);
+                HodgepodgeMethod.checkMobileCardDataIsNull(mobileCardList);
 
-            // 查询正常使用的手机卡
-            MobileCardModel mobileCardQuery = HodgepodgeMethod.assembleMobileCardQueryByUseStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
-            List<MobileCardModel> mobileCardList = ComponentUtil.mobileCardService.findByCondition(mobileCardQuery);
-            HodgepodgeMethod.checkMobileCardDataIsNull(mobileCardList);
+                // 策略数据：查询银行工作日期
+                StrategyModel strategyBankWorkQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_WORK.getStgType());
+                StrategyModel strategyBankWorkModel = ComponentUtil.strategyService.getStrategyModel(strategyBankWorkQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyByBankWork(strategyBankWorkModel);
 
-            // 策略数据：查询银行工作日期
-            StrategyModel strategyBankWorkQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_WORK.getStgType());
-            StrategyModel strategyBankWorkModel = ComponentUtil.strategyService.getStrategyModel(strategyBankWorkQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyByBankWork(strategyBankWorkModel);
+                // 组装查询银行卡的查询条件
+                BankModel bankQuery = HodgepodgeMethod.assembleBankQuery(mobileCardList, strategyBankWorkModel.getStgValue());
+                List<BankModel> bankList = ComponentUtil.bankService.findByCondition(bankQuery);
+                HodgepodgeMethod.checkBankListData(bankList);
 
-            // 组装查询银行卡的查询条件
-            BankModel bankQuery = HodgepodgeMethod.assembleBankQuery(mobileCardList, strategyBankWorkModel.getStgValue());
-            List<BankModel> bankList = ComponentUtil.bankService.findByCondition(bankQuery);
-            HodgepodgeMethod.checkBankListData(bankList);
+                // 查询策略里面的银行流水日月总规则
+                StrategyModel strategyBankListQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_LIMIT.getStgType());
+                StrategyModel strategyBankListModel = ComponentUtil.strategyService.getStrategyModel(strategyBankListQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyByBankLimit(strategyBankListModel);
+                // 解析银行卡流水日月总规则的值
+                List<StrategyBankLimit> strategyBankLimitList = JSON.parseArray(strategyBankListModel.getStgBigValue(), StrategyBankLimit.class);
 
-            // 查询策略里面的银行流水日月总规则
-            StrategyModel strategyBankListQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_LIMIT.getStgType());
-            StrategyModel strategyBankListModel = ComponentUtil.strategyService.getStrategyModel(strategyBankListQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyByBankLimit(strategyBankListModel);
-            // 解析银行卡流水日月总规则的值
-            List<StrategyBankLimit> strategyBankLimitList = JSON.parseArray(strategyBankListModel.getStgBigValue(), StrategyBankLimit.class);
+                // 查询策略里面的订单金额加减范围列表
+                StrategyModel strategyMoneyAddSubtractListQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY_ADD_SUBTRACT_LIST.getStgType());
+                StrategyModel strategyMoneyAddSubtractListModel = ComponentUtil.strategyService.getStrategyModel(strategyMoneyAddSubtractListQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyByMoneyAddSubtractList(strategyMoneyAddSubtractListModel);
+                // 解析订单金额加减范围列表的值
+                List<StrategyData> strategyMoneyAddSubtractList = JSON.parseArray(strategyMoneyAddSubtractListModel.getStgBigValue(), StrategyData.class);
 
-            // 查询策略里面的订单金额加减范围列表
-            StrategyModel strategyMoneyAddSubtractListQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY_ADD_SUBTRACT_LIST.getStgType());
-            StrategyModel strategyMoneyAddSubtractListModel = ComponentUtil.strategyService.getStrategyModel(strategyMoneyAddSubtractListQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyByMoneyAddSubtractList(strategyMoneyAddSubtractListModel);
-            // 解析订单金额加减范围列表的值
-            List<StrategyData> strategyMoneyAddSubtractList = JSON.parseArray(strategyMoneyAddSubtractListModel.getStgBigValue(), StrategyData.class);
+                // 正式筛选出银行卡以及可用金额
+                Map<String, Object> map = new HashMap<>();
+                map = ComponentUtil.bankService.screenBank(bankList, strategyBankLimitList, strategyMoneyAddSubtractList, requestModel.orderMoney);
+                HodgepodgeMethod.checkScreenBankData(map);
 
-            // 正式筛选出银行卡以及可用金额
-            Map<String, Object> map = new HashMap<>();
-            map = ComponentUtil.bankService.screenBank(bankList, strategyBankLimitList, strategyMoneyAddSubtractList, requestModel.orderMoney);
-            HodgepodgeMethod.checkScreenBankData(map);
+                // 查询策略里面的充值订单的失效时间
+                StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ORDER_INVALID_TIME.getStgType());
+                StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyInvalidTime(strategyInvalidTimeModel);
 
-            // 查询策略里面的充值订单的失效时间
-            StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ORDER_INVALID_TIME.getStgType());
-            StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyInvalidTime(strategyInvalidTimeModel);
+                // 组装添加用处充值记录的最初数据
+                DidRechargeModel didRechargeModel = HodgepodgeMethod.assembleDidRechargeAdd(map, did, sgid, moneyId, requestModel.orderMoney, strategyInvalidTimeModel.getStgNumValue());
+                ComponentUtil.didRechargeService.add(didRechargeModel);
+                // 组装返回客户端的数据
+                long stime = System.currentTimeMillis();
+                String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+                strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, (BankModel) map.get("bankModel"), sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime());
 
-            // 组装添加用处充值记录的最初数据
-            DidRechargeModel didRechargeModel = HodgepodgeMethod.assembleDidRechargeAdd(map, did, sgid, moneyId, requestModel.orderMoney, strategyInvalidTimeModel.getStgNumValue());
-            ComponentUtil.didRechargeService.add(didRechargeModel);
-            // 组装返回客户端的数据
-            long stime = System.currentTimeMillis();
-            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, (BankModel) map.get("bankModel"), sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime());
+                // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
+                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
+                ComponentUtil.redisService.set(strKeyCache, strData, ELEVEN_MIN);
+            }
+
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
             resultDataModel.jsonData = encryptionData;
 
-            // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
-            String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
-            ComponentUtil.redisService.set(strKeyCache, sgid, ELEVEN_MIN);
             // 返回数据给客户端
             return JsonResult.successResult(resultDataModel, cgid, sgid);
         }catch (Exception e){
@@ -210,7 +215,7 @@ public class DidRechargeController {
                 log.error(String.format("this DidRechargeController.add() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
-            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+            return JsonResult.failedResult("服务器繁忙,请稍后再试!", map.get("code"), cgid, sgid);
         }
     }
 

@@ -361,7 +361,7 @@
                 a.wx_qr_code_ads = #{wxQrCodeAds},
             </if>
             a.check_status = #{checkStatus},
-            a.check_info = #{checkInfo}
+            a.check_info = #{checkInfo},
             a.update_time = NOW(),
         </trim>
         where 1=1
