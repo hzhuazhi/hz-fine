@@ -954,9 +954,9 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00025.geteCode(), ErrorCode.ENUM_ERROR.DC00025.geteDesc());
         }
 
-        if (didModel.getVipType() == 1){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00026.geteCode(), ErrorCode.ENUM_ERROR.DC00026.geteDesc());
-        }
+//        if (didModel.getVipType() == 1){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00026.geteCode(), ErrorCode.ENUM_ERROR.DC00026.geteDesc());
+//        }
     }
 
     /**

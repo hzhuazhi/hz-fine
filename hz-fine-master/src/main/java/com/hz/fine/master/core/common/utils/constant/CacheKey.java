@@ -19,21 +19,21 @@ public interface CacheKey {
 
     /**
      * 共享：其它地方要进行设置值的，多个地方要用到
-     * 银行卡的日金额已经到达多少钱 - 日上限金额
+     * 银行卡的日收款金额已经到达多少钱 - 日上限金额
      */
-    String SHARE_BANK_MONEY_DAY = "-3";
+    String SHARE_BANK_IN_MONEY_DAY = "-3";
 
     /**
      * 共享：其它地方要进行设置值的，多个地方要用到
-     * 银行卡的月金额已经到达多少钱 - 月上限金额
+     * 银行卡的月收款金额已经到达多少钱 - 月上限金额
      */
-    String SHARE_BANK_MONEY_MONTH = "-4";
+    String SHARE_BANK_IN_MONEY_MONTH = "-4";
 
     /**
      * 共享：其它地方要进行设置值的，多个地方要用到
-     * 银行卡的总金额已经到达多少钱 - 总上限金额
+     * 银行卡的总收款金额已经到达多少钱 - 总上限金额
      */
-    String SHARE_BANK_MONEY_TOTAL = "-5";
+    String SHARE_BANK_IN_MONEY_TOTAL = "-5";
 
 
     /**
@@ -121,5 +121,23 @@ public interface CacheKey {
      * 存储用户登录的token
      */
     String DID_TOKEN_BY_ID = "-19";
+
+    /**
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的日转账金额已经到达多少钱 - 日上限金额
+     */
+    String SHARE_BANK_OUT_MONEY_DAY = "-20";
+
+    /**
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的月转账金额已经到达多少钱 - 月上限金额
+     */
+    String SHARE_BANK_OUT_MONEY_MONTH = "-21";
+
+    /**
+     * 共享：其它地方要进行设置值的，多个地方要用到
+     * 银行卡的总转账金额已经到达多少钱 - 总上限金额
+     */
+    String SHARE_BANK_OUT_MONEY_TOTAL = "-22";
 
 }

@@ -156,6 +156,27 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
 
 
     /**
+     * @Description: check金额是否超过上限
+     * <p>
+     *     这里check的金额上限包括：日月总金额
+     * </p>
+     * @param cacheKey - 缓存的类型Key
+     * @param dataId - 数据的主键ID
+     * @return boolean
+     * @author yoko
+     * @date 2020/5/20 16:39
+     */
+    public boolean checkRedisMoney(String cacheKey, long dataId){
+        String redis_money = getRedisDataByKey(cacheKey, dataId);
+        if (StringUtils.isBlank(redis_money)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+    /**
      * @Description: check次数是否超过上限
      * <p>
      *     这里check的次数上限包括：日月总次数
@@ -183,6 +204,26 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
             flag = true;
         }
         return flag;
+    }
+
+    /**
+     * @Description: check次数是否超过上限
+     * <p>
+     *     这里check的次数上限包括：日月总次数
+     * </p>
+     * @param cacheKey - 缓存的类型Key
+     * @param dataId - 数据的主键ID
+     * @return boolean
+     * @author yoko
+     * @date 2020/5/20 16:39
+     */
+    public boolean checkRedisNum(String cacheKey, long dataId){
+        String redis_num = getRedisDataByKey(cacheKey, dataId);
+        if (StringUtils.isBlank(redis_num)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 
@@ -336,43 +377,69 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
 //                strategyMoneyAddSubtractList_initial = strategyMoneyAddSubtractList;
                 List<StrategyData> strategyMoneyAddSubtractList_initial = BeanUtils.copyList(strategyMoneyAddSubtractList, StrategyData.class);
 
-                StrategyBankLimit strategyBankLimitData = new StrategyBankLimit();
-                for (StrategyBankLimit strategyBankLimit : strategyBankLimitList){
-                    if (bankModel.getBankType() == strategyBankLimit.getStgKey()){
-                        strategyBankLimitData = strategyBankLimit;
-                    }
-                }
-                if (strategyBankLimitData == null || strategyBankLimitData.getId() <= 0){
-                    throw new ServiceException(ErrorCode.ENUM_ERROR.S00005.geteCode(), ErrorCode.ENUM_ERROR.S00005.geteDesc());
+//                StrategyBankLimit strategyBankLimitData = new StrategyBankLimit();
+//                for (StrategyBankLimit strategyBankLimit : strategyBankLimitList){
+//                    if (bankModel.getBankType() == strategyBankLimit.getStgKey()){
+//                        strategyBankLimitData = strategyBankLimit;
+//                    }
+//                }
+//                if (strategyBankLimitData == null || strategyBankLimitData.getId() <= 0){
+//                    throw new ServiceException(ErrorCode.ENUM_ERROR.S00005.geteCode(), ErrorCode.ENUM_ERROR.S00005.geteDesc());
+//                }
+
+                // check日收款金额上限
+//                boolean dayMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_DAY, bankModel.getId(), orderMoney, strategyBankLimitData.getInDayMoney());
+                boolean dayInMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_IN_MONEY_DAY, bankModel.getId());
+                if (!dayInMoneyFlag){
+                    continue;
                 }
 
-                // check日金额上限
-                boolean dayMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_DAY, bankModel.getId(), orderMoney, strategyBankLimitData.getInDayMoney());
-                if (!dayMoneyFlag){
+                // check日转账金额上限
+                boolean dayOutMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_OUT_MONEY_DAY, bankModel.getId());
+                if (!dayOutMoneyFlag){
                     continue;
                 }
-                // check月金额上限
-                boolean monthMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_MONTH, bankModel.getId(), orderMoney, strategyBankLimitData.getInMonthMoney());
-                if (!monthMoneyFlag){
+
+                // check月收款金额上限
+//                boolean monthMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_MONTH, bankModel.getId(), orderMoney, strategyBankLimitData.getInMonthMoney());
+                boolean monthInMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_IN_MONEY_MONTH, bankModel.getId());
+                if (!monthInMoneyFlag){
                     continue;
                 }
-                // check总金额上限
-                boolean totalMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_TOTAL, bankModel.getId(), orderMoney, strategyBankLimitData.getInTotalMoney());
-                if (!totalMoneyFlag){
+
+                // check月转账金额上限
+                boolean monthOutMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_OUT_MONEY_MONTH, bankModel.getId());
+                if (!monthOutMoneyFlag){
                     continue;
                 }
+                // check总收款金额上限
+//                boolean totalMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_TOTAL, bankModel.getId(), orderMoney, strategyBankLimitData.getInTotalMoney());
+                boolean totalInMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_IN_MONEY_TOTAL, bankModel.getId());
+                if (!totalInMoneyFlag){
+                    continue;
+                }
+
+                // check总转账金额上限
+                boolean totalOutMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_OUT_MONEY_TOTAL, bankModel.getId());
+                if (!totalOutMoneyFlag){
+                    continue;
+                }
+
                 // check日次数上限
-                boolean dayNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_DAY, bankModel.getId(), strategyBankLimitData.getInDayNum());
+//                boolean dayNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_DAY, bankModel.getId(), strategyBankLimitData.getInDayNum());
+                boolean dayNumFlag = checkRedisNum(CacheKey.SHARE_BANK_NUM_DAY, bankModel.getId());
                 if (!dayNumFlag){
                     continue;
                 }
                 // check月次数上限
-                boolean monthNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_MONTH, bankModel.getId(), strategyBankLimitData.getInMonthNum());
+//                boolean monthNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_MONTH, bankModel.getId(), strategyBankLimitData.getInMonthNum());
+                boolean monthNumFlag = checkRedisNum(CacheKey.SHARE_BANK_NUM_MONTH, bankModel.getId());
                 if (!monthNumFlag){
                     continue;
                 }
                 // check总次数上限
-                boolean totalNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_TOTAL, bankModel.getId(), strategyBankLimitData.getInTotalNum());
+//                boolean totalNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_TOTAL, bankModel.getId(), strategyBankLimitData.getInTotalNum());
+                boolean totalNumFlag = checkRedisNum(CacheKey.SHARE_BANK_NUM_TOTAL, bankModel.getId());
                 if (!totalNumFlag){
                     continue;
                 }
