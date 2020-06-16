@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description 用户充值记录的Controller层
@@ -66,6 +67,8 @@ public class DidRechargeController {
      * 30分钟.
      */
     public long THIRTY_MIN = 30;
+
+    public long TWO_HOUR = 2;
 
     @Value("${secret.key.token}")
     private String secretKeyToken;
@@ -198,7 +201,7 @@ public class DidRechargeController {
 
                 // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
-                ComponentUtil.redisService.set(strKeyCache, strData, ELEVEN_MIN);
+                ComponentUtil.redisService.set(strKeyCache, strData, TWO_HOUR, TimeUnit.HOURS);
             }
 
             // 数据加密

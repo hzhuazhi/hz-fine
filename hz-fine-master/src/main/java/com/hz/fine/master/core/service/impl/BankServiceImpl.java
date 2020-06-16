@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description 银行的Service层的实现层
@@ -75,7 +76,7 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
         if (map != null){
             // 缓存挂单- 表示这个银行卡的这个金额已经给出去了
             String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.HANG_MONEY, map.get("bankId"), map.get("distributionMoney"));
-            ComponentUtil.redisService.set(strKeyCache, map.get("distributionMoney").toString(), ELEVEN_MIN);
+            ComponentUtil.redisService.set(strKeyCache, map.get("distributionMoney").toString(), TWO_HOUR, TimeUnit.HOURS);
         }
 
         return map;
