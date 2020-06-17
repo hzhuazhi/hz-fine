@@ -3320,6 +3320,19 @@ public class HodgepodgeMethod {
 
     }
 
+    /**
+     * @Description: 组装根据用户收款账号ID查询二维码的方法
+     * @param collectionAccountId - 用户收款账号ID：对应表tb_fn_did_collection_account的主键ID
+     * @return 
+     * @author yoko
+     * @date 2020/6/17 22:10 
+    */
+    public static DidCollectionAccountQrCodeModel assembleDidCollectionAccountQrCodeByCollId(long collectionAccountId){
+        DidCollectionAccountQrCodeModel resBean = new DidCollectionAccountQrCodeModel();
+        resBean.setCollectionAccountId(collectionAccountId);
+        return resBean;
+    }
+
 
 
 

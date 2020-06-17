@@ -86,6 +86,16 @@ public class DidCollectionAccount implements Serializable {
      */
     public Integer useStatus;
 
+    /**
+     * 可使用次数：可以给出多少次
+     */
+    public Integer limitNum;
+
+    /**
+     * 二维码类型：1普通二维码，2个人固码，3固定金额码，4认证商家固码
+     */
+    public Integer dataType;
+
     public DidCollectionAccount(){
 
     }
@@ -209,5 +219,21 @@ public class DidCollectionAccount implements Serializable {
 
     public void setUseStatus(Integer useStatus) {
         this.useStatus = useStatus;
+    }
+
+    public Integer getLimitNum() {
+        return limitNum;
+    }
+
+    public void setLimitNum(Integer limitNum) {
+        this.limitNum = limitNum;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
     }
 }

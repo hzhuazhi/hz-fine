@@ -118,6 +118,16 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
      */
     private Long wxId;
 
+    /**
+     * 可使用次数：可以给出多少次
+     */
+    private Integer limitNum;
+
+    /**
+     * 二维码类型：1普通二维码，2个人固码，3固定金额码，4认证商家固码
+     */
+    private Integer dataType;
+
 
     public Long getId() {
         return id;
@@ -285,5 +295,21 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setWxId(Long wxId) {
         this.wxId = wxId;
+    }
+
+    public Integer getLimitNum() {
+        return limitNum;
+    }
+
+    public void setLimitNum(Integer limitNum) {
+        this.limitNum = limitNum;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
     }
 }

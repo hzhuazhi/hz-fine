@@ -9,6 +9,7 @@ import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
+import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -196,7 +198,28 @@ public class DidCollectionAccountController {
 
             // 获取用户收款账号集合数据
             DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListByDid(requestModel, did);
-            List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.queryByList(didCollectionAccountQuery);
+            List<DidCollectionAccountModel> dataList = ComponentUtil.didCollectionAccountService.queryByList(didCollectionAccountQuery);
+
+            List<DidCollectionAccountModel> didCollectionAccountList = new ArrayList<>();
+            for (DidCollectionAccountModel dataModel : dataList){
+                // 查询收款码的二维码信息
+                DidCollectionAccountQrCodeModel didCollectionAccountQrCodeQuery = HodgepodgeMethod.assembleDidCollectionAccountQrCodeByCollId(dataModel.getId());
+                List<DidCollectionAccountQrCodeModel> didCollectionAccountQrCodeList = ComponentUtil.didCollectionAccountQrCodeService.queryByList(didCollectionAccountQrCodeQuery);
+                if (didCollectionAccountQrCodeList == null || didCollectionAccountQrCodeList.size() <= 0){
+                    dataModel.setLimitNum(0);
+                    dataModel.setDataType(0);
+                }else if(didCollectionAccountQrCodeList.size() == 1){
+                    if (didCollectionAccountQrCodeList.get(0).getDataType() != 1){
+                        dataModel.setLimitNum(0);
+                        dataModel.setDataType(didCollectionAccountQrCodeList.get(0).getDataType());
+                    }
+                }else if (didCollectionAccountQrCodeList.size() > 1){
+                    dataModel.setLimitNum(didCollectionAccountQrCodeList.size());
+                    dataModel.setDataType(1);
+                }
+                didCollectionAccountList.add(dataModel);
+            }
+
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
@@ -271,6 +294,24 @@ public class DidCollectionAccountController {
             // 收款账号详情数据
             DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountByDidAndId(did, requestModel.id);
             DidCollectionAccountModel didCollectionAccountData = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountQuery);
+
+            // 查询收款码的二维码信息
+            DidCollectionAccountQrCodeModel didCollectionAccountQrCodeQuery = HodgepodgeMethod.assembleDidCollectionAccountQrCodeByCollId(didCollectionAccountData.getId());
+            List<DidCollectionAccountQrCodeModel> didCollectionAccountQrCodeList = ComponentUtil.didCollectionAccountQrCodeService.queryByList(didCollectionAccountQrCodeQuery);
+            if (didCollectionAccountQrCodeList == null || didCollectionAccountQrCodeList.size() <= 0){
+                didCollectionAccountData.setLimitNum(0);
+                didCollectionAccountData.setDataType(0);
+            }else if(didCollectionAccountQrCodeList.size() == 1){
+                if (didCollectionAccountQrCodeList.get(0).getDataType() != 1){
+                    didCollectionAccountData.setLimitNum(0);
+                    didCollectionAccountData.setDataType(didCollectionAccountQrCodeList.get(0).getDataType());
+                }
+            }else if (didCollectionAccountQrCodeList.size() > 1){
+                didCollectionAccountData.setLimitNum(didCollectionAccountQrCodeList.size());
+                didCollectionAccountData.setDataType(1);
+                log.info("");
+            }
+
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
