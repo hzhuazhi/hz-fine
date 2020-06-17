@@ -212,6 +212,9 @@ public class DidCollectionAccountController {
                     if (didCollectionAccountQrCodeList.get(0).getDataType() != 1){
                         dataModel.setLimitNum(0);
                         dataModel.setDataType(didCollectionAccountQrCodeList.get(0).getDataType());
+                    }else{
+                        dataModel.setLimitNum(1);
+                        dataModel.setDataType(didCollectionAccountQrCodeList.get(0).getDataType());
                     }
                 }else if (didCollectionAccountQrCodeList.size() > 1){
                     dataModel.setLimitNum(didCollectionAccountQrCodeList.size());
@@ -305,11 +308,15 @@ public class DidCollectionAccountController {
                 if (didCollectionAccountQrCodeList.get(0).getDataType() != 1){
                     didCollectionAccountData.setLimitNum(0);
                     didCollectionAccountData.setDataType(didCollectionAccountQrCodeList.get(0).getDataType());
+                }else{
+                    didCollectionAccountData.setLimitNum(1);
+                    didCollectionAccountData.setDataType(didCollectionAccountQrCodeList.get(0).getDataType());
+                    log.info("");
                 }
             }else if (didCollectionAccountQrCodeList.size() > 1){
                 didCollectionAccountData.setLimitNum(didCollectionAccountQrCodeList.size());
                 didCollectionAccountData.setDataType(1);
-                log.info("");
+
             }
 
             // 组装返回客户端的数据

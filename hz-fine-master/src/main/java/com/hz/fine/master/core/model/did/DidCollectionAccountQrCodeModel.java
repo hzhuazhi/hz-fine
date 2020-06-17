@@ -86,6 +86,10 @@ public class DidCollectionAccountQrCodeModel extends BasePage implements Seriali
 
     private List<DidCollectionAccountQrCodeModel> dataList;
 
+    public DidCollectionAccountQrCodeModel(){
+
+    }
+
     public Long getId() {
         return id;
     }

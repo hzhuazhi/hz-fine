@@ -183,6 +183,23 @@
         </trim>
     </insert>
 
+
+
+    <!-- 批量添加设备的包 -->
+    <insert id="addBatchDidCollectionAccountQrCode" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_fn_did_collection_account_qr_code
+        (collection_account_id, alias, mm_qr_code, dd_qr_code , data_type, qr_code_money, limit_num, create_time)
+        values
+        <foreach item="item" index="index" collection="dataList" separator=",">
+            (
+            #{collectionAccountId}, #{item.alias},#{item.mmQrCode},#{item.ddQrCode},#{item.dataType},#{item.qrCodeMoney},1,now()
+            )
+        </foreach>
+    </insert>
+
     <!-- 更新基本信息 -->
     <update id="update" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel">
         UPDATE tb_fn_did_collection_account_qr_code a

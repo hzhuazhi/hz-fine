@@ -74,8 +74,8 @@ public class DidCollectionAccountQrCodeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAcQrCode/add
-     * 请求的属性类:RequestDid
-     * 必填字段:{"acName":"acName1","acType":1,"acNum":"acNum1","mmQrCode":"mmQrCode1","payee":"payee1","bankName":"bankName1","businessType":1,"wxQrCodeAds":"wxQrCodeAds1","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 请求的属性类:RequestDidCollectionAccountQrCode
+     * 必填字段:{"collectionAccountId":37,"dataList":[{"alias":"alias_4","ddQrCode":"ddQrCode_4","dataType":4,"limitNum":40},{"alias":"alias_5","ddQrCode":"ddQrCode_5","dataType":1,"limitNum":50},{"alias":"alias_6","ddQrCode":"ddQrCode_6","dataType":2,"limitNum":60}],"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJhY05hbWUiOiJhY05hbWUxIiwiYWNUeXBlIjoxLCJhY051bSI6ImFjTnVtMSIsIm1tUXJDb2RlIjoibW1RckNvZGUxIiwicGF5ZWUiOiJwYXllZTEiLCJiYW5rTmFtZSI6ImJhbmtOYW1lMSIsImJ1c2luZXNzVHlwZSI6MSwid3hRckNvZGVBZHMiOiJ3eFFyQ29kZUFkczEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
@@ -114,17 +114,19 @@ public class DidCollectionAccountQrCodeController {
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountQrCodeAddData(requestModel);
-
 //            // 判断用户是否充值过：只有充值过的用户才能进行收款账号的添加
 //            DidModel didQuery = HodgepodgeMethod.assembleDidQuery(did);
 //            DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
 //            HodgepodgeMethod.checkDidInfo(didModel);
-//
 
             // 校验这个用户账号下是否有这个收款账号
-//            // 组装要录入的用户收款账号信息
-//            DidCollectionAccountModel addData = HodgepodgeMethod.assembleDidCollectionAccount(requestModel, did);
-//            ComponentUtil.didCollectionAccountService.add(addData);
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountQueryByDid(did, requestModel.collectionAccountId);
+            DidCollectionAccountModel didCollectionAccountModel = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountQuery);
+            HodgepodgeMethod.checkDidCollectionAccountById(didCollectionAccountModel);
+
+            DidCollectionAccountQrCodeModel didCollectionAccountQrCodeAdd = HodgepodgeMethod.assembleDidCollectionAccountQrCodeAdd(requestModel);
+            ComponentUtil.didCollectionAccountQrCodeService.addBatchDidCollectionAccountQrCode(didCollectionAccountQrCodeAdd);
+
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
@@ -156,7 +158,7 @@ public class DidCollectionAccountQrCodeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAcQrCode/getDataList
-     * 请求的属性类:RequestAppeal
+     * 请求的属性类:RequestDidCollectionAccountQrCode
      * 必填字段:{"collectionAccountId":37,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
      * 加密字段:{"jsonData":"eyJjb2xsZWN0aW9uQWNjb3VudElkIjozNywiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInBhZ2VOdW1iZXIiOjEsInBhZ2VTaXplIjozLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:ctime+秘钥=sign
@@ -235,7 +237,7 @@ public class DidCollectionAccountQrCodeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAcQrCode/getData
-     * 请求的属性类:RequestAppeal
+     * 请求的属性类:RequestDidCollectionAccountQrCode
      * 必填字段:{"id":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJpZCI6MSwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:id+ctime+cctime+秘钥=sign
@@ -309,7 +311,7 @@ public class DidCollectionAccountQrCodeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAcQrCode/update
-     * 请求的属性类:RequestDid
+     * 请求的属性类:RequestDidCollectionAccountQrCode
      * 必填字段:{"id":1,"alias":"alias_1_1","ddQrCode":"ddQrCode_1_1","dataType":2,"limitNum":20,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJpZCI6MSwiYWNOYW1lIjoiYWNOYW1lMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
@@ -391,7 +393,7 @@ public class DidCollectionAccountQrCodeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAcQrCode/updateUse
-     * 请求的属性类:RequestDid
+     * 请求的属性类:RequestDidCollectionAccountQrCode
      * 必填字段:{"id":1,"useStatus":2,"yn":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJpZCI6MSwidXNlU3RhdHVzIjoyLCJ5biI6MSwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
@@ -416,11 +418,11 @@ public class DidCollectionAccountQrCodeController {
         long did = 0;
         RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
 
-        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        RequestDidCollectionAccountQrCode requestModel = new RequestDidCollectionAccountQrCode();
         try {
             // 解密
             data = StringUtil.decoderBase64(requestData.jsonData);
-            requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
+            requestModel = JSON.parseObject(data, RequestDidCollectionAccountQrCode.class);
 
             //#临时数据
 //            if (!StringUtils.isBlank(requestModel.token)){
@@ -430,11 +432,11 @@ public class DidCollectionAccountQrCodeController {
 //            }
 
             // check校验数据
-            did = HodgepodgeMethod.checkDidCollectionAccountUpdateUseData(requestModel);
+            did = HodgepodgeMethod.checkDidCollectionAccountQrCodeUpdateUseData(requestModel);
 
             // 组装要更新的数据进行更新
-            DidCollectionAccountModel didCollectionAccountUpdate = HodgepodgeMethod.assembleDidCollectionAccountUpdateUse(did, requestModel);
-            ComponentUtil.didCollectionAccountService.manyOperation(didCollectionAccountUpdate);
+            DidCollectionAccountQrCodeModel didCollectionAccountQrCodeUpdate = HodgepodgeMethod.assembleDidCollectionAccountQrCodeUpdateUse(requestModel);
+            ComponentUtil.didCollectionAccountQrCodeService.manyOperation(didCollectionAccountQrCodeUpdate);
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
@@ -448,9 +450,9 @@ public class DidCollectionAccountQrCodeController {
             return JsonResult.successResult(resultDataModel, cgid, sgid);
         } catch (Exception e) {
             Map<String, String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
-            log.error(String.format("this DidCollectionAccountController.updateUse() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            log.error(String.format("this DidCollectionAccountQrCodeController.updateUse() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
-                log.error(String.format("this DidCollectionAccountController.updateUse() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+                log.error(String.format("this DidCollectionAccountQrCodeController.updateUse() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
@@ -459,114 +461,34 @@ public class DidCollectionAccountQrCodeController {
     }
 
 
-
     /**
-     * @Description: 用户获取未审核的收款账号信息-集合
+     * @Description: 批量修改用户收款账号二维码的使用状态
      * <p>
-     *     通过小微下线，导致收款账号重新审核的收款账号
+     *     用户可以对收款账号二维码进行：暂停使用，恢复成正常使用，删除收款账号这三个动作的操作-批量
      * </p>
      * @param request
      * @param response
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8086/fine/collAc/getNoCheckDataList
-     * 请求的属性类:RequestAppeal
-     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
-     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
-     * 客户端加密字段:ctime+秘钥=sign
-     * 返回加密字段:stime+秘钥=sign
-     * result={
-     *     "resultCode": "0",
-     *     "message": "success",
-     *     "data": {
-     *         "jsonData": "eyJkYXRhTGlzdCI6W3siYWNOYW1lIjoiYWNOYW1lMSIsImFjTnVtIjoiYWNOdW0xIiwiYWNUeXBlIjoxLCJiYW5rTmFtZSI6ImJhbmtOYW1lMSIsImJ1c2luZXNzVHlwZSI6MSwiY2hlY2tJbmZvIjoiIiwiY2hlY2tTdGF0dXMiOjEsImRheVN3aXRjaCI6MSwiaWQiOjEsIm1tUXJDb2RlIjoibW1RckNvZGUxIiwibW9udGhTd2l0Y2giOjEsInBheWVlIjoicGF5ZWUxIiwidG90YWxTd2l0Y2giOjEsInVzZVN0YXR1cyI6MSwid3hRckNvZGVBZHMiOiJ3eFFyQ29kZUFkczEifSx7ImFjTmFtZSI6ImFjTmFtZTIiLCJhY051bSI6ImFjTnVtMiIsImFjVHlwZSI6MSwiYmFua05hbWUiOiJiYW5rTmFtZTIiLCJidXNpbmVzc1R5cGUiOjEsImNoZWNrSW5mbyI6IiIsImNoZWNrU3RhdHVzIjoxLCJkYXlTd2l0Y2giOjEsImlkIjoyLCJtbVFyQ29kZSI6Im1tUXJDb2RlMiIsIm1vbnRoU3dpdGNoIjoxLCJwYXllZSI6InBheWVlMiIsInRvdGFsU3dpdGNoIjoxLCJ1c2VTdGF0dXMiOjEsInd4UXJDb2RlQWRzIjoid3hRckNvZGVBZHMyIn0seyJhY05hbWUiOiJhY05hbWUzIiwiYWNOdW0iOiJhY051bTMiLCJhY1R5cGUiOjEsImJhbmtOYW1lIjoiYmFua05hbWUzIiwiYnVzaW5lc3NUeXBlIjoxLCJjaGVja0luZm8iOiIiLCJjaGVja1N0YXR1cyI6MSwiZGF5U3dpdGNoIjoxLCJpZCI6MywibW1RckNvZGUiOiJtbVFyQ29kZTMiLCJtb250aFN3aXRjaCI6MSwicGF5ZWUiOiJwYXllZTMiLCJ0b3RhbFN3aXRjaCI6MSwidXNlU3RhdHVzIjoxLCJ3eFFyQ29kZUFkcyI6Ind4UXJDb2RlQWRzMyJ9XSwicm93Q291bnQiOjQsInNpZ24iOiJkNmMwOTRjOTM5MDc3NjY1YzNkNDQzZmMzNTEzYmIzOSIsInN0aW1lIjoxNTg5NzcyNTU1ODE0fQ=="
-     *     },
-     *     "sgid": "202005181129140000001",
-     *     "cgid": ""
-     * }
-     */
-    @RequestMapping(value = "/getNoCheckDataList", method = {RequestMethod.POST})
-    public JsonResult<Object> getNoCheckDataList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
-        String sgid = ComponentUtil.redisIdService.getNewId();
-        String cgid = "";
-        String ip = StringUtil.getIpAddress(request);
-        String data = "";
-        long did = 0;
-
-        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
-        try{
-            // 解密
-            data = StringUtil.decoderBase64(requestData.jsonData);
-            requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
-            //#临时数据
-//            if (!StringUtils.isBlank(requestModel.token)){
-//                if (requestModel.token.equals("111111")){
-//                    ComponentUtil.redisService.set(requestModel.token, "1");
-//                }
-//            }
-            // check校验数据
-            did = HodgepodgeMethod.checkDidCollectionAccountListData(requestModel);
-
-            // 获取用户收款账号集合数据
-            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListByDidAndCheck(requestModel, did, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
-            List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.queryByList(didCollectionAccountQuery);
-            // 组装返回客户端的数据
-            long stime = System.currentTimeMillis();
-            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleDidCollectionAccountListResult(stime, sign, didCollectionAccountList, didCollectionAccountQuery.getRowCount());
-            // 数据加密
-            String encryptionData = StringUtil.mergeCodeBase64(strData);
-            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
-            resultDataModel.jsonData = encryptionData;
-            // 返回数据给客户端
-            return JsonResult.successResult(resultDataModel, cgid, sgid);
-        }catch (Exception e){
-            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
-            // #添加异常
-            log.error(String.format("this DidCollectionAccountController.getNoCheckDataList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
-            if (!StringUtils.isBlank(map.get("dbCode"))){
-                log.error(String.format("this DidCollectionAccountController.getNoCheckDataList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
-            }
-            e.printStackTrace();
-            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
-        }
-    }
-
-
-
-
-    /**
-     * @Description: 用户修改收款账号的小微二维码信息
-     * <p>
-     *     可更新的字段：wx_qr_code_ads
-     *     更新以上字段中的字段，这个收款账号都需要进行重新审核
-     *     #需要提醒用户慎重操作
-     *
-     * </p>
-     * @param request
-     * @param response
-     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
-     * @author yoko
-     * @date 2019/11/25 22:58
-     * local:http://localhost:8086/fine/collAc/updateWxQrCode
-     * 请求的属性类:RequestDid
-     * 必填字段:{"id":1,"wxQrCodeAds":"wxQrCodeAds11","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密字段:{"jsonData":"eyJpZCI6MSwiYWNUeXBlIjoiMiIsImFjTnVtIjoiYWNOdW0xMSIsIm1tUXJDb2RlIjoibW1RckNvZGUxMSIsInBheWVlIjoicGF5ZWUxMSIsImJhbmtOYW1lIjoiYmFua05hbWUxMSIsImJ1c2luZXNzVHlwZSI6IjIiLCJ3eFFyQ29kZUFkcyI6Ind4UXJDb2RlQWRzMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * local:http://localhost:8086/fine/collAcQrCode/batchUpdateUse
+     * 请求的属性类:RequestDidCollectionAccountQrCode
+     * 必填字段:{"collectionAccountId":37,"useStatus":2,"yn":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJpZCI6MSwidXNlU3RhdHVzIjoyLCJ5biI6MSwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJzaWduIjoiZjQyZDEwNjU4NzMzMzI2NDc5NmUxZTM5YjE4MWM5MWMiLCJzdGltZSI6MTU4OTc4ODcwOTY1NX0="
+     *         "jsonData": "eyJzaWduIjoiMWM5ZTA3MjNkYmU5ZTM4NDQ3NWYyZTA4MDU1ZTEyMjQiLCJzdGltZSI6MTU4OTc5MTYyMzY1Nn0="
      *     },
-     *     "sgid": "202005181558280000001",
+     *     "sgid": "202005181647030000001",
      *     "cgid": ""
      * }
      */
-    @RequestMapping(value = "/updateWxQrCode", method = {RequestMethod.POST})
-    public JsonResult<Object> updateWxQrCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
+    @RequestMapping(value = "/batchUpdateUse", method = {RequestMethod.POST})
+    public JsonResult<Object> batchUpdateUse(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
         String sgid = ComponentUtil.redisIdService.getNewId();
         String cgid = "";
         String token = "";
@@ -575,11 +497,11 @@ public class DidCollectionAccountQrCodeController {
         long did = 0;
         RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
 
-        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        RequestDidCollectionAccountQrCode requestModel = new RequestDidCollectionAccountQrCode();
         try {
             // 解密
             data = StringUtil.decoderBase64(requestData.jsonData);
-            requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
+            requestModel = JSON.parseObject(data, RequestDidCollectionAccountQrCode.class);
 
             //#临时数据
 //            if (!StringUtils.isBlank(requestModel.token)){
@@ -587,13 +509,18 @@ public class DidCollectionAccountQrCodeController {
 //                    ComponentUtil.redisService.set(requestModel.token, "1");
 //                }
 //            }
-            // check校验数据
-            did = HodgepodgeMethod.checkDidCollectionAccountUpdateWxQrCodeData(requestModel);
 
+            // check校验数据
+            did = HodgepodgeMethod.checkDidCollectionAccountQrCodeBatchUpdateUseData(requestModel);
+
+            // 校验这个用户账号下是否有这个收款账号
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountQueryByDid(did, requestModel.collectionAccountId);
+            DidCollectionAccountModel didCollectionAccountModel = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountQuery);
+            HodgepodgeMethod.checkDidCollectionAccountById(didCollectionAccountModel);
 
             // 组装要更新的数据进行更新
-            DidCollectionAccountModel didCollectionAccountUpdate = HodgepodgeMethod.assembleDidCollectionAccountUpdateWxQrCode(did, requestModel);
-            ComponentUtil.didCollectionAccountService.updateDidCollectionAccount(didCollectionAccountUpdate);
+            DidCollectionAccountQrCodeModel didCollectionAccountQrCodeUpdate = HodgepodgeMethod.assembleDidCollectionAccountQrCodeUpdateUse(requestModel);
+            ComponentUtil.didCollectionAccountQrCodeService.updateBatchStatus(didCollectionAccountQrCodeUpdate);
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
@@ -607,13 +534,14 @@ public class DidCollectionAccountQrCodeController {
             return JsonResult.successResult(resultDataModel, cgid, sgid);
         } catch (Exception e) {
             Map<String, String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
-            log.error(String.format("this DidCollectionAccountController.updateWxQrCode() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            log.error(String.format("this DidCollectionAccountQrCodeController.batchUpdateUse() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
-                log.error(String.format("this DidCollectionAccountController.updateWxQrCode() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+                log.error(String.format("this DidCollectionAccountQrCodeController.batchUpdateUse() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
 
     }
+
 }

@@ -3334,6 +3334,109 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据当用户更新收款款账号二维码使用状态时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountQrCodeUpdateUseData(RequestDidCollectionAccountQrCode requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00015.geteCode(), ErrorCode.ENUM_ERROR.Q00015.geteDesc());
+        }
+
+        if (requestModel.id == null || requestModel.id <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00016.geteCode(), ErrorCode.ENUM_ERROR.Q00016.geteDesc());
+        }
+
+        if ((requestModel.useStatus == null || requestModel.useStatus <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO)
+                && (requestModel.yn == null || requestModel.yn <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00017.geteCode(), ErrorCode.ENUM_ERROR.Q00017.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装用户更新收款账号的二维码的使用状态
+     * @param requestDidCollectionAccountQrCode - 要更新的基本信息
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:20
+     */
+    public static DidCollectionAccountQrCodeModel assembleDidCollectionAccountQrCodeUpdateUse(RequestDidCollectionAccountQrCode requestDidCollectionAccountQrCode){
+        DidCollectionAccountQrCodeModel resBean = BeanUtils.copy(requestDidCollectionAccountQrCode, DidCollectionAccountQrCodeModel.class);
+        return resBean;
+    }
+
+
+
+    /**
+     * @Description: check校验数据当用户批量更新收款款账号二维码使用状态时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountQrCodeBatchUpdateUseData(RequestDidCollectionAccountQrCode requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00018.geteCode(), ErrorCode.ENUM_ERROR.Q00018.geteDesc());
+        }
+
+        // check收款账号的主键ID
+        if (requestModel.collectionAccountId == null || requestModel.collectionAccountId <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00019.geteCode(), ErrorCode.ENUM_ERROR.Q00019.geteDesc());
+        }
+
+        // check要操作的类型
+        if ((requestModel.useStatus == null || requestModel.useStatus <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO)
+                && (requestModel.yn == null || requestModel.yn <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00020.geteCode(), ErrorCode.ENUM_ERROR.Q00020.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装添加二维码数据的方法
+     * @param requestDidCollectionAccountQrCode - 请求的二维码数据
+     * @return
+     * @author yoko
+     * @date 2020/6/17 23:47
+    */
+    public static DidCollectionAccountQrCodeModel assembleDidCollectionAccountQrCodeAdd(RequestDidCollectionAccountQrCode requestDidCollectionAccountQrCode){
+        DidCollectionAccountQrCodeModel resBean = new DidCollectionAccountQrCodeModel();
+        resBean.setCollectionAccountId(requestDidCollectionAccountQrCode.collectionAccountId);
+        List<DidCollectionAccountQrCodeModel> dataList = BeanUtils.copyList(requestDidCollectionAccountQrCode.dataList, DidCollectionAccountQrCodeModel.class);
+        resBean.setDataList(dataList);
+        return resBean;
+    }
+
+
 
 
 

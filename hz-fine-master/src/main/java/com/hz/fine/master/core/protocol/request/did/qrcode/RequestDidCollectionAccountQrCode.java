@@ -56,6 +56,17 @@ public class RequestDidCollectionAccountQrCode extends BaseRequest implements Se
 
     public List<DidCollectionAccountQrCode> dataList;
 
+    /**
+     * 使用状态:1初始化有效正常使用，2无效暂停使用
+     */
+    public Integer useStatus;
+
+    /**
+     * 是否有效：0有效，1无效/删除
+     */
+    public Integer yn;
+
+
     public RequestDidCollectionAccountQrCode(){
 
     }
@@ -130,5 +141,21 @@ public class RequestDidCollectionAccountQrCode extends BaseRequest implements Se
 
     public void setDataList(List<DidCollectionAccountQrCode> dataList) {
         this.dataList = dataList;
+    }
+
+    public Integer getUseStatus() {
+        return useStatus;
+    }
+
+    public void setUseStatus(Integer useStatus) {
+        this.useStatus = useStatus;
+    }
+
+    public Integer getYn() {
+        return yn;
+    }
+
+    public void setYn(Integer yn) {
+        this.yn = yn;
     }
 }
