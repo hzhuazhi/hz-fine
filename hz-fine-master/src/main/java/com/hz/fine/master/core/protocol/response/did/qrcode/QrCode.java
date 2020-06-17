@@ -1,15 +1,20 @@
-package com.hz.fine.master.core.protocol.request.did.collection;
+package com.hz.fine.master.core.protocol.response.did.qrcode;
 
 import java.io.Serializable;
 
 /**
- * @Description 用户的收款账号二维码的属性字段
+ * @Description 收款二维码的实体属性
  * @Author yoko
- * @Date 2020/6/17 16:34
+ * @Date 2020/6/17 20:43
  * @Version 1.0
  */
 public class QrCode implements Serializable {
-    private static final long   serialVersionUID = 1233283332273L;
+    private static final long   serialVersionUID = 1233023531149L;
+
+    /**
+     * 主键ID
+     */
+    public Long id;
 
     /**
      * 别名
@@ -41,8 +46,18 @@ public class QrCode implements Serializable {
      */
     public Integer limitNum;
 
-    public QrCode(){
+    /**
+     * 已经使用次数：已经给出多少次
+     */
+    public Integer isLimitNum;
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAlias() {
@@ -91,5 +106,13 @@ public class QrCode implements Serializable {
 
     public void setLimitNum(Integer limitNum) {
         this.limitNum = limitNum;
+    }
+
+    public Integer getIsLimitNum() {
+        return isLimitNum;
+    }
+
+    public void setIsLimitNum(Integer isLimitNum) {
+        this.isLimitNum = isLimitNum;
     }
 }

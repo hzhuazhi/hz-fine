@@ -76,16 +76,16 @@ public class DidCollectionAccountAllController {
      * local:http://localhost:8086/fine/collAcAll/add
      * 请求的属性类:RequestDid
      * 必填字段:{"acName":"acName1","acType":1,"businessType":1,"wxQrCodeAds":"wxQrCodeAds1","dataList":[{"alias":"alias_1","ddQrCode":"ddQrCode_1","dataType":1,"limitNum":10},{"alias":"alias_2","ddQrCode":"ddQrCode_2","dataType":2,"limitNum":20},{"alias":"alias_3","ddQrCode":"ddQrCode_3","dataType":3,"limitNum":30}],"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密字段:{"jsonData":"eyJhY05hbWUiOiJhY05hbWUxIiwiYWNUeXBlIjoxLCJhY051bSI6ImFjTnVtMSIsIm1tUXJDb2RlIjoibW1RckNvZGUxIiwicGF5ZWUiOiJwYXllZTEiLCJiYW5rTmFtZSI6ImJhbmtOYW1lMSIsImJ1c2luZXNzVHlwZSI6MSwid3hRckNvZGVBZHMiOiJ3eFFyQ29kZUFkczEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 加密字段:{"jsonData":"eyJhY05hbWUiOiJhY05hbWUxIiwiYWNUeXBlIjoxLCJidXNpbmVzc1R5cGUiOjEsInd4UXJDb2RlQWRzIjoid3hRckNvZGVBZHMxIiwiZGF0YUxpc3QiOlt7ImFsaWFzIjoiYWxpYXNfMSIsImRkUXJDb2RlIjoiZGRRckNvZGVfMSIsImRhdGFUeXBlIjoxLCJsaW1pdE51bSI6MTB9LHsiYWxpYXMiOiJhbGlhc18yIiwiZGRRckNvZGUiOiJkZFFyQ29kZV8yIiwiZGF0YVR5cGUiOjIsImxpbWl0TnVtIjoyMH0seyJhbGlhcyI6ImFsaWFzXzMiLCJkZFFyQ29kZSI6ImRkUXJDb2RlXzMiLCJkYXRhVHlwZSI6MywibGltaXROdW0iOjMwfV0sImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJzaWduIjoiNDgzNTAxMWJiZjdkYzc2YWQ3ZmYwYWVkZWFiMDRhZDAiLCJzdGltZSI6MTU4OTUzMTIyNDg0OX0="
+     *         "jsonData": "eyJzaWduIjoiMDFlODI0ZjBkMzM4MDkzY2ZmMWUyZThhZGNjYmU3ZTQiLCJzdGltZSI6MTU5MjM4OTY5NDk0MX0="
      *     },
-     *     "sgid": "202005151627040000001",
+     *     "sgid": "202006171828120000001",
      *     "cgid": ""
      * }
      */
@@ -106,11 +106,11 @@ public class DidCollectionAccountAllController {
             requestModel  = JSON.parseObject(data, RequestDidCollectionAccountAll.class);
 
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountAllAddData(requestModel);
