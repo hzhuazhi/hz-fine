@@ -35,6 +35,7 @@ public class ComponentUtil {
     public static WxClerkDataService wxClerkDataService;
     public static CatAllDataService catAllDataService;
     public static CatDataService catDataService;
+    public static DidCollectionAccountQrCodeService didCollectionAccountQrCodeService;
 
 
 

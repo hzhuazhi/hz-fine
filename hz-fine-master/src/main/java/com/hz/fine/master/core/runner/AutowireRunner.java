@@ -104,6 +104,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private CatDataService catDataService;
 
+    @Autowired
+    private DidCollectionAccountQrCodeService didCollectionAccountQrCodeService;
+
 
 
 
@@ -141,6 +144,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.wxClerkDataService = wxClerkDataService;
         ComponentUtil.catAllDataService = catAllDataService;
         ComponentUtil.catDataService = catDataService;
+        ComponentUtil.didCollectionAccountQrCodeService = didCollectionAccountQrCodeService;
 
         runThread = new RunThread();
         runThread.start();

@@ -23,6 +23,10 @@ import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
+import com.hz.fine.master.core.protocol.request.did.collection.QrCode;
+import com.hz.fine.master.core.protocol.request.did.collection.RequestDidCollectionAccountAll;
+import com.hz.fine.master.core.protocol.request.did.qrcode.DidCollectionAccountQrCode;
+import com.hz.fine.master.core.protocol.request.did.qrcode.RequestDidCollectionAccountQrCode;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.core.protocol.request.order.RequestOrder;
@@ -2960,6 +2964,151 @@ public class HodgepodgeMethod {
         OrderModel resBean = new OrderModel();
         resBean.setOrderNo(orderNo);
         return resBean;
+    }
+
+
+
+    /**
+     * @Description: check校验数据当用户添加收款账号的二维码时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountQrCodeAddData(RequestDidCollectionAccountQrCode requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00001.geteCode(), ErrorCode.ENUM_ERROR.Q00001.geteDesc());
+        }
+
+        // 校验收款账号ID
+        if (requestModel.collectionAccountId == null || requestModel.collectionAccountId == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00002.geteCode(), ErrorCode.ENUM_ERROR.Q00002.geteDesc());
+        }
+
+        if (requestModel.dataList == null || requestModel.dataList.size() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.Q00003.geteCode(), ErrorCode.ENUM_ERROR.Q00003.geteDesc());
+        }else {
+            for (DidCollectionAccountQrCode data : requestModel.dataList){
+                if (StringUtils.isBlank(data.ddQrCode)){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.Q00004.geteCode(), ErrorCode.ENUM_ERROR.Q00004.geteDesc());
+                }
+                if(data.dataType == null || data.dataType == 0 ){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.Q00005.geteCode(), ErrorCode.ENUM_ERROR.Q00005.geteDesc());
+                }
+            }
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: check校验数据当用户添加收款账号时-合二为一
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountAllAddData(RequestDidCollectionAccountAll requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.A00001.geteCode(), ErrorCode.ENUM_ERROR.A00001.geteDesc());
+        }
+
+        // 校验收款账号类型
+        if (requestModel.acType == null || requestModel.acType == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.A00002.geteCode(), ErrorCode.ENUM_ERROR.A00002.geteDesc());
+        }
+
+//        // check收款人
+//        if (StringUtils.isBlank(requestModel.payee)){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.A00003.geteCode(), ErrorCode.ENUM_ERROR.A00003.geteDesc());
+//        }
+
+        if (requestModel.acType == 3){
+            // check银行名称/银行卡开户行
+            if (StringUtils.isBlank(requestModel.bankName)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.A00004.geteCode(), ErrorCode.ENUM_ERROR.A00004.geteDesc());
+            }
+        }
+
+        // check经营范围类型
+        if (requestModel.businessType == null || requestModel.businessType == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.A00005.geteCode(), ErrorCode.ENUM_ERROR.A00005.geteDesc());
+        }
+
+
+        // check小微商户二维码图片地址
+        if (requestModel.acType == 1){
+
+            if (requestModel.dataList == null || requestModel.dataList.size() <= 0){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.A00006.geteCode(), ErrorCode.ENUM_ERROR.A00006.geteDesc());
+            }else {
+                for (QrCode data : requestModel.dataList){
+                    if (StringUtils.isBlank(data.ddQrCode)){
+                        throw new ServiceException(ErrorCode.ENUM_ERROR.A00007.geteCode(), ErrorCode.ENUM_ERROR.A00007.geteDesc());
+                    }
+                    if(data.dataType == null || data.dataType == 0 ){
+                        throw new ServiceException(ErrorCode.ENUM_ERROR.A00008.geteCode(), ErrorCode.ENUM_ERROR.A00008.geteDesc());
+                    }
+                }
+            }
+
+            if (StringUtils.isBlank(requestModel.wxQrCodeAds)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00008.geteCode(), ErrorCode.ENUM_ERROR.DC00008.geteDesc());
+            }
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装要添加的用户收款账号信息-合二为一
+     * @param requestDidCollectionAccountAll - 用户收款账号信息
+     * @param did - 用户DID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 16:22
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccount(RequestDidCollectionAccountAll requestDidCollectionAccountAll, long did){
+        DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccountAll, DidCollectionAccountModel.class);
+        resBean.setDid(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装添加二维码的数据
+     * @param dataList
+     * @return
+     * @author yoko
+     * @date 2020/6/17 18:17
+    */
+    public static List<DidCollectionAccountQrCodeModel> assembleDidCollectionAccountQrCodeList(List<QrCode> dataList){
+        List<DidCollectionAccountQrCodeModel> resList = BeanUtils.copyList(dataList, DidCollectionAccountQrCodeModel.class);
+        return resList;
     }
 
 
