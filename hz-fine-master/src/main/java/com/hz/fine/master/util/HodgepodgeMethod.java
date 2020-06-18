@@ -2208,6 +2208,7 @@ public class HodgepodgeMethod {
         resBean.setOrderMoney(orderMoney);
         resBean.setCollectionAccountId(didCollectionAccountModel.getId());
         resBean.setCollectionType(didCollectionAccountModel.getAcType());
+        resBean.setQrCodeId(didCollectionAccountModel.getQrCodeId());
         resBean.setQrCode(didCollectionAccountModel.getDdQrCode());
         resBean.setWxNickname(didCollectionAccountModel.getPayee());
         resBean.setWxId(didCollectionAccountModel.getWxId());
@@ -3482,6 +3483,21 @@ public class HodgepodgeMethod {
         if (!StringUtils.isBlank(didCollectionAccountModel.getPayee())){
             resBean.setWxName(didCollectionAccountModel.getPayee());
         }
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询二维码的查询条件
+     * @param collectionAccountId - 收款账号的主键ID
+     * @return
+     * @author yoko
+     * @date 2020/6/18 19:34
+    */
+    public static DidCollectionAccountQrCodeModel assembleDidCollectionAccountQrCode(long collectionAccountId){
+        DidCollectionAccountQrCodeModel resBean = new DidCollectionAccountQrCodeModel();
+        resBean.setCollectionAccountId(collectionAccountId);
+        resBean.setIsLimitNum(1);
+        resBean.setUseStatus(1);
         return resBean;
     }
 

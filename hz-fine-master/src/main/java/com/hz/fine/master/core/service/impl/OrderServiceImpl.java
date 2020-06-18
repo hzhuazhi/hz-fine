@@ -8,6 +8,7 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.mapper.OrderMapper;
 import com.hz.fine.master.core.mapper.TaskMapper;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
+import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
@@ -39,9 +40,9 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
     public long FIVE_MIN = 300;
 
     /**
-     * 11分钟.
+     * 15分钟.
      */
-    public long ELEVEN_MIN = 660;
+    public long FIFTEEN_MIN = 900;
 
     public long TWO_HOUR = 2;
 
@@ -132,50 +133,61 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                     String lockKey_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FOR, didCollectionAccountModel.getId());
                     boolean flagLock_did_collection_account = ComponentUtil.redisIdService.lock(lockKey_did_collection_account);
                     if (flagLock_did_collection_account){
-                        // 判断这个收款账号是否有挂相同金额
-                        String strKeyCache_check_did_collection_account_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_MONEY, didCollectionAccountModel.getId(), orderMoney);
-                        String strCache_check_did_collection_account_money = (String) ComponentUtil.redisService.get(strKeyCache_check_did_collection_account_money);
-                        if (StringUtils.isBlank(strCache_check_did_collection_account_money)){
-                            // 判断用户收款账号与小微的关系正常：上线状态
-                            WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerk(did, didCollectionAccountModel.getId());
-                            WxClerkModel wxClerkData = (WxClerkModel) ComponentUtil.wxClerkService.findByObject(wxClerkQuery);
-                            if (wxClerkData != null && wxClerkData.getId() > 0){
-                                // 判断小微的使用状态是否正常使用
-                                WxModel wxQuery = HodgepodgeMethod.assembleWxQuery(wxClerkData.getWxId());
-                                WxModel wxData = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
-                                if (wxData != null && wxData.getId() > 0){
-                                    // 锁住用户： 因为要对用户的金额进行更改； 更改如下：余额 = 余额 - 派单金额， 冻结金额 = 冻结金额 + 派单金额
-                                    String lockKey_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_MONEY, did);
-                                    boolean flagLock_did_money = ComponentUtil.redisIdService.lock(lockKey_did_money);
-                                    if (flagLock_did_money){
-                                        DidModel didModel = HodgepodgeMethod.assembleUpdateDidMoneyByOrder(did, orderMoney);
-                                        int num  = ComponentUtil.didService.updateDidMoneyByOrder(didModel);
-                                        if (num > 0){
-                                            // 这里没有再次做日上总上限的判断了，因为直接用task来跑：如果在这里做了日上月上总上限的话会导致这个收款账号永远不会超，我这边要的是计算好超一次就可以了
 
-                                            didCollectionAccountModel.setWxId(wxClerkData.getWxId());// 赋值归属小微
+                        // 判断这个收款账号是否超过今日收款金额上限
+                        String strKeyCache_check_lock_did_collection_account_day_suc_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_MONEY, didCollectionAccountModel.getId());
+                        String strCache_check_lock_did_collection_account_day_suc_money = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_money);
+                        if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_money)){
+                            // 判断收款账号今日给出码的次数是否超过上限
+                            String strKeyCache_check_lock_did_collection_account_day_limit_num = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_LIMIT_NUM, didCollectionAccountModel.getId());
+                            String strCache_check_lock_did_collection_account_day_limit_num = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_limit_num);
+                            if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_limit_num)){
+                                // 判断收款账号今日成功收款次数是否超过上限
+                                String strKeyCache_check_lock_did_collection_account_day_suc_limit_num = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_LIMIT_NUM, didCollectionAccountModel.getId());
+                                String strCache_check_lock_did_collection_account_day_suc_limit_num = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_limit_num);
+                                if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_limit_num)){
+                                    // 判断收款账号是否在15分钟之内给出过码
+                                    String strKeyCache_check_lock_did_collection_account_fifteen = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didCollectionAccountModel.getId());
+                                    String strCache_check_lock_did_collection_account_fifteen = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_fifteen);
+                                    if (StringUtils.isBlank(strCache_check_lock_did_collection_account_fifteen)){
+                                        // 判断用户收款账号与小微的关系正常：上线状态
+                                        WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerk(did, didCollectionAccountModel.getId());
+                                        WxClerkModel wxClerkData = (WxClerkModel) ComponentUtil.wxClerkService.findByObject(wxClerkQuery);
+                                        if (wxClerkData != null && wxClerkData.getId() > 0){
+                                            // 判断小微的使用状态是否正常使用
+                                            WxModel wxQuery = HodgepodgeMethod.assembleWxQuery(wxClerkData.getWxId());
+                                            WxModel wxData = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
+                                            if (wxData != null && wxData.getId() > 0){
+                                                // 查询此账号的收款二维码
+                                                DidCollectionAccountQrCodeModel didCollectionAccountQrCodeQuery = HodgepodgeMethod.assembleDidCollectionAccountQrCode(didCollectionAccountModel.getId());
+                                                DidCollectionAccountQrCodeModel didCollectionAccountQrCodeModel  = (DidCollectionAccountQrCodeModel) ComponentUtil.didCollectionAccountQrCodeService.findByObject(didCollectionAccountQrCodeQuery);
+                                                if (didCollectionAccountQrCodeModel != null && didCollectionAccountQrCodeModel.getId() > 0){
+                                                    // 锁住用户： 因为要对用户的金额进行更改； 更改如下：余额 = 余额 - 派单金额， 冻结金额 = 冻结金额 + 派单金额
+                                                    String lockKey_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_MONEY, did);
+                                                    boolean flagLock_did_money = ComponentUtil.redisIdService.lock(lockKey_did_money);
+                                                    if (flagLock_did_money){
+                                                        DidModel didModel = HodgepodgeMethod.assembleUpdateDidMoneyByOrder(did, orderMoney);
+                                                        int num  = ComponentUtil.didService.updateDidMoneyByOrder(didModel);
+                                                        if (num > 0){
 
-//                                            // 锁住这个用户 - 因为已经给这个用户派单了
-//                                            String strKeyCache_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_ING, did);
-//                                            ComponentUtil.redisService.set(strKeyCache_did, String.valueOf(did), ELEVEN_MIN);
-//                                            // 锁住这个用户以及派单的金额 - 因为已经给这个用户派单了并且纪录金额，因为在用户少的情况下可以支持用户同时挂单多个，但是收款金额不能一样
-//                                            String strKeyCache_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_MONEY, did, orderMoney);
-//                                            ComponentUtil.redisService.set(strKeyCache_did_money, String.valueOf(did) + "," + orderMoney, ELEVEN_MIN);
-//
-//                                            // #锁住这个用户下派发订单的收款账号：目前只是先纪录值； 后续如果收款用户多了，就要把这个锁给加上（加上判断）
-//                                            String strKeyCache_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT, didCollectionAccountModel.getId());
-//                                            ComponentUtil.redisService.set(strKeyCache_did_collection_account, String.valueOf(didCollectionAccountModel.getId()), ELEVEN_MIN);
-
-                                            // 锁住这个用户下派发订单的收款账号的收款金额：同一用户同一收款账号可以派不同金额的订单
-                                            String strKeyCache_did_collection_account_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_MONEY, didCollectionAccountModel.getId(), orderMoney);
-                                            ComponentUtil.redisService.set(strKeyCache_did_collection_account_money, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, ELEVEN_MIN);
-
-                                            // 解锁
-                                            ComponentUtil.redisIdService.delLock(lockKey_did_money);
-                                            return didCollectionAccountModel;
-                                        }else {
-                                            // 解锁
-                                            ComponentUtil.redisIdService.delLock(lockKey_did_money);
+                                                            // 这里没有再次做日上总上限的判断了，因为直接用task来跑：如果在这里做了日上月上总上限的话会导致这个收款账号永远不会超，我这边要的是计算好超一次就可以了
+                                                            didCollectionAccountModel.setWxId(wxClerkData.getWxId());// 赋值归属小微
+                                                            didCollectionAccountModel.setQrCodeId(didCollectionAccountQrCodeModel.getId());// 赋值二维码主键ID
+                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
+                                                            // redis存储
+                                                            // 此收款账号给出过码，需要15分钟之后才自动失效
+                                                            String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didCollectionAccountModel.getId());
+                                                            ComponentUtil.redisService.set(strKeyCache_lock_did_collection_account, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, FIFTEEN_MIN);
+                                                            // 解锁
+                                                            ComponentUtil.redisIdService.delLock(lockKey_did_money);
+                                                            return didCollectionAccountModel;
+                                                        }else {
+                                                            // 解锁
+                                                            ComponentUtil.redisIdService.delLock(lockKey_did_money);
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }

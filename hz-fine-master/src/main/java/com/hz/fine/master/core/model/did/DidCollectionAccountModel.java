@@ -128,6 +128,11 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
      */
     private Integer dataType;
 
+    /**
+     * 表tb_fn_did_collection_account_qr_code的主键ID
+     */
+    private Long qrCodeId;
+
 
     public Long getId() {
         return id;
@@ -311,5 +316,13 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setDataType(Integer dataType) {
         this.dataType = dataType;
+    }
+
+    public Long getQrCodeId() {
+        return qrCodeId;
+    }
+
+    public void setQrCodeId(Long qrCodeId) {
+        this.qrCodeId = qrCodeId;
     }
 }

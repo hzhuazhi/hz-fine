@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,
+        a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
         a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn,
@@ -150,6 +150,9 @@
             <if test="collectionType != null and collectionType != '' " >
                 collection_type,
             </if>
+            <if test="qrCodeId != null and qrCodeId != '' " >
+                qr_code_id,
+            </if>
             <if test="qrCode != null and qrCode != '' " >
                 qr_code,
             </if>
@@ -198,6 +201,9 @@
             </if>
             <if test="collectionType != null and collectionType != '' " >
                 <![CDATA[  #{collectionType}, ]]>
+            </if>
+            <if test="qrCodeId != null and qrCodeId != '' " >
+                <![CDATA[  #{qrCodeId}, ]]>
             </if>
             <if test="qrCode != null and qrCode != '' " >
                 <![CDATA[  #{qrCode}, ]]>

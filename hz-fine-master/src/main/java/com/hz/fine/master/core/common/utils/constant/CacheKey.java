@@ -93,9 +93,9 @@ public interface CacheKey {
 
     /**
      * 存储用户下的收款账号挂单：用于redis锁使用
-     * 才正式派单完成之后，需要把这个用户挂单填入缓存中；直到订单成功：把缓存删除、或者订单超过有效期
+     * 要过15分钟才失效，自动失效
      */
-    String LOCK_DID_COLLECTION_ACCOUNT = "-15";// 当有回执数据时：要使用task需要删除redis缓存
+    String LOCK_DID_COLLECTION_ACCOUNT = "-15";
 
     /**
      * 存储用户下的收款账号挂单的具体金额：用于redis锁使用
@@ -139,5 +139,32 @@ public interface CacheKey {
      * 银行卡的总转账金额已经到达多少钱 - 总上限金额
      */
     String SHARE_BANK_OUT_MONEY_TOTAL = "-22";
+
+    /**
+     * 用户收款账号日收款金额是否达到上限：用于redis锁使用
+     * task时时跑每个成功订单里面的收款账号的收款金额，当到达策略里面的金额时，则往redis里面添加数据
+     * #这里需要补充跑收款账号金额数据的task，并且纪录redis的失效时间是到第二天凌晨0点失效
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_MONEY = "-23";
+
+    /**
+     * 用户收款账号日给出次数否达到上限：用于redis锁使用
+     * 每次给出，redis存储的失效时间到第二天凌晨0点失效，
+     * 每次给出，先从redis里面获取，如果没值则往里面填1，下次有值则进行加1
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_DAY_LIMIT_NUM = "-24";
+
+    /**
+     * 用户收款账号日成功收款账号是否达到上限：用于redis锁使用
+     * task时时跑每个成功金额里面的收款账号的成功收款次数，当到达策略里面的成功次数时，则往redis里面添加数据
+     * #这里需要补充跑收款账号成功次数的数据的task，并且纪录redis的失效时间是到第二天凌晨0点失效
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_LIMIT_NUM = "-25";
+
+    /**
+     * 用户收款账号是否在15分钟之内给出过码：用于redis锁使用
+     * 每次给出码时，redis存储的失效时间是15分钟，
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN = "-26";
 
 }
