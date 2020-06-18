@@ -20,6 +20,7 @@ import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
+import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.model.wx.WxModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
@@ -3433,6 +3434,54 @@ public class HodgepodgeMethod {
         resBean.setCollectionAccountId(requestDidCollectionAccountQrCode.collectionAccountId);
         List<DidCollectionAccountQrCodeModel> dataList = BeanUtils.copyList(requestDidCollectionAccountQrCode.dataList, DidCollectionAccountQrCodeModel.class);
         resBean.setDataList(dataList);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询小微旗下店员的有效收款账号的查询条件
+     * @param collectionAccountId - 用户收款账号ID
+     * @return com.hz.fine.master.core.model.wx.WxClerkModel
+     * @author yoko
+     * @date 2020/5/26 19:44
+     */
+    public static WxClerkModel assembleWxClerkByCollectionAccountId(long collectionAccountId){
+        WxClerkModel resBean = new WxClerkModel();
+        resBean.setCollectionAccountId(collectionAccountId);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装删除小微旗下店员的方法
+     * @param collectionAccountId - 收款账号主键ID
+     * @return
+     * @author yoko
+     * @date 2020/6/18 10:39
+    */
+    public static WxClerkModel assembleWxClerkUpdateData(long collectionAccountId){
+        WxClerkModel resBean = new WxClerkModel();
+        resBean.setCollectionAccountId(collectionAccountId);
+        resBean.setYn(1);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装小微需要解绑店员数据添加的方法
+     * @param wxId - 小微的主键ID
+     * @param didCollectionAccountModel - 用户收款账号信息
+     * @return
+     * @author yoko
+     * @date 2020/6/18 10:43
+    */
+    public static WxClerkUnboundModel assembleWxClerkUnbound(long wxId, DidCollectionAccountModel didCollectionAccountModel){
+        WxClerkUnboundModel resBean = new WxClerkUnboundModel();
+        resBean.setWxId(wxId);
+        resBean.setDid(didCollectionAccountModel.getDid());
+        resBean.setCollectionAccountId(didCollectionAccountModel.getId());
+        if (!StringUtils.isBlank(didCollectionAccountModel.getPayee())){
+            resBean.setWxName(didCollectionAccountModel.getPayee());
+        }
         return resBean;
     }
 

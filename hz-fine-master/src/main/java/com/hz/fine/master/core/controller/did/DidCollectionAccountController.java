@@ -12,6 +12,8 @@ import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.region.RegionModel;
+import com.hz.fine.master.core.model.wx.WxClerkModel;
+import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -553,14 +555,38 @@ public class DidCollectionAccountController {
             requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
 
             //#临时数据
-//            if (!StringUtils.isBlank(requestModel.token)){
-//                if (requestModel.token.equals("111111")){
-//                    ComponentUtil.redisService.set(requestModel.token, "1");
-//                }
-//            }
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111112")){
+                    ComponentUtil.redisService.set(requestModel.token, "22");
+                }
+            }
 
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountUpdateUseData(requestModel);
+
+            // 如果用户删除收款账号：则需要查询此收款账号是否是已审核完毕的状态，如果是审核完毕，则需要提醒运营人员进行解绑操作；并且把这个账号与小微关联的数据进行删除
+            if (requestModel.yn != null && requestModel.yn > 0){
+                // 根据用户ID加收款账号ID查询收款账号信息
+                DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountQueryByDid(did, requestModel.id);
+                DidCollectionAccountModel didCollectionAccountModel = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountQuery);
+                if (didCollectionAccountModel != null && didCollectionAccountModel.getId() > 0){
+                    if (didCollectionAccountModel.getCheckStatus() == 3){
+                        // 表示已审核完毕的
+                        // 根据收款账号ID查询绑定的小微
+                        WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerkByCollectionAccountId(didCollectionAccountModel.getId());
+                        WxClerkModel wxClerkData = (WxClerkModel) ComponentUtil.wxClerkService.findByObject(wxClerkQuery);
+                        if (wxClerkData != null && wxClerkData.getId() > 0){
+                            // 删除小微旗下店员的绑定关系数据
+                            WxClerkModel wxClerkUpdate = HodgepodgeMethod.assembleWxClerkUpdateData(didCollectionAccountModel.getId());
+                            ComponentUtil.wxClerkService.manyOperation(wxClerkUpdate);
+                        }
+                        // 添加纪录小微需要解绑店员的数据（手机上面关系解绑）
+                        WxClerkUnboundModel wxClerkUnboundModel = HodgepodgeMethod.assembleWxClerkUnbound(wxClerkData.getWxId(), didCollectionAccountModel);
+                        ComponentUtil.wxClerkUnboundService.add(wxClerkUnboundModel);
+                    }
+                }
+
+            }
 
             // 组装要更新的数据进行更新
             DidCollectionAccountModel didCollectionAccountUpdate = HodgepodgeMethod.assembleDidCollectionAccountUpdateUse(did, requestModel);
