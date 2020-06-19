@@ -196,7 +196,8 @@
                 a.yn = #{yn},
             </if>
         </trim>
-        <include refid="Example_Where_Clause_id"/>
+        where 1=1
+        and a.collection_account_id = #{collectionAccountId}
     </update>
 
 

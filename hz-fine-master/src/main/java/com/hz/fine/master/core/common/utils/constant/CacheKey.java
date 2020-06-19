@@ -167,4 +167,10 @@ public interface CacheKey {
      */
     String LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN = "-26";
 
+    /**
+     * 用户收款账号连续失败达到策略部署的失败次数，纪录用户收款账号被处理过
+     * 目前暂存redis的失效时间是30分钟
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_FAIL = "-27";
+
 }

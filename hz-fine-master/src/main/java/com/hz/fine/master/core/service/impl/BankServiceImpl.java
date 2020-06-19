@@ -255,10 +255,10 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
         }
         if (StringUtils.isBlank(str)){
             // 表示整数金额已有挂单了：先删除整数金额的锁
-            if (num == 1){
-                // 解锁
-                ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
-            }
+//            if (num == 1){
+//                // 解锁
+//                ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
+//            }
 
             // 表示整数金额目前有挂单金额，需要进行订单金额的加减
             List<StrategyData> resList = new ArrayList<StrategyData>();
