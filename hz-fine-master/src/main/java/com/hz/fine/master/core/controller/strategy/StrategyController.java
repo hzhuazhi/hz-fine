@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -588,6 +589,80 @@ public class StrategyController {
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+    /**
+     * @Description: 改造referer来源
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/stg/rf
+     * 请求的属性类:RequestAppeal
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaGFyZSI6eyJzaGFyZUFkZHJlc3MiOiJodHRwOi8vd3d3LmJhaWR1LmNvbT9pY29kZT0xIn0sInNpZ24iOiIzZTc2ZWEyMzhiMTJkZDg3NzJjNmUzYjQxZTY1NGNkOCIsInN0aW1lIjoxNTkwNjQ2MjQwOTIzfQ=="
+     *     },
+     *     "sgid": "202005281410380000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/rf", method = {RequestMethod.GET})
+    public void referer(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestStrategy requestModel = new RequestStrategy();
+        try{
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+
+
+            // 查询策略里面的来源地址集合
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.REFERER_LIST.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyByRefererList(strategyModel);
+
+            // 解析金额列表的值
+            List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+            int random = new Random().nextInt(strategyDataList.size());
+
+            StrategyData dataModel = strategyDataList.get(random);
+            response.setHeader("Accept" ,request.getHeader("Accept"));
+            response.setHeader("Accept-Encoding" ,request.getHeader("Accept-Encoding"));
+            response.setHeader("Accept-Language" ,request.getHeader("Accept-Language"));
+            response.setHeader("Cache-Control" ,request.getHeader("Cache-Control"));
+            response.setHeader("Cookie" ,request.getHeader("Cookie"));
+            response.setHeader("Host", dataModel.getStgValue());
+            response.setHeader("User-Agent", request.getHeader("User-Agent"));
+            response.setHeader("Referer", dataModel.getStgValue());
+//            response.sendRedirect(dataModel.getStgValue());
+            PrintWriter out = response.getWriter();
+            out.print("");
+            out.flush();
+            out.close();
+        }catch (Exception e){
+            log.error(String.format("this StrategyController.referer() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
         }
     }
 

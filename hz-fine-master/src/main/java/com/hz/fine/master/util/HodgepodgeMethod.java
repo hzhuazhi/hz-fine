@@ -3518,6 +3518,18 @@ public class HodgepodgeMethod {
 
     }
 
+    /**
+     * @Description: 校验策略来源地址集合
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByRefererList(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00016.geteCode(), ErrorCode.ENUM_ERROR.S00016.geteDesc());
+        }
+    }
+
 
 
 
