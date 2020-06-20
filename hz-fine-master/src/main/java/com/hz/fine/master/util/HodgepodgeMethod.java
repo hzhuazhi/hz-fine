@@ -3501,8 +3501,22 @@ public class HodgepodgeMethod {
         return resBean;
     }
 
+    /**
+     * @Description: 组装要批量添加的二维码数据
+     * @param collectionAccountId - 收款账号的主键ID
+     * @param dataList - 二维码数据集合
+     * @return
+     * @author yoko
+     * @date 2020/6/20 15:03
+    */
+    public static DidCollectionAccountQrCodeModel assembleDidCollectionAccountQrCodeBatch(long collectionAccountId, List<QrCode> dataList) {
+        DidCollectionAccountQrCodeModel resBean = new DidCollectionAccountQrCodeModel();
+        List<DidCollectionAccountQrCodeModel> qcCodeList = BeanUtils.copyList(dataList, DidCollectionAccountQrCodeModel.class);
+        resBean.setCollectionAccountId(collectionAccountId);
+        resBean.setDataList(qcCodeList);
+        return resBean;
 
-
+    }
 
 
 
@@ -3561,6 +3575,8 @@ public class HodgepodgeMethod {
             System.out.println("m1小于0:" + m1);
         }
     }
+
+
 
 
     

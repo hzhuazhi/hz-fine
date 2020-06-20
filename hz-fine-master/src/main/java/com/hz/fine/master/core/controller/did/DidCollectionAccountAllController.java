@@ -126,11 +126,13 @@ public class DidCollectionAccountAllController {
             if (num > 0){
                 // 批量新增用户收款二维码数据:批量添加后续在实现,先使用for循环实现
                 // 组装要添加的二维码数据集合
-                List<DidCollectionAccountQrCodeModel> didCollectionAccountQrCodeList = HodgepodgeMethod.assembleDidCollectionAccountQrCodeList(requestModel.dataList);
-                for (DidCollectionAccountQrCodeModel qrCodeData : didCollectionAccountQrCodeList){
-                    qrCodeData.setCollectionAccountId(addData.getId());
-                    ComponentUtil.didCollectionAccountQrCodeService.add(qrCodeData);
-                }
+//                List<DidCollectionAccountQrCodeModel> didCollectionAccountQrCodeList = HodgepodgeMethod.assembleDidCollectionAccountQrCodeList(requestModel.dataList);
+//                for (DidCollectionAccountQrCodeModel qrCodeData : didCollectionAccountQrCodeList){
+//                    qrCodeData.setCollectionAccountId(addData.getId());
+//                    ComponentUtil.didCollectionAccountQrCodeService.add(qrCodeData);
+//                }
+                DidCollectionAccountQrCodeModel qrCodeData = HodgepodgeMethod.assembleDidCollectionAccountQrCodeBatch(addData.getId(), requestModel.dataList);
+                ComponentUtil.didCollectionAccountQrCodeService.addBatchDidCollectionAccountQrCode(qrCodeData);
             }else {
                 throw new ServiceException(ErrorCode.ENUM_ERROR.A00009.geteCode(), ErrorCode.ENUM_ERROR.A00009.geteDesc());
             }

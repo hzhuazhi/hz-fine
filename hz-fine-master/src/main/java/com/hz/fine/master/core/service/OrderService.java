@@ -64,9 +64,10 @@ public interface OrderService<T> extends BaseService<T> {
      * </p>
      * @param didBalanceDeductModel - 扣除用于余额
      * @param orderModel - 派发的订单信息
+     * @param didModel -
      * @return
      * @author yoko
      * @date 2020/6/20 12:25
     */
-    public boolean handleOrder(DidBalanceDeductModel didBalanceDeductModel, OrderModel orderModel);
+    public boolean handleOrder(DidBalanceDeductModel didBalanceDeductModel, OrderModel orderModel, DidModel didModel);
 }
