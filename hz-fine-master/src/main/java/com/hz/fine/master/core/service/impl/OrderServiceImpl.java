@@ -7,6 +7,7 @@ import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.mapper.OrderMapper;
 import com.hz.fine.master.core.mapper.TaskMapper;
+import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
 import com.hz.fine.master.core.model.did.DidModel;
@@ -173,7 +174,8 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                                                             // 这里没有再次做日上总上限的判断了，因为直接用task来跑：如果在这里做了日上月上总上限的话会导致这个收款账号永远不会超，我这边要的是计算好超一次就可以了
                                                             didCollectionAccountModel.setWxId(wxClerkData.getWxId());// 赋值归属小微
                                                             didCollectionAccountModel.setQrCodeId(didCollectionAccountQrCodeModel.getId());// 赋值二维码主键ID
-                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
+//                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
+                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getMmQrCode());// 赋值收款二维码
                                                             // redis存储
                                                             // 此收款账号给出过码，需要5分钟之后才自动失效
                                                             String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didCollectionAccountModel.getId());
@@ -298,6 +300,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
     @Override
     public int getOrderStatus(OrderModel model) {
         return orderMapper.getOrderStatus(model);
+    }
+
+    @Override
+    public boolean handleOrder(DidBalanceDeductModel didBalanceDeductModel, OrderModel orderModel) {
+        return false;
     }
 
 
