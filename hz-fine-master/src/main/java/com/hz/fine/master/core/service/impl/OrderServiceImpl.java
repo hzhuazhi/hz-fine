@@ -146,7 +146,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                                 String strKeyCache_check_lock_did_collection_account_day_suc_limit_num = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_LIMIT_NUM, didCollectionAccountModel.getId());
                                 String strCache_check_lock_did_collection_account_day_suc_limit_num = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_limit_num);
                                 if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_limit_num)){
-                                    // 判断收款账号是否在15分钟之内给出过码
+                                    // 判断收款账号是否在5分钟之内给出过码
                                     String strKeyCache_check_lock_did_collection_account_fifteen = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didCollectionAccountModel.getId());
                                     String strCache_check_lock_did_collection_account_fifteen = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_fifteen);
                                     if (StringUtils.isBlank(strCache_check_lock_did_collection_account_fifteen)){
@@ -175,7 +175,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                                                             didCollectionAccountModel.setQrCodeId(didCollectionAccountQrCodeModel.getId());// 赋值二维码主键ID
                                                             didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
                                                             // redis存储
-                                                            // 此收款账号给出过码，需要15分钟之后才自动失效
+                                                            // 此收款账号给出过码，需要5分钟之后才自动失效
                                                             String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didCollectionAccountModel.getId());
                                                             ComponentUtil.redisService.set(strKeyCache_lock_did_collection_account, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, FIFTEEN_MIN);
                                                             // 解锁
