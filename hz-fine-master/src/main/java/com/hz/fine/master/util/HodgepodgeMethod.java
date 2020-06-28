@@ -2219,7 +2219,7 @@ public class HodgepodgeMethod {
             resBean.setNotifyUrl(notifyUlr);
         }
         // 订单失效时间
-        String invalidTime = DateUtil.addDateMinute(5);// 目前默认5分钟：后续可以从策略取数据
+        String invalidTime = DateUtil.addDateMinute(10);// 目前默认5分钟：后续可以从策略取数据
         resBean.setInvalidTime(invalidTime);
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));

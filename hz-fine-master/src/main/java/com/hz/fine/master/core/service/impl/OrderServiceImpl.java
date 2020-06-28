@@ -175,7 +175,12 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                                                             didCollectionAccountModel.setWxId(wxClerkData.getWxId());// 赋值归属小微
                                                             didCollectionAccountModel.setQrCodeId(didCollectionAccountQrCodeModel.getId());// 赋值二维码主键ID
 //                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
-                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getMmQrCode());// 赋值收款二维码
+                                                            if(!StringUtils.isBlank(didCollectionAccountQrCodeModel.getMmQrCode())){
+                                                                didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getMmQrCode());// 赋值收款二维码
+                                                            }else {
+                                                                didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
+                                                            }
+//                                                            didCollectionAccountModel.setDdQrCode(didCollectionAccountQrCodeModel.getDdQrCode());// 赋值收款二维码
                                                             // redis存储
                                                             // 此收款账号给出过码，需要5分钟之后才自动失效
                                                             String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didCollectionAccountModel.getId());

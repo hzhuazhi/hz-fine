@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -624,7 +625,17 @@ public class OrderController {
             response.setHeader("Accept-Encoding" ,request.getHeader("Accept-Encoding"));
             response.setHeader("Accept-Language" ,request.getHeader("Accept-Language"));
             response.setHeader("Cache-Control" ,request.getHeader("Cache-Control"));
-            response.setHeader("Cookie" ,request.getHeader("Cookie"));
+//            String strCookie = "";
+//            if (request.getCookies() != null){
+//                Cookie[] cookies = request.getCookies();
+//                for (Cookie cookie : cookies){
+//                    strCookie += cookie;
+//                }
+//            }
+            if (!StringUtils.isBlank(requestModel.ck)){
+                log.info("------------------------------------------------strCookie:" + requestModel.ck);
+                response.setHeader("Cookie" , requestModel.ck);
+            }
             response.setHeader("Host", dataModel.getStgValue());
             response.setHeader("User-Agent", request.getHeader("User-Agent"));
             response.setHeader("Referer", dataModel.getStgValue());

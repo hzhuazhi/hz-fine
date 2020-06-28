@@ -60,6 +60,8 @@ public class RequestOrder extends BaseRequest implements Serializable {
      */
     public Integer curdayEnd;
 
+    public String ck;
+
 
     public RequestOrder(){
 
@@ -135,5 +137,13 @@ public class RequestOrder extends BaseRequest implements Serializable {
 
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+    }
+
+    public String getCk() {
+        return ck;
+    }
+
+    public void setCk(String ck) {
+        this.ck = ck;
     }
 }
