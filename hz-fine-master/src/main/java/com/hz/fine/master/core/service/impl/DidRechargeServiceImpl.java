@@ -34,4 +34,9 @@ public class DidRechargeServiceImpl <T> extends BaseServiceImpl<T> implements Di
     public int updateDidRechargeByAppeal(DidRechargeModel model) {
         return didRechargeMapper.updateDidRechargeByAppeal(model);
     }
+
+    @Override
+    public int updateDidRechargeByDeposit(DidRechargeModel model) {
+        return didRechargeMapper.updateDidRechargeByDeposit(model);
+    }
 }

@@ -314,4 +314,31 @@
     </update>
 
 
+    <!-- 修改用户充值之后的存入打款的账号信息 -->
+    <update id="updateDidRechargeByDeposit" parameterType="com.hz.fine.master.core.model.did.DidRechargeModel">
+        UPDATE tb_fn_did_recharge a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="depositor != null and depositor != '' " >
+                a.depositor = #{depositor},
+            </if>
+            <if test="depositTime != null and depositTime != '' " >
+                a.deposit_time = #{depositTime},
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                a.last_num = #{lastNum},
+            </if>
+            <if test="workType != null and workType != '' " >
+                a.work_type = #{workType},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.order_no = #{orderNo}
+        <if test="id != null and id != '' " >
+            and a.id = #{id}
+        </if>
+        and a.yn = 0
+    </update>
+
+
 </mapper>

@@ -9,10 +9,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1566,6 +1563,21 @@ public class StringUtil {
 			return false;
 		}
 		return true;
+	}
+
+
+	/**
+	 * @Description: 随机数-随机获取某个范围的数值
+	 * @param minNum - 最小值
+	 * @param maxNum - 最大值
+	 * @return
+	 * @author yoko
+	 * @date 2020/6/29 15:07
+	 */
+	public static int getRandom(int minNum, int maxNum){
+		Random rand = new Random();
+		int num = rand.nextInt(maxNum - minNum + 1) + minNum; // 将被赋值为一个 MIN 和 MAX 范围内的随机数
+		return num;
 	}
 
 	public static void main(String [] args){

@@ -1617,6 +1617,18 @@ public class HodgepodgeMethod {
     }
 
     /**
+     * @Description: 校验筛选出的具体金额是否有值
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkScreenBankMoneyData(String money) throws Exception{
+        if (StringUtils.isBlank(money)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00015.geteCode(), ErrorCode.ENUM_ERROR.DR00015.geteDesc());
+        }
+    }
+
+    /**
      * @Description: 校验策略类型数据
      * @return void
      * @author yoko
@@ -1688,6 +1700,9 @@ public class HodgepodgeMethod {
         data.orderMoney = orderMoney;
         data.distributionMoney = distributionMoney;
         data.invalidTime = invalidTime;
+        data.depositor = "";
+        data.depositTime = "";
+        data.lastNum = "";
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
@@ -3666,6 +3681,163 @@ public class HodgepodgeMethod {
         }
         dataModel.setStime(stime);
         dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据当用户正式购买是
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkRechargeBuy(RequestDidRecharge requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00012.geteCode(), ErrorCode.ENUM_ERROR.DR00012.geteDesc());
+        }
+
+        // 校验充值金额值
+        if (StringUtils.isBlank(requestModel.orderMoney)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00013.geteCode(), ErrorCode.ENUM_ERROR.DR00013.geteDesc());
+        }
+
+        // 校验银行卡ID
+        if (requestModel.bankId == null || requestModel.bankId <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00014.geteCode(), ErrorCode.ENUM_ERROR.DR00014.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: check银行卡数据
+     * @param bankModel - 银行卡信息
+     * @return
+     * @author yoko
+     * @date 2020/6/29 16:56
+    */
+    public static void checkBank(BankModel bankModel) throws Exception{
+        if (bankModel == null || bankModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.BK00003.geteCode(), ErrorCode.ENUM_ERROR.BK00003.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 组装用户充值记录的方法
+     * @param money - 筛选出来的金额信息
+     * @param bankId - 银行卡主键ID
+     * @param did - 用户ID
+     * @param orderNo - 订单号
+     * @param moneyId - 策略里面的金额的主键ID
+     * @param orderMoney - 订单金额
+     * @param invalid - 策略里面的失效时间多少分钟
+     * @return com.hz.fine.master.core.model.did.DidRechargeModel
+     * @author yoko
+     * @date 2020/5/21 13:52
+     */
+    public static DidRechargeModel assembleDidRechargeBuy(String money, long bankId, long did, String orderNo, long moneyId, String orderMoney, int invalid){
+        DidRechargeModel resBean = new DidRechargeModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        resBean.setMoneyId(moneyId);
+        resBean.setOrderMoney(orderMoney);
+        resBean.setDistributionMoney(money);
+        resBean.setBankId(bankId);
+
+        // 订单失效时间
+        String invalidTime = DateUtil.addDateMinute(invalid);
+        resBean.setInvalidTime(invalidTime);
+        resBean.setDataType(2);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验数据用户充值之后，更新充值存入账号的信息
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDeposit(RequestDidRecharge requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00016.geteCode(), ErrorCode.ENUM_ERROR.DR00016.geteDesc());
+        }
+
+        // 校验订单号值
+        if (StringUtils.isBlank(requestModel.orderNo)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00017.geteCode(), ErrorCode.ENUM_ERROR.DR00017.geteDesc());
+        }
+
+        // 校验存入人的值
+        if (StringUtils.isBlank(requestModel.depositor)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00018.geteCode(), ErrorCode.ENUM_ERROR.DR00018.geteDesc());
+        }
+
+        // 校验存入时间的值
+        if (StringUtils.isBlank(requestModel.depositTime)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00019.geteCode(), ErrorCode.ENUM_ERROR.DR00019.geteDesc());
+        }
+
+        // 校验存入账号的尾号的值
+        if (StringUtils.isBlank(requestModel.lastNum)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00020.geteCode(), ErrorCode.ENUM_ERROR.DR00020.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装用户充值之后，更新充值存入账号的信息
+     * @param requestModel - 用户的存入信息数据
+     * @param did - 用户ID
+     * @return
+     * @author yoko
+     * @date 2020/5/21 15:57
+     */
+    public static DidRechargeModel assembleDepositUpdate(RequestDidRecharge requestModel, long did){
+        DidRechargeModel resBean = BeanUtils.copy(requestModel, DidRechargeModel.class);
+        resBean.setDid(did);
+        resBean.setWorkType(2);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户修改存入信息后，修改redis的缓存数据
+     * @param redisData - 用户缓存中的充值订单数据
+     * @param requestModel - 更新的存入信息
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidRechargeUpdateRedisByDeposit(String redisData, RequestDidRecharge requestModel){
+        ResponseDidRecharge dataModel = JSON.parseObject(redisData, ResponseDidRecharge.class);
+        dataModel.recharge.depositor = requestModel.depositor;
+        dataModel.recharge.depositTime = requestModel.depositTime;
+        dataModel.recharge.lastNum = requestModel.lastNum;
         return JSON.toJSONString(dataModel);
     }
 

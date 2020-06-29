@@ -122,6 +122,48 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
         return resList;
     }
 
+    @Override
+    public String getMoney(BankModel bankModel, String orderMoney) throws Exception {
+        String money = "";
+        // 获取订单金额的百分之十的额度的值
+        String [] orderMoney_arr = orderMoney.split("\\.");
+        int minMoney = Integer.parseInt(orderMoney_arr[0]);
+        int maxMoney = (int) (minMoney + minMoney * 0.1);
+        int count = 0;// 加一把防止死循环的锁
+        while (true){
+            if (count <= 100){
+                int num = StringUtil.getRandom(minMoney, maxMoney);
+                // 先锁定这个数值
+                String str = String.valueOf(num) + ".00";
+                // 这个金额可以使用，判断这个金额是否被锁定；
+                String lockKey_orderMoney = CachedKeyUtils.getCacheKey(CacheKey.LOCK_MONEY_CENT, bankModel.getId(), str);
+                boolean flagLock_orderMoney = ComponentUtil.redisIdService.lock(lockKey_orderMoney);
+                if (flagLock_orderMoney){
+                    // 判断金额是否有挂单金额
+                    String redis_data = getRedisMoneyDataByKey(CacheKey.HANG_MONEY, bankModel.getId(), str);
+                    if (StringUtils.isBlank(redis_data)) {
+                        // 表示整数金额目前没有挂单的金额，可以直接给出订单金额
+                        money = str;
+                    }
+                }
+                if (!StringUtils.isBlank(money)){
+                    // 缓存挂单- 表示这个银行卡的这个金额已经给出去了
+                    String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.HANG_MONEY, bankModel.getId(), money);
+                    ComponentUtil.redisService.set(strKeyCache, money, TWO_HOUR, TimeUnit.HOURS);
+
+                    // 解锁
+                    ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
+                    break;
+                }
+                count ++;
+            }else{
+                break;
+            }
+        }
+
+        return money;
+    }
+
 
     /**
      * @Description: 组装缓存key查询缓存中存在的数据

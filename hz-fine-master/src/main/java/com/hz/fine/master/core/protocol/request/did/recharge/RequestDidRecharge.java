@@ -44,6 +44,26 @@ public class RequestDidRecharge extends BaseRequest implements Serializable {
      */
     public Integer curdayEnd;
 
+    /**
+     * 银行卡主键ID
+     */
+    public Long bankId;
+
+    /**
+     *存款人
+     */
+    public String depositor;
+
+    /**
+     * 存款时间
+     */
+    public String depositTime;
+
+    /**
+     * 存款账号尾号
+     */
+    public String lastNum;
+
 
     public RequestDidRecharge(){
 
@@ -96,5 +116,37 @@ public class RequestDidRecharge extends BaseRequest implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public Long getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(Long bankId) {
+        this.bankId = bankId;
+    }
+
+    public String getDepositor() {
+        return depositor;
+    }
+
+    public void setDepositor(String depositor) {
+        this.depositor = depositor;
+    }
+
+    public String getDepositTime() {
+        return depositTime;
+    }
+
+    public void setDepositTime(String depositTime) {
+        this.depositTime = depositTime;
+    }
+
+    public String getLastNum() {
+        return lastNum;
+    }
+
+    public void setLastNum(String lastNum) {
+        this.lastNum = lastNum;
     }
 }

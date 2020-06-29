@@ -22,4 +22,13 @@ public interface DidRechargeMapper<T> extends BaseDao<T> {
      */
     public int updateDidRechargeByAppeal(DidRechargeModel model);
 
+    /**
+     * @Description: 修改用户充值之后的存入打款的账号信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/6/29 17:33
+     */
+    public int updateDidRechargeByDeposit(DidRechargeModel model);
+
 }

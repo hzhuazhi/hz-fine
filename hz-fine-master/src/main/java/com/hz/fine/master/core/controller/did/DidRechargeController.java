@@ -18,6 +18,7 @@ import com.hz.fine.master.core.model.strategy.StrategyBankLimit;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
+import com.hz.fine.master.core.protocol.response.did.recharge.ResponseDidRecharge;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
 import org.apache.commons.lang.StringUtils;
@@ -221,6 +222,208 @@ public class DidRechargeController {
             return JsonResult.failedResult("服务器繁忙,请稍后再试!", map.get("code"), cgid, sgid);
         }
     }
+
+
+
+    /**
+     * @Description: 用户正式购买
+     * <p>
+     *     用户正式购买的主要全流程：
+     *     1.根据金额向上浮动百分之十，取这百分之十的随机数确定要充值的金额
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/recharge/buy
+     * 请求的属性类:RequestDid
+     * 必填字段:{"orderMoney":"1000.00","bankId":29,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJvcmRlck1vbmV5IjoiMTAwMC4wMCIsImJhbmtJZCI6MjksImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJyZWNoYXJnZSI6eyJhY2NvdW50TmFtZSI6IuaLm+WVhumTtuihjDEiLCJiYW5rQ2FyZCI6IjQ1NzcyNjM2NjYyNzI2MzYzMjIxIiwiYmFua05hbWUiOiLmi5vllYbpk7booYwiLCJkZXBvc2l0VGltZSI6IiIsImRlcG9zaXRvciI6IiIsImRpc3RyaWJ1dGlvbk1vbmV5IjoiMTAxNC4wMCIsImludmFsaWRUaW1lIjoiMjAyMC0wNi0yOSAxOToxODoyOCIsImxhc3ROdW0iOiIiLCJvcmRlck1vbmV5IjoiMTAwMC4wMCIsIm9yZGVyTm8iOiIyMDIwMDYyOTE3MTgyMzAwMDAwMDEiLCJzdWJicmFuY2hOYW1lIjoieHh4eOmTtuihjOmSseaxn+aUr+ihjCJ9LCJzaWduIjoiNjk0MjU1MDE5OTUxZmVmM2ViYTU2ZjFlNWU3OWI3YWQiLCJzdGltZSI6MTU5MzQyMjMwODkyNn0="
+     *     },
+     *     "sgid": "202006291718230000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/buy", method = {RequestMethod.POST})
+    public JsonResult<Object> buy(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestDidRecharge requestModel = new RequestDidRecharge();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
+
+            //#临时数据
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
+            // check校验数据
+            did = HodgepodgeMethod.checkRechargeBuy(requestModel);
+            String strData = "";
+
+            // 判断是否还有未完成的订单
+            strData = HodgepodgeMethod.checkDidOrderByRedis(did);
+            if (StringUtils.isBlank(strData)){
+                // 查询策略里面的金额列表
+                StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY.getStgType());
+                StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyByMoney(strategyModel);
+
+                // 解析金额列表的值
+                List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+                long moneyId = HodgepodgeMethod.checkRechargeMoney(strategyDataList, requestModel.orderMoney);
+
+                // 获取银行卡信息
+                BankModel bankQuery = HodgepodgeMethod.assembleBankById(requestModel.bankId);
+                BankModel bankData = (BankModel) ComponentUtil.bankService.findByObject(bankQuery);
+                HodgepodgeMethod.checkBank(bankData);
+                // 正式筛选出银行卡以及可用金额
+                String money = ComponentUtil.bankService.getMoney(bankData, requestModel.orderMoney);
+                HodgepodgeMethod.checkScreenBankMoneyData(money);
+
+                // 查询策略里面的充值订单的失效时间
+                StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ORDER_INVALID_TIME.getStgType());
+                StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                HodgepodgeMethod.checkStrategyInvalidTime(strategyInvalidTimeModel);
+
+                // 组装添加用处充值记录的最初数据
+                DidRechargeModel didRechargeModel = HodgepodgeMethod.assembleDidRechargeBuy(money, bankData.getId(), did, sgid, moneyId, requestModel.orderMoney, strategyInvalidTimeModel.getStgNumValue());
+                ComponentUtil.didRechargeService.add(didRechargeModel);
+                // 组装返回客户端的数据
+                long stime = System.currentTimeMillis();
+                String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+                strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime());
+
+                // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
+                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
+                ComponentUtil.redisService.set(strKeyCache, strData, TWO_HOUR, TimeUnit.HOURS);
+            }
+
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidRechargeController.buy() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRechargeController.buy() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult("服务器繁忙,请稍后再试!", map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+    /**
+     * @Description: 用户充值之后，更新充值存入账号的信息
+     *
+     * <p>
+     *     更新：存款人，存款时间，存款账号的尾号
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/recharge/deposit
+     * 请求的属性类:RequestDidRecharge
+     * 必填字段:{"orderNo":"202006291718230000001","depositor":"存入人","depositTime":"存入时间","lastNum":"存入尾号","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA1MjExNDUwMjAwMDAwMDAxIiwicGljdHVyZUFkcyI6Imh0dHA6Ly93d3cuYmFpZHUuY29tIiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiMWM5ZTA3MjNkYmU5ZTM4NDQ3NWYyZTA4MDU1ZTEyMjQiLCJzdGltZSI6MTU4OTc5MTYyMzY1Nn0="
+     *     },
+     *     "sgid": "202005211446000000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/deposit", method = {RequestMethod.POST})
+    public JsonResult<Object> deposit(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+        RequestDidRecharge requestModel = new RequestDidRecharge();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验数据
+            did = HodgepodgeMethod.checkDeposit(requestModel);
+
+            DidRechargeModel didRechargeUpdate = HodgepodgeMethod.assembleDepositUpdate(requestModel, did);
+            ComponentUtil.didRechargeService.updateDidRechargeByDeposit(didRechargeUpdate);
+
+            // 更新之后，把redis缓存里面的数据也更新一下：更新存款人的一些信息
+            String redis_data = HodgepodgeMethod.checkDidOrderByRedis(did);
+            if (!StringUtils.isBlank(redis_data)){
+                String resRedis = HodgepodgeMethod.assembleDidRechargeUpdateRedisByDeposit(redis_data, requestModel);
+                // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
+                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
+                ComponentUtil.redisService.set(strKeyCache, resRedis, TWO_HOUR, TimeUnit.HOURS);
+            }
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidRechargeController.deposit() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRechargeController.deposit() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+
+
+    }
+
+
 
 
     /**

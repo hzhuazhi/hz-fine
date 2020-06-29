@@ -51,6 +51,22 @@ public class RechargeInfo implements Serializable {
      * 订单失效时间
      */
     public String invalidTime;
+
+    /**
+     * 存款人
+     */
+    public String depositor;
+
+    /**
+     * 存款时间
+     */
+    public String depositTime;
+
+    /**
+     * 存款账号尾号
+     */
+    public String lastNum;
+
     public RechargeInfo(){
 
     }
@@ -117,5 +133,29 @@ public class RechargeInfo implements Serializable {
 
     public void setInvalidTime(String invalidTime) {
         this.invalidTime = invalidTime;
+    }
+
+    public String getDepositor() {
+        return depositor;
+    }
+
+    public void setDepositor(String depositor) {
+        this.depositor = depositor;
+    }
+
+    public String getDepositTime() {
+        return depositTime;
+    }
+
+    public void setDepositTime(String depositTime) {
+        this.depositTime = depositTime;
+    }
+
+    public String getLastNum() {
+        return lastNum;
+    }
+
+    public void setLastNum(String lastNum) {
+        this.lastNum = lastNum;
     }
 }

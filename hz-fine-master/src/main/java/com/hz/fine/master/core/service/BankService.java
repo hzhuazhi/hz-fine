@@ -39,4 +39,14 @@ public interface BankService<T> extends BaseService<T> {
      * @date 2020/6/29 14:33
     */
     public List<BuyBank> screenBankByBuy(List<BankModel> bankList);
+
+    /**
+     * @Description: 筛选此银行可用金额
+     * @param bankModel - 银行卡信息
+     * @param orderMoney - 订单金额
+     * @return
+     * @author yoko
+     * @date 2020/6/29 16:29
+    */
+    public String getMoney(BankModel bankModel, String orderMoney) throws Exception;
 }
