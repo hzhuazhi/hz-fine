@@ -8,7 +8,8 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
-        a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.is_notify,a.notify_url,a.own_id,a.use_status,
+        a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
+        a.is_notify,a.notify_url,a.own_id,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -179,6 +180,9 @@
             <if test="totalProfit != null and totalProfit != '' " >
                 total_profit,
             </if>
+            <if test="zfbTotalProfit != null and zfbTotalProfit != '' " >
+                zfb_total_profit,
+            </if>
             <if test="isNotify != null and isNotify != '' " >
                 is_notify,
             </if>
@@ -245,6 +249,9 @@
             </if>
             <if test="totalProfit != null and totalProfit != '' " >
                 <![CDATA[  #{totalProfit}, ]]>
+            </if>
+            <if test="zfbTotalProfit != null and zfbTotalProfit != '' " >
+                <![CDATA[  #{zfbTotalProfit}, ]]>
             </if>
             <if test="isNotify != null and isNotify != '' " >
                 <![CDATA[  #{isNotify}, ]]>
@@ -316,6 +323,9 @@
             </if>
             <if test="totalProfit != null and totalProfit != '' " >
                 a.total_profit = #{totalProfit},
+            </if>
+            <if test="zfbTotalProfit != null and zfbTotalProfit != '' " >
+                a.zfb_total_profit = #{zfbTotalProfit},
             </if>
             <if test="isNotify != null and isNotify != '' " >
                 a.is_notify = #{isNotify},

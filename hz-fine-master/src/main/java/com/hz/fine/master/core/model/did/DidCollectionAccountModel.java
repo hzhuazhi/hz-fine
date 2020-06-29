@@ -39,6 +39,11 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
     private String acNum;
 
     /**
+     * 支付宝的用户ID
+     */
+    private String userId;
+
+    /**
      * 收款账号/地址（原）：二维码
      */
     private String mmQrCode;
@@ -324,5 +329,13 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setQrCodeId(Long qrCodeId) {
         this.qrCodeId = qrCodeId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

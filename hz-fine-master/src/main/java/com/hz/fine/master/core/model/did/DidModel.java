@@ -121,6 +121,11 @@ public class DidModel extends BasePage implements Serializable {
     private String totalProfit;
 
     /**
+     * 支付宝总奖励金额
+     */
+    private String zfbTotalProfit;
+
+    /**
      * 是否需要同步数据:1不需要，2需要同步
      */
     private Integer isNotify;
@@ -420,5 +425,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setOrderMoney(String orderMoney) {
         this.orderMoney = orderMoney;
+    }
+
+    public String getZfbTotalProfit() {
+        return zfbTotalProfit;
+    }
+
+    public void setZfbTotalProfit(String zfbTotalProfit) {
+        this.zfbTotalProfit = zfbTotalProfit;
     }
 }

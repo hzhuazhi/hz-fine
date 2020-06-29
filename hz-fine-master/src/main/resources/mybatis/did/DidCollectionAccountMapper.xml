@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.ac_name,a.ac_type,a.ac_num,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
+        a.id,a.did,a.ac_name,a.ac_type,a.ac_num,a.user_id,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
         a.wx_qr_code_ads,a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -160,6 +160,9 @@
             <if test="acNum != null and acNum != '' " >
                 ac_num,
             </if>
+            <if test="userId != null and userId != '' " >
+                user_id,
+            </if>
             <if test="mmQrCode != null and mmQrCode != '' " >
                 mm_qr_code,
             </if>
@@ -211,6 +214,9 @@
             </if>
             <if test="acNum != null and acNum != '' " >
                 <![CDATA[  #{acNum}, ]]>
+            </if>
+            <if test="userId != null and userId != '' " >
+                <![CDATA[  #{userId}, ]]>
             </if>
             <if test="mmQrCode != null and mmQrCode != '' " >
                 <![CDATA[  #{mmQrCode}, ]]>
