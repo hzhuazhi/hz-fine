@@ -269,11 +269,11 @@ public class DidRechargeController {
             requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
 
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
             // check校验数据
             did = HodgepodgeMethod.checkRechargeBuy(requestModel);
             String strData = "";
@@ -350,7 +350,7 @@ public class DidRechargeController {
      * local:http://localhost:8086/fine/recharge/deposit
      * 请求的属性类:RequestDidRecharge
      * 必填字段:{"orderNo":"202006291718230000001","depositor":"存入人","depositTime":"存入时间","lastNum":"存入尾号","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA1MjExNDUwMjAwMDAwMDAxIiwicGljdHVyZUFkcyI6Imh0dHA6Ly93d3cuYmFpZHUuY29tIiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
+     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA2MjkxNzE4MjMwMDAwMDAxIiwiZGVwb3NpdG9yIjoi5a2Y5YWl5Lq6IiwiZGVwb3NpdFRpbWUiOiLlrZjlhaXml7bpl7QiLCJsYXN0TnVtIjoi5a2Y5YWl5bC+5Y+3IiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
