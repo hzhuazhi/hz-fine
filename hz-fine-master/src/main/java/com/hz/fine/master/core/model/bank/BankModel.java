@@ -97,6 +97,11 @@ public class BankModel extends BasePage implements Serializable {
     private Integer openType;
 
     /**
+     * 日收款金额
+     */
+    private String inDayMoney;
+
+    /**
      * 日开关是否启用（等于1正常使用，其它是暂停）:：1正常使用，2暂停使用
      */
     private Integer daySwitch;
@@ -342,5 +347,13 @@ public class BankModel extends BasePage implements Serializable {
 
     public void setOpenTypeList(List<Integer> openTypeList) {
         this.openTypeList = openTypeList;
+    }
+
+    public String getInDayMoney() {
+        return inDayMoney;
+    }
+
+    public void setInDayMoney(String inDayMoney) {
+        this.inDayMoney = inDayMoney;
     }
 }

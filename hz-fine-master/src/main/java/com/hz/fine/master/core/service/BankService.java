@@ -4,6 +4,7 @@ import com.hz.fine.master.core.common.service.BaseService;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.strategy.StrategyBankLimit;
 import com.hz.fine.master.core.model.strategy.StrategyData;
+import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 
 import java.util.List;
 import java.util.Map;
@@ -28,4 +29,14 @@ public interface BankService<T> extends BaseService<T> {
     */
     public Map<String, Object> screenBank(List<BankModel> bankList, List<StrategyBankLimit> strategyBankLimitList,
                                           List<StrategyData> strategyMoneyAddSubtractList, String orderMoney) throws Exception;
+
+
+    /**
+     * @Description: 筛选出未被限制的银行卡
+     * @param bankList - 银行卡集合数据
+     * @return
+     * @author yoko
+     * @date 2020/6/29 14:33
+    */
+    public List<BuyBank> screenBankByBuy(List<BankModel> bankList);
 }

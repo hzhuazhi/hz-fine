@@ -22,6 +22,7 @@ import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.model.wx.WxModel;
+import com.hz.fine.master.core.protocol.request.bank.RequestBank;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.collection.QrCode;
@@ -34,6 +35,9 @@ import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.response.ResponseData;
+import com.hz.fine.master.core.protocol.response.bank.Bank;
+import com.hz.fine.master.core.protocol.response.bank.BuyBank;
+import com.hz.fine.master.core.protocol.response.bank.ResponseBank;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
@@ -3530,6 +3534,140 @@ public class HodgepodgeMethod {
         }
     }
 
+    /**
+     * @Description: 组装查询我要买时：查询银行卡的组装查询条件
+     * @param mobileCardList - 手机卡主键ID
+     * @param bankWorkTime - 银行工作日期
+     * @param requestModel - 查询条件
+     * @return
+     * @author yoko
+     * @date 2020/6/29 14:27
+    */
+    public static BankModel assembleBankByBuyQuery(List<MobileCardModel> mobileCardList, String bankWorkTime, RequestBank requestModel){
+        BankModel resBean = new BankModel();
+        resBean = BeanUtils.copy(requestModel, BankModel.class);
+        List<Long> mobileCardIdList = new ArrayList<>();
+        for (MobileCardModel mobileCardModel : mobileCardList){
+            mobileCardIdList.add(mobileCardModel.getId());
+        }
+        resBean.setMobileCardIdList(mobileCardIdList);
+
+        // 获得是白天银行上班的工作时间还是银行休息时间：开启类型：1白天，2晚上，3两者都支持；银行卡是白天跑还是晚上跑数据
+        int openType = getOpenTypeByBankWork(bankWorkTime);
+        List<Integer> openTypeList = new ArrayList<>();
+        openTypeList.add(openType);
+        openTypeList.add(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE);
+        resBean.setOpenTypeList(openTypeList);
+        resBean.setDaySwitch(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+        resBean.setMonthSwitch(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+        resBean.setTotalSwitch(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+        resBean.setUseStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 生成1万-5万以内的随机数
+     * @return
+     * @author yoko
+     * @date 2020/6/29 15:07
+    */
+    public static int getRandom(){
+        Random rand = new Random();
+        int num = rand.nextInt(50000 - 10000 + 1) + 10000; // 将被赋值为一个 MIN 和 MAX 范围内的随机数
+        return num;
+    }
+
+
+
+    /**
+     * @Description: 用户我要买的银行集合数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param buyBankList - 银行卡数据集合集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleBankListResult(long stime, String sign, List<BuyBank> buyBankList, Integer rowCount){
+        ResponseBank dataModel = new ResponseBank();
+        if (buyBankList != null && buyBankList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            dataModel.dataList = buyBankList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据获取银行卡详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkBankData(RequestBank requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.BK00001.geteCode(), ErrorCode.ENUM_ERROR.BK00001.geteDesc());
+        }
+
+        if (requestModel.id == null || requestModel.id <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.BK00002.geteCode(), ErrorCode.ENUM_ERROR.BK00002.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装查询银行卡信息的查询条件
+     * @param id - 银行卡主键ID
+     * @return
+     * @author yoko
+     * @date 2020/6/29 15:43
+    */
+    public static BankModel assembleBankById(long id){
+        BankModel resBean = new BankModel();
+        resBean.setId(id);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 获取银行卡信息-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param bankModel - 银行卡详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleBankDataResult(long stime, String sign, BankModel bankModel){
+        ResponseBank dataModel = new ResponseBank();
+        if (bankModel != null){
+            Bank data = BeanUtils.copy(bankModel, Bank.class);
+            dataModel.dataModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
 
 
 
@@ -3579,13 +3717,17 @@ public class HodgepodgeMethod {
         String str = JSON.toJSONString(list);
         System.out.println(str);
 //        String money = "-552.254";
-        String money = "asdg1";
+        String money = "1111";
         double m1 = Double.parseDouble(money);
         if (m1 >0){
             System.out.println("m1大于0:" + m1);
         }else {
             System.out.println("m1小于0:" + m1);
         }
+
+        int sb1 = getRandom();
+        System.out.println("sb1:" + sb1);
+
     }
 
 

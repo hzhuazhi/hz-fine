@@ -64,6 +64,26 @@ public class DidRechargeModel extends BasePage implements Serializable {
     private Integer orderStatus;
 
     /**
+     *存款人
+     */
+    private String depositor;
+
+    /**
+     * 存款时间
+     */
+    private String depositTime;
+
+    /**
+     * 存款账号尾号
+     */
+    private String lastNum;
+
+    /**
+     * 存款数据录入状态（存款人，存款人时间，尾号）：1初始化，2录入完毕
+     */
+    private Integer workType;
+
+    /**
      * 申诉状态：1初始化，2申诉中，3申诉失败，4申诉成功
      */
     private Integer appealStatus;
@@ -72,6 +92,11 @@ public class DidRechargeModel extends BasePage implements Serializable {
      * 申诉失败原因：描述申诉结果的原因
      */
     private String appealOrigin;
+
+    /**
+     * 充值接口的类型：1微信规则充值，2新规则充值
+     */
+    private Integer dataType;
 
     /**
      * 创建日期：存的日期格式20160530
@@ -291,5 +316,45 @@ public class DidRechargeModel extends BasePage implements Serializable {
 
     public void setAppealOrigin(String appealOrigin) {
         this.appealOrigin = appealOrigin;
+    }
+
+    public String getDepositor() {
+        return depositor;
+    }
+
+    public void setDepositor(String depositor) {
+        this.depositor = depositor;
+    }
+
+    public String getDepositTime() {
+        return depositTime;
+    }
+
+    public void setDepositTime(String depositTime) {
+        this.depositTime = depositTime;
+    }
+
+    public String getLastNum() {
+        return lastNum;
+    }
+
+    public void setLastNum(String lastNum) {
+        this.lastNum = lastNum;
+    }
+
+    public Integer getWorkType() {
+        return workType;
+    }
+
+    public void setWorkType(Integer workType) {
+        this.workType = workType;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
     }
 }

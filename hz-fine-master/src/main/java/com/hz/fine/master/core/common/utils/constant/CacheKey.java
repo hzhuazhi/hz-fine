@@ -173,4 +173,12 @@ public interface CacheKey {
      */
     String LOCK_DID_COLLECTION_ACCOUNT_FAIL = "-27";
 
+
+    /**
+     * 银行卡当日收款的金额：用于redis锁使用；这里主要是纪录用户我要买，购买的数量
+     * task时时跑每个成功充值订单里面的收款账号的收款金额
+     * redis的失效时间是到第二天凌晨0点失效
+     */
+    String LOCK_BANK_DAY_SUC_MONEY = "-28";
+
 }

@@ -14,8 +14,10 @@ import com.hz.fine.master.core.mapper.BankMapper;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.strategy.StrategyBankLimit;
 import com.hz.fine.master.core.model.strategy.StrategyData;
+import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 import com.hz.fine.master.core.service.BankService;
 import com.hz.fine.master.util.ComponentUtil;
+import com.hz.fine.master.util.HodgepodgeMethod;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,6 +82,44 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
         }
 
         return map;
+    }
+
+    @Override
+    public List<BuyBank> screenBankByBuy(List<BankModel> bankList) {
+        List<BuyBank> resList = new ArrayList<>();
+        for (BankModel dataModel : bankList){
+            boolean flag = checkBank(dataModel);
+            if (flag){
+                BuyBank buyBank = new BuyBank();
+                buyBank.setId(dataModel.getId());
+                buyBank.setNickname("****");
+                // 获取已成功收款的金额
+                String strKeyCache_lock_bank_day_suc_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_BANK_DAY_SUC_MONEY, dataModel.getId());
+                String strCache_lock_bank_day_suc_money = (String) ComponentUtil.redisService.get(strKeyCache_lock_bank_day_suc_money);
+                String money = "";
+                if (!StringUtils.isBlank(strCache_lock_bank_day_suc_money)){
+                    money = strCache_lock_bank_day_suc_money;
+                }else{
+                    // 随机生成一个5万以下的数据
+                    money = String.valueOf(HodgepodgeMethod.getRandom());
+                }
+                String buyNum = StringUtil.getBigDecimalSubtractByStr(dataModel.getInDayMoney(), money);
+                buyBank.setBuyNum(buyNum);
+                buyBank.setSellNum(money);
+                // 计算占比：还剩多少的比例
+                String divide = StringUtil.getBigDecimalDivide(money, dataModel.getInDayMoney());
+                String ratio = StringUtil.getBigDecimalSubtractByStr("1", divide);
+                ratio = StringUtil.getMultiply(ratio, "100");
+                buyBank.setRatio(ratio);
+                buyBank.setMinQuota("1000.00");
+                buyBank.setMaxQuota("50000.00");
+                buyBank.setUnitPrice("1.00");
+                resList.add(buyBank);
+
+            }
+        }
+
+        return resList;
     }
 
 
@@ -462,6 +502,73 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
         }else {
             return null;
         }
+
+    }
+
+    /**
+     * @Description: check银行的日上限月上限总上限
+     * @param bankModel - 银行信息
+     * @return
+     * @author yoko
+     * @date 2020/6/29 14:37
+    */
+    public boolean checkBank(BankModel bankModel){
+        // check日收款金额上限
+        boolean dayInMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_IN_MONEY_DAY, bankModel.getId());
+        if (!dayInMoneyFlag){
+            return false;
+        }
+
+        // check日转账金额上限
+        boolean dayOutMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_OUT_MONEY_DAY, bankModel.getId());
+        if (!dayOutMoneyFlag){
+            return false;
+        }
+
+        // check月收款金额上限
+//                boolean monthMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_MONTH, bankModel.getId(), orderMoney, strategyBankLimitData.getInMonthMoney());
+        boolean monthInMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_IN_MONEY_MONTH, bankModel.getId());
+        if (!monthInMoneyFlag){
+            return false;
+        }
+
+        // check月转账金额上限
+        boolean monthOutMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_OUT_MONEY_MONTH, bankModel.getId());
+        if (!monthOutMoneyFlag){
+            return false;
+        }
+        // check总收款金额上限
+//                boolean totalMoneyFlag = checkMoney(CacheKey.SHARE_BANK_MONEY_TOTAL, bankModel.getId(), orderMoney, strategyBankLimitData.getInTotalMoney());
+        boolean totalInMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_IN_MONEY_TOTAL, bankModel.getId());
+        if (!totalInMoneyFlag){
+            return false;
+        }
+
+        // check总转账金额上限
+        boolean totalOutMoneyFlag = checkRedisMoney(CacheKey.SHARE_BANK_OUT_MONEY_TOTAL, bankModel.getId());
+        if (!totalOutMoneyFlag){
+            return false;
+        }
+
+        // check日次数上限
+//                boolean dayNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_DAY, bankModel.getId(), strategyBankLimitData.getInDayNum());
+        boolean dayNumFlag = checkRedisNum(CacheKey.SHARE_BANK_NUM_DAY, bankModel.getId());
+        if (!dayNumFlag){
+            return false;
+        }
+        // check月次数上限
+//                boolean monthNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_MONTH, bankModel.getId(), strategyBankLimitData.getInMonthNum());
+        boolean monthNumFlag = checkRedisNum(CacheKey.SHARE_BANK_NUM_MONTH, bankModel.getId());
+        if (!monthNumFlag){
+            return false;
+        }
+        // check总次数上限
+//                boolean totalNumFlag = checkNum(CacheKey.SHARE_BANK_NUM_TOTAL, bankModel.getId(), strategyBankLimitData.getInTotalNum());
+        boolean totalNumFlag = checkRedisNum(CacheKey.SHARE_BANK_NUM_TOTAL, bankModel.getId());
+        if (!totalNumFlag){
+            return false;
+        }
+        return true;
 
     }
 

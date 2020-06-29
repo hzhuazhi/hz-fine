@@ -7,7 +7,8 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.order_no,a.money_id,a.order_money,a.distribution_money,a.bank_id,a.picture_ads,a.invalid_time,a.order_status,a.appeal_status,a.appeal_origin,
+        a.id,a.did,a.order_no,a.money_id,a.order_money,a.distribution_money,a.bank_id,a.picture_ads,a.invalid_time,a.order_status,
+        a.depositor,a.deposit_time,a.last_num,a.work_type,a.appeal_status,a.appeal_origin,a.data_type,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -159,6 +160,21 @@
             <if test="orderStatus != null and orderStatus != '' " >
                 order_status,
             </if>
+            <if test="depositor != null and depositor != '' " >
+                depositor,
+            </if>
+            <if test="depositTime != null and depositTime != '' " >
+                deposit_time,
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                last_num,
+            </if>
+            <if test="workType != null and workType != '' " >
+                work_type,
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                data_type,
+            </if>
             <if test="curday != null and curday != '' " >
                 curday,
             </if>
@@ -198,6 +214,21 @@
             </if>
             <if test="orderStatus != null and orderStatus != '' " >
                 <![CDATA[  #{orderStatus}, ]]>
+            </if>
+            <if test="depositor != null and depositor != '' " >
+                <![CDATA[  #{depositor}, ]]>
+            </if>
+            <if test="depositTime != null and depositTime != '' " >
+                <![CDATA[  #{depositTime}, ]]>
+            </if>
+            <if test="lastNum != null and lastNum != '' " >
+                <![CDATA[  #{lastNum}, ]]>
+            </if>
+            <if test="workType != null and workType != '' " >
+                <![CDATA[  #{workType}, ]]>
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                <![CDATA[  #{dataType}, ]]>
             </if>
             <if test="curday != null and curday != '' " >
                 <![CDATA[  #{curday}, ]]>
