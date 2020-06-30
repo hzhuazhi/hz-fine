@@ -142,6 +142,11 @@ public class OrderModel extends BasePage implements Serializable {
      */
     private String profit;
 
+    /**
+     * 收益比例
+     */
+    private String ratio;
+
 
     public Long getId() {
         return id;
@@ -358,5 +363,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setQrCodeId(Long qrCodeId) {
         this.qrCodeId = qrCodeId;
+    }
+
+    public String getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(String ratio) {
+        this.ratio = ratio;
     }
 }

@@ -55,6 +55,8 @@ import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
 import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
+import com.hz.fine.master.core.protocol.response.sell.ResponseSell;
+import com.hz.fine.master.core.protocol.response.sell.Sell;
 import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
@@ -3838,6 +3840,122 @@ public class HodgepodgeMethod {
         dataModel.recharge.depositor = requestModel.depositor;
         dataModel.recharge.depositTime = requestModel.depositTime;
         dataModel.recharge.lastNum = requestModel.lastNum;
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 组装查询成功订单的查询条件
+     * @param ratio - 收益比例
+     * @return 
+     * @author yoko
+     * @date 2020/6/30 11:25 
+    */
+    public static OrderModel assembleOrderQuery(String ratio){
+        OrderModel resBean = new OrderModel();
+        resBean.setRatio(ratio);
+        resBean.setCreateTime(DateUtil.addDateMinute(5));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装临时假数据
+     * @param ratio - 收益比例
+     * @param dataNum - 值等于0则生成5条数据，等于1则生成2条数据
+     * @return
+     * @author yoko
+     * @date 2020/6/30 11:34
+    */
+    public static List<OrderModel> getTempOrderList(String ratio, int dataNum){
+        List<OrderModel> resList = new ArrayList<>();
+        OrderModel bean1 = new OrderModel();
+        bean1.setAcName("****");
+        // 随机生成数字
+        int random1 = (int)(Math.random()*20+1) * 100;
+        bean1.setOrderMoney(String.valueOf(random1) + ".00");
+        String profit1 = StringUtil.getMultiply(String.valueOf(random1), ratio);
+        bean1.setProfit(profit1);
+
+        OrderModel bean2 = new OrderModel();
+        bean2.setAcName("****");
+        // 随机生成数字
+        int random2 = (int)(Math.random()*20+1) * 100;
+        bean2.setOrderMoney(String.valueOf(random2) + ".00");
+        String profit2 = StringUtil.getMultiply(String.valueOf(random2), ratio);
+        bean2.setProfit(profit2);
+
+        OrderModel bean3 = new OrderModel();
+        bean3.setAcName("****");
+        // 随机生成数字
+        int random3 = (int)(Math.random()*20+1) * 100;
+        bean3.setOrderMoney(String.valueOf(random3) + ".00");
+        String profit3 = StringUtil.getMultiply(String.valueOf(random3), ratio);
+        bean3.setProfit(profit3);
+
+        OrderModel bean4 = new OrderModel();
+        bean4.setAcName("****");
+        // 随机生成数字
+        int random4 = (int)(Math.random()*20+1) * 100;
+        bean4.setOrderMoney(String.valueOf(random4) + ".00");
+        String profit4 = StringUtil.getMultiply(String.valueOf(random4), ratio);
+        bean4.setProfit(profit4);
+
+        OrderModel bean5 = new OrderModel();
+        bean5.setAcName("****");
+        // 随机生成数字
+        int random5 = (int)(Math.random()*20+1) * 100;
+        bean5.setOrderMoney(String.valueOf(random5) + ".00");
+        String profit5 = StringUtil.getMultiply(String.valueOf(random5), ratio);
+        bean5.setProfit(profit5);
+
+        if (dataNum == 0){
+            resList.add(bean1);
+            resList.add(bean2);
+            resList.add(bean3);
+            resList.add(bean4);
+            resList.add(bean5);
+        }else{
+            resList.add(bean1);
+            resList.add(bean2);
+            resList.add(bean3);
+        }
+        return resList;
+    }
+
+
+    /**
+     * @Description: 我要卖的数据返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderList - 成功订单集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleSellListResult(long stime, String sign, List<OrderModel> orderList, Integer rowCount){
+        ResponseSell dataModel = new ResponseSell();
+        if (orderList != null && orderList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<Sell> dataList = new ArrayList<>();
+            for (OrderModel orderModel : orderList){
+                Sell sell = new Sell();
+                sell.acName = orderModel.getAcName();
+                sell.sellNum = orderModel.getOrderMoney();
+                sell.orderMoney = orderModel.getOrderMoney();
+                sell.profit = orderModel.getProfit();
+                dataList.add(sell);
+            }
+            dataModel.dataList = dataList;
+        }
+        int minNum = StringUtil.getRandom(50, 100);
+        int maxNum = StringUtil.getRandom(120, 200);
+        dataModel.totalNum = maxNum;
+        dataModel.waitNum = minNum;
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
     }
 

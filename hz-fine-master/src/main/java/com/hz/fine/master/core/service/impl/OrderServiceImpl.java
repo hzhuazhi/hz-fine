@@ -312,6 +312,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         return false;
     }
 
+    @Override
+    public List<OrderModel> getSucOrderList(OrderModel model) {
+        return orderMapper.getSucOrderList(model);
+    }
+
 
     /**
      * @Description: 组装缓存key查询缓存中存在的数据

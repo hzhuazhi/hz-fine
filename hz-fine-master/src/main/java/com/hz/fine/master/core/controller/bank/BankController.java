@@ -12,14 +12,9 @@ import com.hz.fine.master.core.controller.did.DidRechargeController;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.bank.BankModel;
-import com.hz.fine.master.core.model.did.DidRechargeModel;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
-import com.hz.fine.master.core.model.region.RegionModel;
-import com.hz.fine.master.core.model.strategy.StrategyBankLimit;
-import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.bank.RequestBank;
-import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -47,7 +42,7 @@ import java.util.Map;
 @RequestMapping("/fine/buy")
 public class BankController {
 
-    private static Logger log = LoggerFactory.getLogger(DidRechargeController.class);
+    private static Logger log = LoggerFactory.getLogger(BankController.class);
 
     /**
      * 5分钟.

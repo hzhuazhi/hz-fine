@@ -70,4 +70,14 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/6/20 12:25
     */
     public boolean handleOrder(DidBalanceDeductModel didBalanceDeductModel, OrderModel orderModel, DidModel didModel);
+
+
+    /**
+     * @Description: 获取成功订单的数据
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/6/29 20:02
+    */
+    public List<OrderModel> getSucOrderList(OrderModel model);
 }

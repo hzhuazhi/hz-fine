@@ -327,4 +327,23 @@
     </select>
 
 
+    <!-- 获取成功订单的数据 -->
+    <select id="getSucOrderList" resultType="com.hz.fine.master.core.model.order.OrderModel">
+         select
+            a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
+            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+            a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
+            a.create_time,a.update_time,a.yn,
+            '****' as ac_name,ifnull(convert(a.order_money * #{ratio},decimal(19,2)), '0.00') as profit
+        from tb_fn_order a
+        where 1=1
+        and a.order_status = 4
+        and a.collection_type = 2
+        and a.create_time >= #{createTime}
+        and a.yn = 0
+        order by a.create_time desc
+        limit 5
+    </select>
+
+
 </mapper>

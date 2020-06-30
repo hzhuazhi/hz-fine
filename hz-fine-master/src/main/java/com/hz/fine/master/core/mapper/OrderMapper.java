@@ -4,6 +4,8 @@ import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.model.order.OrderModel;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @Description 任务订单的Dao层
  * @Author yoko
@@ -40,5 +42,15 @@ public interface OrderMapper<T> extends BaseDao<T> {
      * @date 2020/6/8 20:00
      */
     public int getOrderStatus(OrderModel model);
+
+
+    /**
+     * @Description: 获取成功订单的数据
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/6/29 20:02
+     */
+    public List<OrderModel> getSucOrderList(OrderModel model);
 
 }

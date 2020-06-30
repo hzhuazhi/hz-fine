@@ -110,7 +110,7 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
                 String divide = StringUtil.getBigDecimalDivide(money, dataModel.getInDayMoney());
                 String ratio = StringUtil.getBigDecimalSubtractByStr("1", divide);
                 ratio = StringUtil.getMultiply(ratio, "100");
-                buyBank.setRatio(ratio);
+                buyBank.setRatio(ratio + "%");
                 buyBank.setMinQuota("1000.00");
                 buyBank.setMaxQuota("50000.00");
                 buyBank.setUnitPrice("1.00");
