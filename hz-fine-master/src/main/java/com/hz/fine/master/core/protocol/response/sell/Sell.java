@@ -31,6 +31,11 @@ public class Sell implements Serializable {
      */
     public String profit;
 
+    /**
+     * 交易时间
+     */
+    public String time;
+
     public Sell(){
 
     }
@@ -65,5 +70,14 @@ public class Sell implements Serializable {
 
     public void setProfit(String profit) {
         this.profit = profit;
+    }
+
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

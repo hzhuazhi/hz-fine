@@ -3067,6 +3067,11 @@ public class DateUtil {
 		System.out.println(DateUtil.dateAddDays(new Date(),2));
 		String str1 = addDateMinute(-10);
 		System.out.println(str1);
+
+		String sb1 = getDateHmd(new Date());
+		System.out.println("sb1:" + sb1);
+		String sb2 = sb1.substring(0, 6);
+		System.out.println("sb2:" + sb2);
 	}
 
 	/**
@@ -3108,6 +3113,25 @@ public class DateUtil {
 			return random(begin,end);
 		}
 		return rtn;
+	}
+
+	/**
+	 * 获取当前时间的时分秒
+	 * @return String
+	 * @throws Exception
+	 */
+	public static String getDateHmd(Date date) {
+		String nowDate = "";
+		try {
+			SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");//设置日期格式
+//			SimpleDateFormat sdfHour = new SimpleDateFormat("yyyy-MM-dd HH");
+			if (date != null)
+				nowDate = df.format(date);
+			return nowDate;
+		} catch (Exception e) {
+			out.println("Error at getDate:" + e.getMessage());
+			return "";
+		}
 	}
 
 

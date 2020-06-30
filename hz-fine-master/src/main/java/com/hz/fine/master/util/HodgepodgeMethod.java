@@ -3943,6 +3943,16 @@ public class HodgepodgeMethod {
                 sell.sellNum = orderModel.getOrderMoney();
                 sell.orderMoney = orderModel.getOrderMoney();
                 sell.profit = orderModel.getProfit();
+                String time = DateUtil.getDateHmd(new Date());
+                int random = (int)(Math.random()*59);
+                String second = "";
+                if (random < 10){
+                    second = "0" + String.valueOf(random);
+                }else {
+                    second = String.valueOf(random);
+                }
+                time = time.substring(0, 6) + second;
+                sell.time = time;
                 dataList.add(sell);
             }
             dataModel.dataList = dataList;

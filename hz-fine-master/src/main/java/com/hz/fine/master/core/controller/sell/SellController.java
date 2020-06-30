@@ -86,9 +86,9 @@ public class SellController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJkYXRhTGlzdCI6W3siYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxMDAwIiwicHJvZml0IjoiMTAuMDAiLCJzZWxsTnVtIjoiMTAwMCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxMzAwLjAwIiwicHJvZml0IjoiMTMiLCJzZWxsTnVtIjoiMTMwMC4wMCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIyMDAuMDAiLCJwcm9maXQiOiIyIiwic2VsbE51bSI6IjIwMC4wMCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNzAwLjAwIiwicHJvZml0IjoiMTciLCJzZWxsTnVtIjoiMTcwMC4wMCJ9XSwic2lnbiI6ImVhYzc1YzBkZTFjMjdjY2E5YWY4OWM0MGFmMzdhMWQ3Iiwic3RpbWUiOjE1OTM0OTU2NzMyMzYsInRvdGFsTnVtIjoxNTksIndhaXROdW0iOjc0fQ=="
+     *         "jsonData": "eyJkYXRhTGlzdCI6W3siYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiI4MDAuMDAiLCJwcm9maXQiOiI4Iiwic2VsbE51bSI6IjgwMC4wMCIsInRpbWUiOiIxNTo1MjoxMCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNTAwLjAwIiwicHJvZml0IjoiMTUiLCJzZWxsTnVtIjoiMTUwMC4wMCIsInRpbWUiOiIxNTo1MjozNSJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxOTAwLjAwIiwicHJvZml0IjoiMTkiLCJzZWxsTnVtIjoiMTkwMC4wMCIsInRpbWUiOiIxNTo1MjowNSJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNzAwLjAwIiwicHJvZml0IjoiMTciLCJzZWxsTnVtIjoiMTcwMC4wMCIsInRpbWUiOiIxNTo1MjoxNCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNTAwLjAwIiwicHJvZml0IjoiMTUiLCJzZWxsTnVtIjoiMTUwMC4wMCIsInRpbWUiOiIxNTo1MjoyNCJ9XSwic2lnbiI6IjlhMGY0ODNmMmZiMDc0NTFjZmJiMzBlZmZlMjk1YjI2Iiwic3RpbWUiOjE1OTM1MDM1NjMzODgsInRvdGFsTnVtIjoxNTAsIndhaXROdW0iOjk4fQ=="
      *     },
-     *     "sgid": "202006301340510000001",
+     *     "sgid": "202006301552370000001",
      *     "cgid": ""
      * }
      */
