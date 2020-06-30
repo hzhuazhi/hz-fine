@@ -110,6 +110,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private WxClerkUnboundService wxClerkUnboundService;
 
+    @Autowired
+    private DidOnoffService didOnoffService;
+
 
 
 
@@ -148,6 +151,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.catDataService = catDataService;
         ComponentUtil.didCollectionAccountQrCodeService = didCollectionAccountQrCodeService;
         ComponentUtil.wxClerkUnboundService = wxClerkUnboundService;
+        ComponentUtil.didOnoffService = didOnoffService;
 
         runThread = new RunThread();
         runThread.start();

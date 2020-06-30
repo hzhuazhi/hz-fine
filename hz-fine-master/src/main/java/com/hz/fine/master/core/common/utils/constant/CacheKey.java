@@ -181,4 +181,10 @@ public interface CacheKey {
      */
     String LOCK_BANK_DAY_SUC_MONEY = "-28";
 
+    /**
+     * 在用户抢单上下线修改状态的时候，需要先锁住此用户
+     * 高并发避免为题
+     */
+    String LOCK_DID_ONOFF = "-29";
+
 }

@@ -27,6 +27,7 @@ import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.collection.QrCode;
 import com.hz.fine.master.core.protocol.request.did.collection.RequestDidCollectionAccountAll;
+import com.hz.fine.master.core.protocol.request.did.onoff.RequestDidOnoff;
 import com.hz.fine.master.core.protocol.request.did.qrcode.DidCollectionAccountQrCode;
 import com.hz.fine.master.core.protocol.request.did.qrcode.RequestDidCollectionAccountQrCode;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
@@ -42,6 +43,8 @@ import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.ResponseDidCollectionAccount;
+import com.hz.fine.master.core.protocol.response.did.onoff.DidOnoff;
+import com.hz.fine.master.core.protocol.response.did.onoff.ResponseDidOnoff;
 import com.hz.fine.master.core.protocol.response.did.qrcode.ResponseDidCollectionAccountQrCode;
 import com.hz.fine.master.core.protocol.response.did.recharge.DidRecharge;
 import com.hz.fine.master.core.protocol.response.did.recharge.RechargeInfo;
@@ -3804,6 +3807,11 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.DR00020.geteCode(), ErrorCode.ENUM_ERROR.DR00020.geteDesc());
         }
 
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
         // 校验用户是否登录
         did = HodgepodgeMethod.checkIsLogin(requestModel.token);
 
@@ -3967,6 +3975,135 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据当用户抢单上下线修改时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkOnoffUpdate(RequestDidOnoff requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OF00001.geteCode(), ErrorCode.ENUM_ERROR.OF00001.geteDesc());
+        }
+
+        // 校验数据类型是否为空
+        if (requestModel.dataType == null || requestModel.dataType <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OF00002.geteCode(), ErrorCode.ENUM_ERROR.OF00002.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装查询用户抢单上下线的查询条件
+     * @param did - 用户ID
+     * @return
+     * @author yoko
+     * @date 2020/6/30 18:51
+    */
+    public static DidOnoffModel assembleDidOnoffQueryByDid(long did){
+        DidOnoffModel resBean = new DidOnoffModel();
+        resBean.setDid(did);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装更新用户抢单上下线的数据
+     * @param did - 用户ID
+     * @param dataType - 数据类型;1下线（取消抢单），2上线（开始抢单）
+     * @return com.hz.fine.master.core.model.did.DidOnoffModel
+     * @author yoko
+     * @date 2020/6/30 18:54
+     */
+    public static DidOnoffModel assembleDidOnoffUpdate(long did, int dataType) throws Exception{
+        DidOnoffModel resBean = new DidOnoffModel();
+        resBean.setDid(did);
+        resBean.setDataType(dataType);
+        if (dataType == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE){
+            // 下线
+            resBean.setOfflineTime(DateUtil.getNowPlusTime());
+        }else{
+            resBean.setOnlineTime(DateUtil.getNowPlusTime());
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户抢单上下线最终状态-的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param dataType - 数据类型;1下线（取消抢单），2上线（开始抢单）
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidOnoffResult(long stime, String sign, int dataType){
+        ResponseDidOnoff dataModel = new ResponseDidOnoff();
+        DidOnoff data = new DidOnoff();
+        data.dataType = dataType;
+        dataModel.dataModel = data;
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: check用户余额
+     * @param balance - 用户余额
+     * @return
+     * @author yoko
+     * @date 2020/6/30 20:38
+    */
+    public static void checkDidbalance(String balance) throws Exception{
+        if (StringUtils.isBlank(balance)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OF00004.geteCode(), ErrorCode.ENUM_ERROR.OF00004.geteDesc());
+        }
+        if (Double.parseDouble(balance) <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OF00004.geteCode(), ErrorCode.ENUM_ERROR.OF00004.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: check校验数据获取用户抢单上下线的状态时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkOnoffData(RequestDidOnoff requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OF00010.geteCode(), ErrorCode.ENUM_ERROR.OF00010.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
     }
 
 
