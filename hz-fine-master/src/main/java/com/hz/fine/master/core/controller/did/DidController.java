@@ -240,6 +240,8 @@ public class DidController {
                 ComponentUtil.redisService.set(token, String.valueOf(did), 7, TimeUnit.DAYS);
                 // 设置这个用户使用的token值：下次登录时可以删除上一次登录的token
                 ComponentUtil.redisService.set(strKeyCache_token, token, 7, TimeUnit.DAYS);
+                // 设置登录的token存放到cookie里面
+                response.setHeader("Cookie" , "yf_token=" + token);
             }
 
             // 组装返回客户端的数据
@@ -250,6 +252,7 @@ public class DidController {
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
             resultDataModel.jsonData = encryptionData;
+
             // 返回数据给客户端
             return JsonResult.successResult(resultDataModel, cgid, sgid);
         }catch (Exception e){
