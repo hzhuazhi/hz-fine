@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -242,6 +243,8 @@ public class DidController {
                 ComponentUtil.redisService.set(strKeyCache_token, token, 7, TimeUnit.DAYS);
                 // 设置登录的token存放到cookie里面
                 response.setHeader("Cookie" , "yf_token=" + token);
+                Cookie cookie = new Cookie("yf_token",token);
+                response.addCookie(cookie);
             }
 
             // 组装返回客户端的数据

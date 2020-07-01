@@ -5,6 +5,8 @@ import com.hz.fine.master.core.common.exception.ExceptionMethod;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
+import com.hz.fine.master.core.common.utils.constant.CacheKey;
+import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
@@ -110,6 +112,18 @@ public class SellController {
 //                    ComponentUtil.redisService.set(requestModel.token, "1");
 //                }
 //            }
+
+            // 获取用户的ID
+            String strCache = (String) ComponentUtil.redisService.get(requestModel.token);
+            if (!StringUtils.isBlank(strCache)) {
+                // 登录存储在缓存中的用户id
+                did = Long.parseLong(strCache);
+                // 设置5秒钟的redis缓存时间
+
+                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.DID_ONOFF, did);
+                ComponentUtil.redisService.set(strKeyCache, String.valueOf(did), 5L);
+
+            }
 
             OrderModel orderQuery = HodgepodgeMethod.assembleOrderQuery("0.01");
             List<OrderModel> orderList = ComponentUtil.orderService.getSucOrderList(orderQuery);

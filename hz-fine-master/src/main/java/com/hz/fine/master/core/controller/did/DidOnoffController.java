@@ -145,6 +145,8 @@ public class DidOnoffController {
                     ComponentUtil.didOnoffService.updateDidOnoff(didOnoffUpdate);
 
                 }
+                // 解锁
+                ComponentUtil.redisIdService.delLock(lockKey_did);
             }else {
                 throw new ServiceException("ONOFF01", "错误,请重试!");
             }
@@ -233,7 +235,8 @@ public class DidOnoffController {
                 }else{
                     dataType = didOnoffData.getDataType();
                 }
-
+                // 解锁
+                ComponentUtil.redisIdService.delLock(lockKey_did);
             }else {
                 throw new ServiceException("ONOFF01", "错误,请重试!");
             }

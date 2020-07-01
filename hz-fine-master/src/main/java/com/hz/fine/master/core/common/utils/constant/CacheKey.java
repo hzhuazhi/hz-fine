@@ -187,4 +187,10 @@ public interface CacheKey {
      */
     String LOCK_DID_ONOFF = "-29";
 
+    /**
+     * 用户是否一致处于开始抢单的界面的redis缓存
+     * 客户端会每隔2秒访问服务端，这里代表着客户端一直跟服务端保持着通讯
+     */
+    String DID_ONOFF = "-30";
+
 }
