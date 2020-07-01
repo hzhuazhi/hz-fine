@@ -76,6 +76,11 @@ public class Order implements Serializable {
      */
     public Integer curminute;
 
+    /**
+     * 用户提交订单状态的最后读秒时间
+     */
+    public Integer lastTime;
+
     public Order(){
 
     }
@@ -182,5 +187,13 @@ public class Order implements Serializable {
 
     public void setProfit(String profit) {
         this.profit = profit;
+    }
+
+    public Integer getLastTime() {
+        return lastTime;
+    }
+
+    public void setLastTime(Integer lastTime) {
+        this.lastTime = lastTime;
     }
 }

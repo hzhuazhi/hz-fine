@@ -12,6 +12,8 @@ import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.did.DidRechargeModel;
 import com.hz.fine.master.core.model.order.OrderModel;
+import com.hz.fine.master.core.model.strategy.StrategyData;
+import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.sell.RequestSell;
 import com.hz.fine.master.util.ComponentUtil;
@@ -125,14 +127,20 @@ public class SellController {
 
             }
 
+            // 查询策略里面的消耗金额范围内的奖励规则列表
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.CONSUME_MONEY_LIST.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            // 解析奖励规则的值
+            List<StrategyData> consumeMoneyList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+
             OrderModel orderQuery = HodgepodgeMethod.assembleOrderQuery("0.01");
             List<OrderModel> orderList = ComponentUtil.orderService.getSucOrderList(orderQuery);
             if (orderList == null || orderList.size() <= 0){
                 // 组装假数据
-                orderList = HodgepodgeMethod.getTempOrderList("0.01", 0);
+                orderList = HodgepodgeMethod.getTempOrderList(consumeMoneyList, 0);
             }else if(orderList.size() > 0 && orderList.size() <= 3){
                 // 因为数据少，还需组装假数据
-                List<OrderModel> tempOrderList = HodgepodgeMethod.getTempOrderList("0.01", 1);
+                List<OrderModel> tempOrderList = HodgepodgeMethod.getTempOrderList(consumeMoneyList, 1);
                 orderList.addAll(tempOrderList);
             }
 

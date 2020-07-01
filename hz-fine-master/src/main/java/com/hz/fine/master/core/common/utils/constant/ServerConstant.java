@@ -97,6 +97,8 @@ public class ServerConstant {
         QC_CODE_LIMIT_LIST(12,""),
         QC_CODE_FAIL_NUM(13,""),
         REFERER_LIST(14,""),
+        CONSUME_MONEY_LIST(15,""),
+        LAST_TIME(16,""),
 
         ;
         private int stgType;

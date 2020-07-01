@@ -3868,20 +3868,23 @@ public class HodgepodgeMethod {
 
     /**
      * @Description: 组装临时假数据
-     * @param ratio - 收益比例
+     * @param consumeMoneyList - 消耗金额范围内的奖励规则列表
      * @param dataNum - 值等于0则生成5条数据，等于1则生成2条数据
      * @return
      * @author yoko
      * @date 2020/6/30 11:34
     */
-    public static List<OrderModel> getTempOrderList(String ratio, int dataNum){
+    public static List<OrderModel> getTempOrderList(List<StrategyData> consumeMoneyList, int dataNum){
         List<OrderModel> resList = new ArrayList<>();
         OrderModel bean1 = new OrderModel();
         bean1.setAcName("****");
         // 随机生成数字
+
         int random1 = (int)(Math.random()*20+1) * 100;
         bean1.setOrderMoney(String.valueOf(random1) + ".00");
-        String profit1 = StringUtil.getMultiply(String.valueOf(random1), ratio);
+//        String profit1 = StringUtil.getMultiply(String.valueOf(random1), ratio);
+        String profit1 = getConsumeProfit(consumeMoneyList, String.valueOf(random1) + ".00");
+
         bean1.setProfit(profit1);
 
         OrderModel bean2 = new OrderModel();
@@ -3889,7 +3892,8 @@ public class HodgepodgeMethod {
         // 随机生成数字
         int random2 = (int)(Math.random()*20+1) * 100;
         bean2.setOrderMoney(String.valueOf(random2) + ".00");
-        String profit2 = StringUtil.getMultiply(String.valueOf(random2), ratio);
+//        String profit2 = StringUtil.getMultiply(String.valueOf(random2), ratio);
+        String profit2 = getConsumeProfit(consumeMoneyList, String.valueOf(random2) + ".00");
         bean2.setProfit(profit2);
 
         OrderModel bean3 = new OrderModel();
@@ -3897,7 +3901,8 @@ public class HodgepodgeMethod {
         // 随机生成数字
         int random3 = (int)(Math.random()*20+1) * 100;
         bean3.setOrderMoney(String.valueOf(random3) + ".00");
-        String profit3 = StringUtil.getMultiply(String.valueOf(random3), ratio);
+//        String profit3 = StringUtil.getMultiply(String.valueOf(random3), ratio);
+        String profit3 = getConsumeProfit(consumeMoneyList, String.valueOf(random3) + ".00");
         bean3.setProfit(profit3);
 
         OrderModel bean4 = new OrderModel();
@@ -3905,7 +3910,8 @@ public class HodgepodgeMethod {
         // 随机生成数字
         int random4 = (int)(Math.random()*20+1) * 100;
         bean4.setOrderMoney(String.valueOf(random4) + ".00");
-        String profit4 = StringUtil.getMultiply(String.valueOf(random4), ratio);
+//        String profit4 = StringUtil.getMultiply(String.valueOf(random4), ratio);
+        String profit4 = getConsumeProfit(consumeMoneyList, String.valueOf(random4) + ".00");
         bean4.setProfit(profit4);
 
         OrderModel bean5 = new OrderModel();
@@ -3913,7 +3919,8 @@ public class HodgepodgeMethod {
         // 随机生成数字
         int random5 = (int)(Math.random()*20+1) * 100;
         bean5.setOrderMoney(String.valueOf(random5) + ".00");
-        String profit5 = StringUtil.getMultiply(String.valueOf(random5), ratio);
+//        String profit5 = StringUtil.getMultiply(String.valueOf(random5), ratio);
+        String profit5 = getConsumeProfit(consumeMoneyList, String.valueOf(random5) + ".00");
         bean5.setProfit(profit5);
 
         if (dataNum == 0){
@@ -4149,7 +4156,7 @@ public class HodgepodgeMethod {
         resBean.setDid(did);
         resBean.setOrderStatus(orderStatus);
         resBean.setDidStatus(didStatus);
-        resBean.setRatio(ratio);
+//        resBean.setRatio(ratio);
         return resBean;
     }
 
@@ -4201,6 +4208,77 @@ public class HodgepodgeMethod {
         resBean.setOrderNo(requestModel.orderNo);
         resBean.setDidStatus(requestModel.status);
         return resBean;
+    }
+
+
+    /**
+     * @Description: 校验策略类型数据:用户提交订单状态的最后读秒时间
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByLastTime(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00017.geteCode(), ErrorCode.ENUM_ERROR.S00017.geteDesc());
+        }
+        if (strategyModel.getStgNumValue() == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00018.geteCode(), ErrorCode.ENUM_ERROR.S00018.geteDesc());
+        }
+    }
+
+    /**
+     * @Description: 用户派单（初始化）-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleInitOrderDataResult(long stime, String sign, OrderModel orderModel, int lastTime){
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null && !StringUtils.isBlank(orderModel.getOrderNo())){
+            Order data = BeanUtils.copy(orderModel, Order.class);
+            if (lastTime > 0){
+                data.lastTime = lastTime;
+            }
+            dataModel.dataModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 计算派单的订单金额的奖励金额（收益）
+     * @param consumeMoneyList - 消耗金额范围内的奖励规则列表
+     * @param orderMoney - 订单金额
+     * @return java.lang.String
+     * @author yoko
+     * @date 2020/6/6 11:48
+     */
+    public static String getConsumeProfit(List<StrategyData> consumeMoneyList, String orderMoney){
+        String profit = "";
+        for (StrategyData dataModel : consumeMoneyList){
+            String [] rule = dataModel.getStgValue().split("-");
+            String ratio = dataModel.getStgValueOne();
+            if(rule[0].equals(rule[1])){
+                double dbl = Double.parseDouble(rule[0]);
+                if (Double.parseDouble(orderMoney) >= dbl){
+                    profit = StringUtil.getMultiply(orderMoney, ratio);
+                    break;
+                }
+            }else{
+                double start = Double.parseDouble(rule[0]);
+                double end = Double.parseDouble(rule[1]);
+                if (Double.parseDouble(orderMoney) >= start && Double.parseDouble(orderMoney) <= end){
+                    profit = StringUtil.getMultiply(orderMoney, ratio);
+                    break;
+                }
+            }
+        }
+        return profit;
     }
 
 

@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
         a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
-        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,
+        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn,
         b.ac_name,b.ac_num
@@ -347,7 +347,7 @@
             a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
             a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
             a.create_time,a.update_time,a.yn,
-            '****' as ac_name,ifnull(convert(a.order_money * #{ratio},decimal(19,2)), '0.00') as profit
+            '****' as ac_name,a.profit
         from tb_fn_order a
         where 1=1
         and a.order_status = 4
@@ -364,10 +364,10 @@
          select
             a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
             a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
-            a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,
+            a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
             a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
             a.create_time,a.update_time,a.yn,
-            ifnull(convert(a.order_money * #{ratio},decimal(19,2)), '0.00') as profit,time_to_sec(timediff(invalid_time,now())) as invalid_second
+            time_to_sec(timediff(invalid_time,now())) as invalid_second
         from tb_fn_order a
         where 1=1
         and a.did = #{did}

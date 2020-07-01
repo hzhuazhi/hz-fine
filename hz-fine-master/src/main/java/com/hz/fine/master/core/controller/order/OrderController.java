@@ -710,13 +710,18 @@ public class OrderController {
             // check校验请求的数据
             did = HodgepodgeMethod.checkGetOrderData(requestModel);
 
+            // 策略数据：查询用户提交订单状态的最后读秒时间
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.LAST_TIME.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyByLastTime(strategyModel);
+
             // 获取派单信息（初始化的派单信息）
             OrderModel orderQuery = HodgepodgeMethod.assembleOrderByDidQuery(did, 1, 1, "0.01");
             OrderModel orderModelData = (OrderModel) ComponentUtil.orderService.getInitOrder(orderQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleOrderDataResult(stime, sign, orderModelData);
+            String strData = HodgepodgeMethod.assembleInitOrderDataResult(stime, sign, orderModelData, strategyModel.getStgNumValue());
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
