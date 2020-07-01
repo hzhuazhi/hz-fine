@@ -2933,7 +2933,7 @@ public class HodgepodgeMethod {
      */
     public static String assembleOrderDataResult(long stime, String sign, OrderModel orderModel){
         ResponseOrder dataModel = new ResponseOrder();
-        if (orderModel != null){
+        if (orderModel != null && !StringUtils.isBlank(orderModel.getOrderNo())){
             Order data = BeanUtils.copy(orderModel, Order.class);
             dataModel.dataModel = data;
         }
@@ -4104,6 +4104,103 @@ public class HodgepodgeMethod {
 
         return did;
 
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取初始化派单数据详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkGetOrderData(RequestOrder requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00015.geteCode(), ErrorCode.ENUM_ERROR.OR00015.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装查询派单的查询条件
+     * @param did - 用户ID
+     * @param orderStatus - 订单状态：1初始化，2超时/失败，3有质疑，4成功
+     * @param didStatus - 订单状态_用户操作的状态：1初始化，2失败，3超时后默认成功，4用户点击成功
+     * @param ratio - 收益比例
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/7/1 16:17
+     */
+    public static OrderModel assembleOrderByDidQuery(long did, int orderStatus, int didStatus, String ratio){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderStatus(orderStatus);
+        resBean.setDidStatus(didStatus);
+        resBean.setRatio(ratio);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验数据当用户订单的用户操作派单状态的时候
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkUpdateOrderStatus(RequestOrder requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00016.geteCode(), ErrorCode.ENUM_ERROR.OR00016.geteDesc());
+
+        }
+
+        if (StringUtils.isBlank(requestModel.orderNo)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00017.geteCode(), ErrorCode.ENUM_ERROR.OR00017.geteDesc());
+        }
+
+        if (requestModel.status == null || requestModel.status <= 1){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00018.geteCode(), ErrorCode.ENUM_ERROR.OR00018.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装更新用户订单的用户操作派单状态的方法
+     * @param requestModel - 请求的数据
+     * @return
+     * @author yoko
+     * @date 2020/5/14 19:56
+     */
+    public static OrderModel assembleUpdateOrderStatusData(long did, RequestOrder requestModel){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(requestModel.orderNo);
+        resBean.setDidStatus(requestModel.status);
+        return resBean;
     }
 
 

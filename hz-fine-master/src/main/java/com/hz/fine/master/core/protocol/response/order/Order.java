@@ -37,6 +37,26 @@ public class Order implements Serializable {
     public Integer orderStatus;
 
     /**
+     * 支付宝账号
+     */
+    public String zfbAcNum;
+
+    /**
+     * 失效时间
+     */
+    public String invalidTime;
+
+    /**
+     * 失效时间-秒
+     */
+    public String invalidSecond;
+
+    /**
+     * 收益
+     */
+    public String profit;
+
+    /**
      * 创建时间
      */
     public String createTime;
@@ -130,5 +150,37 @@ public class Order implements Serializable {
 
     public void setCurminute(Integer curminute) {
         this.curminute = curminute;
+    }
+
+    public String getZfbAcNum() {
+        return zfbAcNum;
+    }
+
+    public void setZfbAcNum(String zfbAcNum) {
+        this.zfbAcNum = zfbAcNum;
+    }
+
+    public String getInvalidTime() {
+        return invalidTime;
+    }
+
+    public void setInvalidTime(String invalidTime) {
+        this.invalidTime = invalidTime;
+    }
+
+    public String getInvalidSecond() {
+        return invalidSecond;
+    }
+
+    public void setInvalidSecond(String invalidSecond) {
+        this.invalidSecond = invalidSecond;
+    }
+
+    public String getProfit() {
+        return profit;
+    }
+
+    public void setProfit(String profit) {
+        this.profit = profit;
     }
 }

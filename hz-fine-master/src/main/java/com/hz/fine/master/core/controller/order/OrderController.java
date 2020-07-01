@@ -657,4 +657,167 @@ public class OrderController {
         }
     }
 
+
+
+
+
+    /**
+     * @Description: 获取初始化派单数据-详情
+     * <p>
+     *     用户在开始抢单之后，程序派单给用户，客户端进行数据监听查询
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/order/getInitOrderData
+     * 请求的属性类:RequestOrder
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:id+ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiY29sbGVjdGlvblR5cGUiOjIsImNyZWF0ZVRpbWUiOiIyMDIwLTA3LTAxIDE2OjIxOjQ3IiwiY3VyZGF5IjoyMDIwMDcwMSwiY3VyaG91ciI6MCwiY3VybWludXRlIjowLCJpbnZhbGlkU2Vjb25kIjoiMzE0IiwiaW52YWxpZFRpbWUiOiIyMDIwLTA3LTAxIDE3OjIwOjIxIiwib3JkZXJNb25leSI6IjEwMDAiLCJvcmRlck5vIjoiMjAyMDA3MDFfb3JkZXJfbm9fMSIsIm9yZGVyU3RhdHVzIjoxLCJwcm9maXQiOiIxMC4wMCIsInpmYkFjTnVtIjoiIn0sInNpZ24iOiJjMjBkNjY5Y2FkMWVmNDVkYzM3MjlkN2M2OGM5YTgxNyIsInN0aW1lIjoxNTkzNTk0OTA4NTg5fQ=="
+     *     },
+     *     "sgid": "202007011715080000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getInitOrderData", method = {RequestMethod.POST})
+    public JsonResult<Object> getInitOrderData(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestOrder requestModel = new RequestOrder();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestOrder.class);
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验请求的数据
+            did = HodgepodgeMethod.checkGetOrderData(requestModel);
+
+            // 获取派单信息（初始化的派单信息）
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByDidQuery(did, 1, 1, "0.01");
+            OrderModel orderModelData = (OrderModel) ComponentUtil.orderService.getInitOrder(orderQuery);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleOrderDataResult(stime, sign, orderModelData);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // 添加异常
+            log.error(String.format("this OrderController.getInitOrderData() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this OrderController.getInitOrderData() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+    /**
+     * @Description: 用户订单的用户操作派单状态
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/order/updateOrderStatus
+     * 请求的属性类:RequestOrder
+     * 必填字段:{"orderNo":"20200701_order_no_1","status":2,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA3MDFfb3JkZXJfbm9fMSIsInN0YXR1cyI6MiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiNmU3NTJiOGFjNDViNjk0Yjc0NGY4OWQ5N2ZiOTRmNTUiLCJzdGltZSI6MTU5MzU5NTM3MjMxNX0="
+     *     },
+     *     "sgid": "202007011722520000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/updateOrderStatus", method = {RequestMethod.POST})
+    public JsonResult<Object> updateOrderStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestOrder requestModel = new RequestOrder();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestOrder.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+
+            // check校验数据
+            did = HodgepodgeMethod.checkUpdateOrderStatus(requestModel);
+
+            // 正式修改派单的用户的操作状态
+            OrderModel orderModel = HodgepodgeMethod.assembleUpdateOrderStatusData(did, requestModel);
+            ComponentUtil.orderService.updateDidStatus(orderModel);
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this OrderController.updateOrderStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this OrderController.updateOrderStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 }

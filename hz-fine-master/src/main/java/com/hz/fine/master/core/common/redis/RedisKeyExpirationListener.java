@@ -33,32 +33,34 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
     public void onMessage(Message message, byte[] pattern) {
         // message.toString()可以获取失效的key
         String expiredKey = message.toString();
-        System.out.println("expiredKey:" + expiredKey);
+//        System.out.println("expiredKey:" + expiredKey);
         if (expiredKey.indexOf("FN-30-") > -1){
             long did = Long.parseLong(expiredKey.substring("FN-30-".length()));
             // 把用户抢单上下线状态修改成下线状态
 
-            // 先锁住这个用户
-            String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ONOFF, did);
-            boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
-            if (flagLock_did){
-                // 判断用户是否在上下线的表中有数据
-                DidOnoffModel didOnoffQuery = HodgepodgeMethod.assembleDidOnoffQueryByDid(did);
-                DidOnoffModel didOnoffData = (DidOnoffModel) ComponentUtil.didOnoffService.findByObject(didOnoffQuery);
-                if (didOnoffData == null || didOnoffData.getId() <= 0){
-                    // 添加数据
-                    ComponentUtil.didOnoffService.add(didOnoffQuery);
-                }else{
-                    // 下线（取消抢单）
-                    try{
-                        DidOnoffModel didOnoffUpdate = HodgepodgeMethod.assembleDidOnoffUpdate(did, 1);
-                        ComponentUtil.didOnoffService.updateDidOnoff(didOnoffUpdate);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-                // 解锁
-                ComponentUtil.redisIdService.delLock(lockKey_did);
+//            // 先锁住这个用户
+//            String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ONOFF, did);
+//            boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
+//            if (flagLock_did){
+//                // 判断用户是否在上下线的表中有数据
+//                DidOnoffModel didOnoffQuery = HodgepodgeMethod.assembleDidOnoffQueryByDid(did);
+//                DidOnoffModel didOnoffData = (DidOnoffModel) ComponentUtil.didOnoffService.findByObject(didOnoffQuery);
+//                if (didOnoffData == null || didOnoffData.getId() <= 0){
+//                    // 添加数据
+//                    ComponentUtil.didOnoffService.add(didOnoffQuery);
+//                }else{
+//
+//                }
+//                // 解锁
+//                ComponentUtil.redisIdService.delLock(lockKey_did);
+//            }
+
+            // 下线（取消抢单）
+            try{
+                DidOnoffModel didOnoffUpdate = HodgepodgeMethod.assembleDidOnoffUpdate(did, 1);
+                ComponentUtil.didOnoffService.updateDidOnoff(didOnoffUpdate);
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

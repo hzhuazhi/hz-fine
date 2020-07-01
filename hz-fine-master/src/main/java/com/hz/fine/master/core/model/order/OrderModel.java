@@ -84,6 +84,31 @@ public class OrderModel extends BasePage implements Serializable {
     private String invalidTime;
 
     /**
+     * 支付宝的用户ID
+     */
+    private String userId;
+
+    /**
+     * 支付宝的账号
+     */
+    private String zfbAcNum;
+
+    /**
+     * 订单成功程序上报时间
+     */
+    private String programTime;
+
+    /**
+     * 订单状态_用户操作的状态：1初始化，2失败，3超时后默认成功，4用户点击成功
+     */
+    private Integer didStatus;
+
+    /**
+     * 订单成功用户上报时间
+     */
+    private String didTime;
+
+    /**
      * 创建日期：存的日期格式20160530
      */
     private Integer curday;
@@ -146,6 +171,11 @@ public class OrderModel extends BasePage implements Serializable {
      * 收益比例
      */
     private String ratio;
+
+    /**
+     * 失效时间-秒
+     */
+    private String invalidSecond;
 
 
     public Long getId() {
@@ -371,5 +401,53 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setRatio(String ratio) {
         this.ratio = ratio;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getProgramTime() {
+        return programTime;
+    }
+
+    public void setProgramTime(String programTime) {
+        this.programTime = programTime;
+    }
+
+    public Integer getDidStatus() {
+        return didStatus;
+    }
+
+    public void setDidStatus(Integer didStatus) {
+        this.didStatus = didStatus;
+    }
+
+    public String getDidTime() {
+        return didTime;
+    }
+
+    public void setDidTime(String didTime) {
+        this.didTime = didTime;
+    }
+
+    public String getZfbAcNum() {
+        return zfbAcNum;
+    }
+
+    public void setZfbAcNum(String zfbAcNum) {
+        this.zfbAcNum = zfbAcNum;
+    }
+
+    public String getInvalidSecond() {
+        return invalidSecond;
+    }
+
+    public void setInvalidSecond(String invalidSecond) {
+        this.invalidSecond = invalidSecond;
     }
 }

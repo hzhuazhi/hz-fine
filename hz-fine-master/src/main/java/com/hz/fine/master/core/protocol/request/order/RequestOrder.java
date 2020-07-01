@@ -62,6 +62,11 @@ public class RequestOrder extends BaseRequest implements Serializable {
 
     public String ck;
 
+    /**
+     * 订单状态_用户操作的状态：1初始化，2失败，3超时后默认成功，4用户点击成功
+     */
+    public Integer status;
+
 
     public RequestOrder(){
 
@@ -145,5 +150,14 @@ public class RequestOrder extends BaseRequest implements Serializable {
 
     public void setCk(String ck) {
         this.ck = ck;
+    }
+
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

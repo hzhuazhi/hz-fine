@@ -118,10 +118,10 @@ public class SellController {
             if (!StringUtils.isBlank(strCache)) {
                 // 登录存储在缓存中的用户id
                 did = Long.parseLong(strCache);
-                // 设置5秒钟的redis缓存时间
+                // 设置10秒钟的redis缓存时间
 
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.DID_ONOFF, did);
-                ComponentUtil.redisService.set(strKeyCache, String.valueOf(did), 5L);
+                ComponentUtil.redisService.set(strKeyCache, String.valueOf(did), 10L);
 
             }
 

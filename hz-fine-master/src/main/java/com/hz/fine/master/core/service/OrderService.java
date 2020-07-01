@@ -80,4 +80,25 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/6/29 20:02
     */
     public List<OrderModel> getSucOrderList(OrderModel model);
+
+    /**
+     * @Description: 获取初始化的派单信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/1 16:24
+    */
+    public OrderModel getInitOrder(OrderModel model);
+
+    /**
+     * @Description: 修改用户操作的状态
+     * <p>
+     *     订单状态_用户操作的状态：1初始化，2失败，3超时后默认成功，4用户点击成功
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/1 16:46
+    */
+    public int updateDidStatus(OrderModel model);
 }

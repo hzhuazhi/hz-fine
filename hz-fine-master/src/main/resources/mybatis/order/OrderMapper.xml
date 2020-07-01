@@ -9,6 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
         a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn,
         b.ac_name,b.ac_num
@@ -174,6 +175,12 @@
             <if test="invalidTime != null and invalidTime != '' " >
                 invalid_time,
             </if>
+            <if test="userId != null and userId != '' " >
+                user_id,
+            </if>
+            <if test="zfbAcNum != null and zfbAcNum != '' " >
+                zfb_ac_num,
+            </if>
             <if test="curday != null and curday != '' " >
                 curday,
             </if>
@@ -225,6 +232,12 @@
             </if>
             <if test="invalidTime != null and invalidTime != '' " >
                 <![CDATA[  #{invalidTime}, ]]>
+            </if>
+            <if test="userId != null and userId != '' " >
+                <![CDATA[  #{userId}, ]]>
+            </if>
+            <if test="zfbAcNum != null and zfbAcNum != '' " >
+                <![CDATA[  #{zfbAcNum}, ]]>
             </if>
             <if test="curday != null and curday != '' " >
                 <![CDATA[  #{curday}, ]]>
@@ -344,6 +357,45 @@
         order by a.create_time desc
         limit 5
     </select>
+
+
+    <!-- 获取初始化的派单信息 -->
+    <select id="getInitOrder" resultType="com.hz.fine.master.core.model.order.OrderModel">
+         select
+            a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
+            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+            a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,
+            a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
+            a.create_time,a.update_time,a.yn,
+            ifnull(convert(a.order_money * #{ratio},decimal(19,2)), '0.00') as profit,time_to_sec(timediff(invalid_time,now())) as invalid_second
+        from tb_fn_order a
+        where 1=1
+        and a.did = #{did}
+        and a.collection_type = 2
+        and a.order_status = #{orderStatus}
+        and a.did_status = #{didStatus}
+        and a.yn = 0
+        order by a.create_time desc
+        limit 1
+    </select>
+
+
+    <!-- 修改用户操作的状态 -->
+    <update id="updateDidStatus" parameterType="com.hz.fine.master.core.model.order.OrderModel">
+        UPDATE tb_fn_order a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="didStatus != null and didStatus != '' " >
+                a.did_status = #{didStatus},
+            </if>
+            a.did_time = now(),
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.did = #{did}
+        and a.order_no = #{orderNo}
+        and a.did_status = 1
+        and a.yn = 0
+    </update>
 
 
 </mapper>
