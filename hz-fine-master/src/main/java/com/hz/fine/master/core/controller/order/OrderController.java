@@ -442,7 +442,7 @@ public class OrderController {
             HodgepodgeMethod.checkOrderByQrCodeData(requestModel);
 
             // 收款账号详情数据
-            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo);
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo, 0);
             OrderModel orderModelData = ComponentUtil.orderService.getOrderQrCodeByOrderNo(orderQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
@@ -590,7 +590,7 @@ public class OrderController {
             HodgepodgeMethod.checkOrderByQrCodeData(requestModel);
 
             // 收款账号详情数据
-            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo);
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo, 0);
             int orderStatus = ComponentUtil.orderService.getOrderStatus(orderQuery);
             if (orderStatus != 0){
                 orderStatus = 1;
@@ -928,7 +928,70 @@ public class OrderController {
 
 
 
+    /**
+     * @Description: 获取派单的订单信息-支付宝
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/order/getZfbQrCode
+     * 请求的属性类:RequestOrder
+     * 必填字段:{"orderNo":"202007021853550000001"}
+     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA3MDIxODUzNTUwMDAwMDAxIn0="}
+     * 客户端加密字段:id+ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJvcmRlciI6eyJkYXRhVHlwZSI6MiwiaW52YWxpZFNlY29uZCI6Ijc0NzciLCJpbnZhbGlkVGltZSI6IjIwMjAtMDctMDIgMjE6MDM6NTUiLCJrZXkiOiI4RkY3QUM3MkRFMCIsIm9yZGVyTW9uZXkiOiIxMTExLjAwIiwib3JkZXJObyI6IjIwMjAwNzAyMTg1MzU1MDAwMDAwMSIsInVzZXJJZCI6IjIwODg2MDIwNzkyMTg3ODIiLCJ6ZmJBY051bSI6IjEzNjA2NzA2MzQ2In0sInNpZ24iOiJlY2MyOGYzM2RkYWU0MjA5ZDBlMTUzYjdmMWIyNDJjYSIsInN0aW1lIjoxNTkzNjg3NTU4NDAzfQ=="
+     *     },
+     *     "sgid": "202007021859180000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getZfbQrCode", method = {RequestMethod.POST})
+    public JsonResult<Object> getZfbQrCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
 
+        RequestOrder requestModel = new RequestOrder();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestOrder.class);
+
+            // check校验请求的数据
+            HodgepodgeMethod.checkZfbOrderByQrCodeData(requestModel);
+            // 收款账号详情数据
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo, 1);
+            OrderModel orderModelData = ComponentUtil.orderService.getOrderQrCodeByOrderNo(orderQuery);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleZfbOrderDataResult(stime, sign, orderModelData);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // 添加异常
+            log.error(String.format("this OrderController.getZfbQrCode() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this OrderController.getZfbQrCode() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
 
 
 

@@ -41,6 +41,26 @@ public class OrderDistribution implements Serializable {
      */
     public String qrCodeUrl;
 
+    /**
+     * 支付宝账号ID
+     */
+    public String userId;
+
+    /**
+     * 支付宝账号
+     */
+    public String zfbAcNum;
+
+    /**
+     * 数据类型
+     */
+    public Integer dataType;
+
+    /**
+     *
+     */
+    public String key;
+
     public OrderDistribution(){
 
     }
@@ -91,5 +111,37 @@ public class OrderDistribution implements Serializable {
 
     public void setInvalidSecond(String invalidSecond) {
         this.invalidSecond = invalidSecond;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getZfbAcNum() {
+        return zfbAcNum;
+    }
+
+    public void setZfbAcNum(String zfbAcNum) {
+        this.zfbAcNum = zfbAcNum;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

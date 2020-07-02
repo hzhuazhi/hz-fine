@@ -2,10 +2,7 @@ package com.hz.fine.master.util;
 
 import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ServiceException;
-import com.hz.fine.master.core.common.utils.BeanUtils;
-import com.hz.fine.master.core.common.utils.DateUtil;
-import com.hz.fine.master.core.common.utils.QiniuCloudUtil;
-import com.hz.fine.master.core.common.utils.StringUtil;
+import com.hz.fine.master.core.common.utils.*;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
@@ -2987,9 +2984,12 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2020/5/18 11:41
      */
-    public static OrderModel assembleOrderOrderNo(String orderNo){
+    public static OrderModel assembleOrderOrderNo(String orderNo, int didStatus){
         OrderModel resBean = new OrderModel();
         resBean.setOrderNo(orderNo);
+        if (didStatus != 0){
+            resBean.setDidStatus(didStatus);
+        }
         return resBean;
     }
 
@@ -4408,6 +4408,84 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据获取支付宝派单数据-详情-返回码的接口时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkZfbOrderByQrCodeData(RequestOrder requestModel) throws Exception{
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00020.geteCode(), ErrorCode.ENUM_ERROR.OR00020.geteDesc());
+        }
+
+        if (StringUtils.isBlank(requestModel.orderNo)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00021.geteCode(), ErrorCode.ENUM_ERROR.OR00021.geteDesc());
+        }
+
+    }
+
+
+    /**
+     * @Description: 支付宝派单的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleZfbOrderDataResult(long stime, String sign, OrderModel orderModel){
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null){
+            OrderDistribution order = new OrderDistribution();
+            order.orderNo = orderModel.getOrderNo();
+            order.orderMoney = orderModel.getOrderMoney();
+            order.invalidTime = orderModel.getInvalidTime();
+            order.invalidSecond = orderModel.getInvalidSecond();
+            order.userId = orderModel.getUserId();
+            order.zfbAcNum = orderModel.getZfbAcNum();
+            Map<String, Object> map = getZfbKey();
+            order.dataType = Integer.parseInt(map.get("dataType").toString());
+            order.key = map.get("key").toString();
+            dataModel.order = order;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 生成秘钥给客户端使用
+     * @return
+     * @author yoko
+     * @date 2020/7/2 18:47
+    */
+    public static Map<String, Object> getZfbKey(){
+        int random = (int)(Math.random()*10+1);
+        String key = UUID.randomUUID().toString().replaceAll("\\-", "");
+        if (random == 1 || random == 9){
+            key = MD5Util.getMD5String(key).substring(0, 10).toUpperCase();
+        }else if(random == 2 || random == 8){
+            key = MD5Util.getMD5String(key).substring(0, 11).toUpperCase();
+        }else if(random == 3 || random == 7){
+            key = MD5Util.getMD5String(key).substring(0, 12).toUpperCase();
+        }else if(random == 4 || random == 6){
+            key = MD5Util.getMD5String(key).substring(0, 13).toUpperCase();
+        }else if(random == 5 || random == 5){
+            key = MD5Util.getMD5String(key).substring(0, 14).toUpperCase();
+        }
+
+        System.out.println("key:" + key);
+        Map<String, Object> map = new HashMap<>();
+        map.put("dataType", random);
+        map.put("key", key);
+        return map;
+    }
+
+
 
 
     public static void main(String [] args){
@@ -4464,6 +4542,8 @@ public class HodgepodgeMethod {
 
         int sb1 = getRandom();
         System.out.println("sb1:" + sb1);
+
+        Map<String, Object> map = getZfbKey();
 
     }
 
