@@ -38,6 +38,7 @@ public class ComponentUtil {
     public static DidCollectionAccountQrCodeService didCollectionAccountQrCodeService;
     public static WxClerkUnboundService wxClerkUnboundService;
     public static DidOnoffService didOnoffService;
+    public static DidBalanceDeductService didBalanceDeductService;
 
 
 
