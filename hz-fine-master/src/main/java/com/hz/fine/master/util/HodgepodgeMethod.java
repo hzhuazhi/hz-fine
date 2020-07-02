@@ -4282,6 +4282,131 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验是否筛选出收款账号
+     * @param didModel - 用户收款账号以及用户
+     * @return
+     * @author yoko
+     * @date 2020/6/2 14:13
+     */
+    public static void checkDidAndByAddCollectionAccountOrder(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00019.geteCode(), ErrorCode.ENUM_ERROR.OR00019.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 组装添加派单数据的方法-支付宝
+     * @param did -  用户ID
+     * @param orderNo - 订单号
+     * @param orderMoney - 订单金额
+     * @param outTradeNo - 商家订单号
+     * @param notifyUlr - 同步地址
+     * @param didModel - 用户收款账号信息
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/6/2 14:53
+     */
+    public static OrderModel assembleOrderByZfbAdd(long did, String orderNo, String orderMoney, String notifyUlr, String outTradeNo,
+                                                DidModel didModel, int collectionType, List<StrategyData> consumeMoneyList){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        resBean.setOrderMoney(orderMoney);
+        resBean.setCollectionAccountId(didModel.getCollectionAccountId());
+        resBean.setCollectionType(collectionType);
+        if (!StringUtils.isBlank(outTradeNo)){
+            resBean.setOutTradeNo(outTradeNo);
+        }
+        if (!StringUtils.isBlank(notifyUlr)){
+            resBean.setNotifyUrl(notifyUlr);
+        }
+        // 订单失效时间
+        String invalidTime = DateUtil.addDateMinute(10);// 目前默认5分钟：后续可以从策略取数据
+        resBean.setInvalidTime(invalidTime);
+        resBean.setUserId(didModel.getUserId());
+        resBean.setZfbAcNum(didModel.getZfbAcNum());
+        String profit = getConsumeProfit(consumeMoneyList, orderMoney);
+        resBean.setProfit(profit);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装扣除用户余额流水的数据的方法
+     * @param did - 用户ID
+     * @param orderNo - 订单号
+     * @param money - 订单金额
+     * @return com.hz.fine.master.core.model.did.DidBalanceDeductModel
+     * @author yoko
+     * @date 2020/7/2 14:52
+     */
+    public static DidBalanceDeductModel assembleDidBalanceDeductAdd(long did, String orderNo, String money){
+        DidBalanceDeductModel resBean = new DidBalanceDeductModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        resBean.setMoney(money);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装更新用户金额的方法
+     * @param did - 用户ID
+     * @param orderMoney - 派单的具体金额
+     * @return com.hz.fine.master.core.model.did.DidModel
+     * @author yoko
+     * @date 2020/6/9 10:47
+     */
+    public static DidModel assembleUpdateDidBalance(long did, String orderMoney){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setOrderMoney(orderMoney);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户派单成功的数据组装返回客户端的方法-支付宝
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @param returnUrl - 支付完成之后自动跳转的地址
+     * @param zfbQrCodeUrl - 生成的HTML页面的地址
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderZfbQrCodeDataResult(long stime, String sign, OrderModel orderModel, String returnUrl, String zfbQrCodeUrl) throws Exception{
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null){
+            OrderDistribution order = new OrderDistribution();
+            order.orderNo = orderModel.getOrderNo();
+            order.qrCode = orderModel.getQrCode();
+            order.orderMoney = orderModel.getOrderMoney();
+            order.invalidTime = orderModel.getInvalidTime();
+            int invalidSecond = DateUtil.calLastedTime(orderModel.getInvalidTime());
+            order.invalidSecond = String.valueOf(invalidSecond);
+            String resQrCodeUrl = "";
+            if (!StringUtils.isBlank(returnUrl)){
+                resQrCodeUrl = zfbQrCodeUrl + "?" + "orderNo=" +  orderModel.getOrderNo() + "&" + "returnUrl=" + returnUrl;
+            }else {
+                resQrCodeUrl = zfbQrCodeUrl + "?" + "orderNo=" +  orderModel.getOrderNo() + "&" + "returnUrl=";
+            }
+            order.qrCodeUrl = URLEncoder.encode(resQrCodeUrl,"UTF-8");
+            dataModel.order = order;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
 
 
 

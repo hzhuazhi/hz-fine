@@ -8,6 +8,7 @@ import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.order.OrderModel;
@@ -810,6 +811,115 @@ public class OrderController {
             log.error(String.format("this OrderController.updateOrderStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
                 log.error(String.format("this OrderController.updateOrderStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+
+
+    /**
+     * @Description: 派发订单-支付宝接口
+     * <p>
+     * 1.用户余额是否满足此次派单的金额。
+     * 2.用户抢单开始的状态是在上线状态。
+     * 3.用户的支付宝收款账号是否正常。
+     * 4.已经派单过的用户并且名下有订单没有过失效期的用户不派单。
+     * 5.派单进行中：需要从余额里面剔除相对应的订单金额，把剔除到的存放到表《用户扣减余额流水表》里面。
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/order/zfbQrCode
+     * 请求的属性类:RequestOrder
+     * 必填字段:{"money":"1111","payType":2,"outTradeNo":"outTradeNo1","notifyUrl":"notify_url","returnUrl":"http://www.baidu.com","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJtb25leSI6IjExMTEiLCJwYXlUeXBlIjoyLCJvdXRUcmFkZU5vIjoib3V0VHJhZGVObzEiLCJub3RpZnlVcmwiOiJub3RpZnlfdXJsIiwicmV0dXJuVXJsIjoiaHR0cDovL3d3dy5iYWlkdS5jb20iLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJvcmRlciI6eyJpbnZhbGlkU2Vjb25kIjoiNDk4IiwiaW52YWxpZFRpbWUiOiIyMDIwLTA3LTAyIDE2OjAwOjIzIiwib3JkZXJNb25leSI6IjExMTEuMDAiLCJvcmRlck5vIjoiMjAyMDA3MDIxNTUwMTAwMDAwMDAxIiwicXJDb2RlVXJsIjoiaHR0cCUzQSUyRiUyRnd3dy55YnpmbS5jb20lM0E4MDAyJTJGcGF5JTJGaW5kZXguaHRtbCUzRm9yZGVyTm8lM0QyMDIwMDcwMjE1NTAxMDAwMDAwMDElMjZyZXR1cm5VcmwlM0RodHRwJTNBJTJGJTJGd3d3LmJhaWR1LmNvbSJ9LCJzaWduIjoiIiwic3RpbWUiOjE1OTM2NzYzMjQ4NDN9"
+     *     },
+     *     "sgid": "202007021550100000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/zfbQrCode", method = {RequestMethod.POST})
+    public JsonResult<Object> zfbQrCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestOrder requestModel = new RequestOrder();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestOrder.class);
+
+            // check校验数据
+            HodgepodgeMethod.checkOrderAdd(requestModel);
+
+            if (requestModel.money.indexOf(".") <= -1){
+                requestModel.money = requestModel.money + ".00";
+            }
+            log.info("");
+
+            // 获取可派单的用户集合
+            DidModel didQuery = HodgepodgeMethod.assembleEffectiveDid(requestModel);
+            List<DidModel> didList = ComponentUtil.didService.getEffectiveDidByZfbList(didQuery);
+            // check校验是否有有效的用户
+            HodgepodgeMethod.checkEffectiveDidData(didList);
+
+            // 循环筛选有效
+            DidModel didModel = ComponentUtil.orderService.screenCollectionAccountByZfb(didList, requestModel.money);
+            // check校验
+            HodgepodgeMethod.checkDidAndByAddCollectionAccountOrder(didModel);
+
+            did = didModel.getId();
+
+            // 查询策略里面的消耗金额范围内的奖励规则列表
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.CONSUME_MONEY_LIST.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            // 解析奖励规则的值
+            List<StrategyData> consumeMoneyList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+
+            // 组装派发订单的数据
+            OrderModel orderModel = HodgepodgeMethod.assembleOrderByZfbAdd(did, sgid, requestModel.money, requestModel.notifyUrl, requestModel.outTradeNo, didModel, requestModel.payType, consumeMoneyList);
+
+            // 组装用户扣除余额流水的数据
+            DidBalanceDeductModel didBalanceDeductModel = HodgepodgeMethod.assembleDidBalanceDeductAdd(did, sgid, requestModel.money);
+
+            // 组装扣除用户余额
+            DidModel updateBalance = HodgepodgeMethod.assembleUpdateDidBalance(did, requestModel.money);
+
+            // 正式处理派单的逻辑
+            ComponentUtil.orderService.handleOrder(orderModel, didBalanceDeductModel, updateBalance);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleOrderZfbQrCodeDataResult(stime, token, orderModel, requestModel.returnUrl, ComponentUtil.loadConstant.zfbQrCodeUrl);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this OrderController.zfbQrCode() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this OrderController.zfbQrCode() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);

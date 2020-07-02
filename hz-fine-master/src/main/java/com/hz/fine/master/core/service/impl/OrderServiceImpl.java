@@ -1,10 +1,13 @@
 package com.hz.fine.master.core.service.impl;
 
 import com.hz.fine.master.core.common.dao.BaseDao;
+import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
+import com.hz.fine.master.core.mapper.DidBalanceDeductMapper;
+import com.hz.fine.master.core.mapper.DidMapper;
 import com.hz.fine.master.core.mapper.OrderMapper;
 import com.hz.fine.master.core.mapper.TaskMapper;
 import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
@@ -21,6 +24,7 @@ import com.hz.fine.master.util.HodgepodgeMethod;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,6 +53,12 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private DidBalanceDeductMapper didBalanceDeductMapper;
+
+    @Autowired
+    private DidMapper didMapper;
 
     public BaseDao<T> getDao() {
         return orderMapper;
@@ -325,6 +335,85 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
     @Override
     public int updateDidStatus(OrderModel model) {
         return orderMapper.updateDidStatus(model);
+    }
+
+    @Override
+    public DidModel screenCollectionAccountByZfb(List<DidModel> didList, String orderMoney) {
+        DidModel didModel = new DidModel();
+        int count = 0;// 加一把防止死循环的锁
+        while (1==1){
+            if (count <= 50){
+                // 随机选一个用户
+                int random = new Random().nextInt(didList.size());
+                DidModel randomDidModel = didList.get(random);
+
+                // 筛选收款账号
+                didModel = getDidCollectionAccountByZfb(randomDidModel, orderMoney);
+                if (didModel != null && didModel.getId() > 0){
+                    break;
+                }
+                count ++;
+            }else {
+                break;
+            }
+        }
+
+        return didModel;
+    }
+
+    @Transactional(rollbackFor=Exception.class)
+    @Override
+    public boolean handleOrder(OrderModel orderModel, DidBalanceDeductModel didBalanceDeductModel, DidModel didModel) throws Exception {
+        int num1 = orderMapper.add(orderModel);
+        int num2 = didBalanceDeductMapper.add(didBalanceDeductModel);
+        int num3 = 0;
+        // 锁定这个用户
+        String lockKey_did_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_MONEY, didModel.getId());
+        boolean flagLock_did_money = ComponentUtil.redisIdService.lock(lockKey_did_money);
+        if (flagLock_did_money){
+            num3 = didMapper.updateDidBalance(didModel);
+            // 解锁
+            ComponentUtil.redisIdService.delLock(lockKey_did_money);
+        }else {
+            throw new ServiceException("handleOrder", "用户ID被其它锁住");
+        }
+
+        if (num1 > 0 && num2 > 0 && num3 > 0){
+            return true;
+        }else{
+            throw new ServiceException("handleOrder", "三个执行更新SQL其中有一个或者多个响应行为0");
+        }
+
+    }
+
+
+    /**
+     * @Description: 筛选可使用的支付宝收款账号以及用户
+     * @param didModel - 用户信息
+     * @param orderMoney - 派单金额
+     * @return
+     * @author yoko
+     * @date 2020/6/1 19:51
+     */
+    public DidModel getDidCollectionAccountByZfb(DidModel didModel, String orderMoney){
+        // 判断此用户是否被锁住
+        String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER, didModel.getId());
+        boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
+        if (flagLock_did){
+            // 判断收款账号是否在5分钟之内给出过码
+            String strKeyCache_check_lock_did_collection_account_fifteen = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didModel.getCollectionAccountId());
+            String strCache_check_lock_did_collection_account_fifteen = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_fifteen);
+            if (StringUtils.isBlank(strCache_check_lock_did_collection_account_fifteen)){
+                // redis存储
+                // 此收款账号给出过码，需要5分钟之后才自动失效
+                String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didModel.getCollectionAccountId());
+                ComponentUtil.redisService.set(strKeyCache_lock_did_collection_account, String.valueOf(didModel.getCollectionAccountId()) + "," + orderMoney, FIFTEEN_MIN);
+                return didModel;
+            }
+            // 解锁
+            ComponentUtil.redisIdService.delLock(lockKey_did);
+        }
+        return null;
     }
 
 

@@ -41,4 +41,14 @@ public class DidServiceImpl<T> extends BaseServiceImpl<T> implements DidService<
     public int updateDidMoneyByOrder(DidModel model) {
         return didMapper.updateDidMoneyByOrder(model);
     }
+
+    @Override
+    public List<DidModel> getEffectiveDidByZfbList(DidModel model) {
+        return didMapper.getEffectiveDidByZfbList(model);
+    }
+
+    @Override
+    public int updateDidBalance(DidModel model) {
+        return didMapper.updateDidBalance(model);
+    }
 }

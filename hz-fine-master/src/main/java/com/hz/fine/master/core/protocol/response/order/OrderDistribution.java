@@ -32,6 +32,11 @@ public class OrderDistribution implements Serializable {
     public String invalidTime;
 
     /**
+     * 失效时间-秒
+     */
+    public String invalidSecond;
+
+    /**
      * 生成二维码扫码的HTML地址
      */
     public String qrCodeUrl;
@@ -78,5 +83,13 @@ public class OrderDistribution implements Serializable {
 
     public void setQrCodeUrl(String qrCodeUrl) {
         this.qrCodeUrl = qrCodeUrl;
+    }
+
+    public String getInvalidSecond() {
+        return invalidSecond;
+    }
+
+    public void setInvalidSecond(String invalidSecond) {
+        this.invalidSecond = invalidSecond;
     }
 }

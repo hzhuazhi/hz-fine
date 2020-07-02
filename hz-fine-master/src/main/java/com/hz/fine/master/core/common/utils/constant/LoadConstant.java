@@ -42,4 +42,12 @@ public class LoadConstant {
      */
     @Value("${qrCode.url}")
     public String qrCodeUrl;
+
+    /**
+     * 支付宝支付地址
+     */
+    @Value("${zfb.qrCode.url}")
+    public String zfbQrCodeUrl;
+
+
 }

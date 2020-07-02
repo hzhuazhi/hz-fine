@@ -178,6 +178,21 @@ public class DidModel extends BasePage implements Serializable {
      */
     private String orderMoney;
 
+    /**
+     * 用户收款账号ID：对应表tb_fn_did_collection_account的主键ID
+     */
+    private Long collectionAccountId;
+
+    /**
+     * 支付宝账号ID
+     */
+    private String userId;
+
+    /**
+     * 支付宝账号
+     */
+    private String zfbAcNum;
+
     public Long getId() {
         return id;
     }
@@ -433,5 +448,29 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setZfbTotalProfit(String zfbTotalProfit) {
         this.zfbTotalProfit = zfbTotalProfit;
+    }
+
+    public Long getCollectionAccountId() {
+        return collectionAccountId;
+    }
+
+    public void setCollectionAccountId(Long collectionAccountId) {
+        this.collectionAccountId = collectionAccountId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getZfbAcNum() {
+        return zfbAcNum;
+    }
+
+    public void setZfbAcNum(String zfbAcNum) {
+        this.zfbAcNum = zfbAcNum;
     }
 }

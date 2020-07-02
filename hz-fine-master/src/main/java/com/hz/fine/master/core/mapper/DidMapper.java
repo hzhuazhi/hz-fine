@@ -35,4 +35,26 @@ public interface DidMapper<T> extends BaseDao<T> {
      * @date 2020/6/9 10:25 
     */
     public int updateDidMoneyByOrder(DidModel model);
+
+    /**
+     * @Description: 获取有效的用户-支付宝
+     * <p>
+     *     获取有余额，并且配置了支付宝账号的用户
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/2 10:56
+     */
+    public List<DidModel> getEffectiveDidByZfbList(DidModel model);
+
+
+    /**
+     * @Description: 更新用户余额
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/2 14:56
+     */
+    public int updateDidBalance(DidModel model);
 }

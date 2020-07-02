@@ -5,6 +5,7 @@ import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.order.OrderModel;
+import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 
 import java.util.List;
 
@@ -101,4 +102,25 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/7/1 16:46
     */
     public int updateDidStatus(OrderModel model);
+
+    /**
+     * @Description: 筛选出要派单的支付宝收款账号以及用户
+     * @param didList - 可以正常使用的did账号集合
+     * @param orderMoney - 订单金额
+     * @return
+     * @author yoko
+     * @date 2020/5/26 15:58
+     */
+    public DidModel screenCollectionAccountByZfb(List<DidModel> didList, String orderMoney);
+
+    /**
+     * @Description: 处理订单派发的所有逻辑
+     * @param orderModel - 订单信息
+     * @param didBalanceDeductModel - 用户余额要扣减的流水
+     * @param didModel - 更新用户的余额
+     * @return
+     * @author yoko
+     * @date 2020/7/2 15:03
+    */
+    public boolean handleOrder(OrderModel orderModel, DidBalanceDeductModel didBalanceDeductModel, DidModel didModel) throws Exception;
 }

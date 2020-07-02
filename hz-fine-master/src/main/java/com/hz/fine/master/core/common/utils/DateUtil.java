@@ -497,7 +497,7 @@ public class DateUtil {
 	/**
 	 * 根据毫秒数返回时分秒毫秒
 	 *
-	 * @param _second
+	 * @param ms_second
 	 *            秒数
 	 * @return String
 	 * @throws Exception
@@ -577,7 +577,7 @@ public class DateUtil {
 	/**
 	 * 得到日期中的日
 	 *
-	 * @param date
+	 * @param d
 	 *            日期
 	 * @return yyyy格式的年份
 	 */
@@ -589,7 +589,7 @@ public class DateUtil {
 	/**
 	 * 得到日期中的小时
 	 *
-	 * @param date
+	 * @param d
 	 *            日期
 	 * @return HH格式的小时
 	 */
@@ -601,7 +601,7 @@ public class DateUtil {
 	/**
 	 * 得到日期中的分钟
 	 *
-	 * @param date
+	 * @param d
 	 *            日期
 	 * @return mm格式的分钟
 	 */
@@ -2101,7 +2101,7 @@ public class DateUtil {
 	/**
 	 * Returns a "friendly" date format.
 	 *
-	 * @param mimimalFormat
+	 * @param minimalFormat
 	 *            Should the date format allow single digits.
 	 **/
 	public static SimpleDateFormat friendlyDateFormat(boolean minimalFormat) {
@@ -3132,6 +3132,22 @@ public class DateUtil {
 			out.println("Error at getDate:" + e.getMessage());
 			return "";
 		}
+	}
+
+	/**
+	 * @Description: 计算时间相差多少秒
+	 * @param time
+	 * @return
+	 * @author yoko
+	 * @date 2020/7/2 15:29
+	*/
+	public static int calLastedTime(String time) throws Exception{
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = format.parse(time);
+		long a = startDate.getTime();
+		long b = new Date().getTime();
+		int c = (int)((a - b) / 1000);
+		return c;
 	}
 
 
