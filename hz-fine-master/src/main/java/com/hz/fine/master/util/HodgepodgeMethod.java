@@ -4474,7 +4474,7 @@ public class HodgepodgeMethod {
             key = MD5Util.getMD5String(key).substring(0, 12).toUpperCase();
         }else if(random == 4 || random == 6){
             key = MD5Util.getMD5String(key).substring(0, 13).toUpperCase();
-        }else if(random == 5 || random == 5){
+        }else if(random == 5 || random == 10){
             key = MD5Util.getMD5String(key).substring(0, 14).toUpperCase();
         }
 
