@@ -17,7 +17,7 @@ public class ResponseBank extends BaseResponse implements Serializable {
 
     public List<BuyBank> dataList;
     public Bank dataModel;
-    public List<String> moneyList;// 筛选出来的金额列表集合
+    public BankMoney bankMoney;// 展现给用户的银行金额
     public Integer rowCount;
 
     public ResponseBank(){
@@ -52,11 +52,11 @@ public class ResponseBank extends BaseResponse implements Serializable {
     }
 
 
-    public List<String> getMoneyList() {
-        return moneyList;
+    public BankMoney getBankMoney() {
+        return bankMoney;
     }
 
-    public void setMoneyList(List<String> moneyList) {
-        this.moneyList = moneyList;
+    public void setBankMoney(BankMoney bankMoney) {
+        this.bankMoney = bankMoney;
     }
 }

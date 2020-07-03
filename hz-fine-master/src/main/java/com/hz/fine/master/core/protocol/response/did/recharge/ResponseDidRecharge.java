@@ -23,6 +23,11 @@ public class ResponseDidRecharge extends BaseResponse implements Serializable {
     public DidRecharge dataModel;
     public Integer rowCount;
 
+    /**
+     * 用户名下是否充值挂单：1没有挂单，2有挂单
+     */
+    public Integer haveType;
+
 
 
     public ResponseDidRecharge(){
@@ -35,5 +40,40 @@ public class ResponseDidRecharge extends BaseResponse implements Serializable {
 
     public void setRecharge(RechargeInfo recharge) {
         this.recharge = recharge;
+    }
+
+
+    public List<DidRecharge> getDataList() {
+        return dataList;
+    }
+
+    public void setDataList(List<DidRecharge> dataList) {
+        this.dataList = dataList;
+    }
+
+    public DidRecharge getDataModel() {
+        return dataModel;
+    }
+
+    public void setDataModel(DidRecharge dataModel) {
+        this.dataModel = dataModel;
+    }
+
+    @Override
+    public Integer getRowCount() {
+        return rowCount;
+    }
+
+    @Override
+    public void setRowCount(Integer rowCount) {
+        this.rowCount = rowCount;
+    }
+
+    public Integer getHaveType() {
+        return haveType;
+    }
+
+    public void setHaveType(Integer haveType) {
+        this.haveType = haveType;
     }
 }

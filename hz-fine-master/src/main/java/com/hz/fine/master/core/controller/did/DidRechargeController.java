@@ -425,6 +425,93 @@ public class DidRechargeController {
 
 
 
+    /**
+     * @Description: 获取用户是否有充值挂单
+     * <p>
+     *     判断用户是否有充值挂单：如果没有填写存入人的一些信息，则把redis的订单进行返回用户。
+     *     如果已填写存入人的一些信息，则无需把订单展现给用户
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/recharge/haveOrder
+     * 请求的属性类:RequestDidRecharge
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJoYXZlVHlwZSI6MiwicmVjaGFyZ2UiOnsiYWNjb3VudE5hbWUiOiLmi5vllYbpk7booYwxIiwiYmFua0NhcmQiOiI0NTc3MjYzNjY2MjcyNjM2MzIyMSIsImJhbmtOYW1lIjoi5oub5ZWG6ZO26KGMIiwiZGVwb3NpdFRpbWUiOiIiLCJkZXBvc2l0b3IiOiIiLCJkaXN0cmlidXRpb25Nb25leSI6IjEwNzUuMDAiLCJpbnZhbGlkVGltZSI6IjIwMjAtMDctMDMgMjA6Mzk6NDciLCJsYXN0TnVtIjoiIiwib3JkZXJNb25leSI6IjEwMDAuMDAiLCJvcmRlck5vIjoiMjAyMDA3MDMxODM5MzYwMDAwMDAxIiwic3ViYnJhbmNoTmFtZSI6Inh4eHjpk7booYzpkrHmsZ/mlK/ooYwifSwic2lnbiI6ImE1YjhhMjEwMmI4MmNjMTUxMWU5YjAxZmVlZTMzMzA4Iiwic3RpbWUiOjE1OTM3NzI4NTk3NzF9"
+     *     },
+     *     "sgid": "202007031840590000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/haveOrder", method = {RequestMethod.POST})
+    public JsonResult<Object> haveOrder(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestDidRecharge requestModel = new RequestDidRecharge();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验数据
+            did = HodgepodgeMethod.checkHaveOrderData(requestModel);
+            String strData = "";
+            // 判断是否还有未完成的订单
+            strData = HodgepodgeMethod.checkDidOrderByRedis(did);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            if (StringUtils.isBlank(strData)){
+                strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, null, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+            }else{
+                ResponseDidRecharge responseDidRecharge = JSON.parseObject(strData, ResponseDidRecharge.class);
+                if (StringUtils.isBlank(responseDidRecharge.recharge.depositor)){
+                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, responseDidRecharge, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+                }else {
+                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, null, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+                }
+            }
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidRechargeController.haveOrder() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRechargeController.haveOrder() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
 
     /**
      * @Description: 用户上传图片-申诉

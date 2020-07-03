@@ -261,9 +261,9 @@ public class BankController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJkYXRhTGlzdCI6W3siZGlzdHJpYnV0aW9uTW9uZXkiOiIxMDAwLjAwIiwiaW52YWxpZFRpbWUiOiIyMDIwLTA1LTIxIDE1OjUwOjIzIiwib3JkZXJNb25leSI6IjEwMDAuMDAiLCJvcmRlck5vIjoiMjAyMDA1MjExNTQwMTYwMDAwMDAxIiwib3JkZXJTdGF0dXMiOjEsInBpY3R1cmVBZHMiOiIifSx7ImRpc3RyaWJ1dGlvbk1vbmV5IjoiMTAwMC4wMCIsImludmFsaWRUaW1lIjoiMjAyMC0wNS0yMSAxNToxNDowNSIsIm9yZGVyTW9uZXkiOiIxMDAwLjAwIiwib3JkZXJObyI6IjIwMjAwNTIxMTUwMzU2MDAwMDAwMSIsIm9yZGVyU3RhdHVzIjoxLCJwaWN0dXJlQWRzIjoiIn0seyJkaXN0cmlidXRpb25Nb25leSI6Ijk5OS45NSIsImludmFsaWRUaW1lIjoiMjAyMC0wNS0yMSAxNToxMzoyNSIsIm9yZGVyTW9uZXkiOiIxMDAwLjAwIiwib3JkZXJObyI6IjIwMjAwNTIxMTUwMzIwMDAwMDAwMSIsIm9yZGVyU3RhdHVzIjoxLCJwaWN0dXJlQWRzIjoiIn1dLCJzaWduIjoiYjdjNjNjMmZmYjM0OTI2YmIwYWE4ZTI2ZWU1ZWMwYTMiLCJzdGltZSI6MTU5MDA0OTU3OTg4MX0="
+     *         "jsonData": "eyJiYW5rTW9uZXkiOnsiYmFua0lkIjoyOSwibW9uZXlMaXN0IjpbIjEwMDQuMDAiLCIyMTE3LjAwIiwiMzI1NS4wMCIsIjQyODAuMDAiLCI1NDc1LjAwIl19LCJyb3dDb3VudCI6NSwic2lnbiI6ImM1NzNlMTU5OTUyMTBkNmI1ZDM4MTFlZjU5ZjQzYjViIiwic3RpbWUiOjE1OTM3NzQ1ODMzMzd9"
      *     },
-     *     "sgid": "202005211626180000001",
+     *     "sgid": "202007031909420000001",
      *     "cgid": ""
      * }
      */
@@ -281,11 +281,11 @@ public class BankController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestBank.class);
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
             // check校验数据
             did = HodgepodgeMethod.checkGetMoneyListData(requestModel);
 
@@ -326,7 +326,7 @@ public class BankController {
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleBankMoneyListResult(stime, sign, moneyList, moneyList.size());
+            String strData = HodgepodgeMethod.assembleBankMoneyListResult(stime, sign, bankModel.getId(), moneyList, moneyList.size());
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

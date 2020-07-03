@@ -34,6 +34,7 @@ import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.response.ResponseData;
 import com.hz.fine.master.core.protocol.response.bank.Bank;
+import com.hz.fine.master.core.protocol.response.bank.BankMoney;
 import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 import com.hz.fine.master.core.protocol.response.bank.ResponseBank;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
@@ -4543,20 +4544,72 @@ public class HodgepodgeMethod {
      * @Description: 点击我要买-展现可用金额信息数据组装返回客户端的方法-集合
      * @param stime - 服务器的时间
      * @param sign - 签名
+     * @param bankId - 银行卡主键ID
      * @param moneyList - 金额列表集合
      * @param rowCount - 总行数
      * @return java.lang.String
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleBankMoneyListResult(long stime, String sign, List<String> moneyList, Integer rowCount){
+    public static String assembleBankMoneyListResult(long stime, String sign,long bankId, List<String> moneyList, Integer rowCount){
         ResponseBank dataModel = new ResponseBank();
         if (moneyList != null && moneyList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
-            dataModel.moneyList = moneyList;
+            BankMoney bankMoney = new BankMoney();
+            bankMoney.bankId = bankId;
+            bankMoney.moneyList = moneyList;
+            dataModel.bankMoney = bankMoney;
         }
         if (rowCount != null){
             dataModel.rowCount = rowCount;
         }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据获取用户是否有充值挂单
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkHaveOrderData(RequestDidRecharge requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00021.geteCode(), ErrorCode.ENUM_ERROR.DR00021.geteDesc());
+        }
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 获取用户是否有充值挂单数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param responseDidRecharge - 存储在缓存里面的挂单信息
+     * @param haveType - 用户名下是否充值挂单：1没有挂单，2有挂单
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidRechargeHaveOrderDataResult(long stime, String sign, ResponseDidRecharge responseDidRecharge, int haveType){
+        ResponseDidRecharge dataModel = new ResponseDidRecharge();
+        if (responseDidRecharge != null && responseDidRecharge.recharge != null && !StringUtils.isBlank(responseDidRecharge.recharge.orderNo)){
+            dataModel = responseDidRecharge;
+        }
+        dataModel.haveType = haveType;
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);

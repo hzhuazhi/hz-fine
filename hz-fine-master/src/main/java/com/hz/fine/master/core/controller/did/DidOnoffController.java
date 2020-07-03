@@ -212,11 +212,11 @@ public class DidOnoffController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestDidOnoff.class);
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
             // check校验数据
             did = HodgepodgeMethod.checkOnoffData(requestModel);
 
