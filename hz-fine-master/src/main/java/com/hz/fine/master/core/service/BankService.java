@@ -49,4 +49,23 @@ public interface BankService<T> extends BaseService<T> {
      * @date 2020/6/29 16:29
     */
     public String getMoney(BankModel bankModel, String orderMoney) throws Exception;
+
+    /**
+     * @Description: 筛选出未超过日月总上限的银行卡
+     * @param bankList
+     * @return
+     * @author yoko
+     * @date 2020/7/3 14:52
+    */
+    public List<BankModel> screenBankByMoney(List<BankModel> bankList);
+
+    /**
+     * @Description: 筛选可用的金额集合
+     * @param bankModel - 银行卡信息
+     * @param strategyMoneyList - 策略里面的金额
+     * @return
+     * @author yoko
+     * @date 2020/7/3 16:22
+    */
+    public List<String> screenMoneyList(BankModel bankModel, List<StrategyData> strategyMoneyList);
 }

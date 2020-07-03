@@ -4486,6 +4486,83 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: 随机获取一张银行卡
+     * @param bankList
+     * @return
+     * @author yoko
+     * @date 2020/7/3 16:18
+    */
+    public static BankModel screenBank(List<BankModel> bankList){
+        int random = new Random().nextInt(bankList.size());
+        BankModel bankModel = bankList.get(random);
+        return bankModel;
+    }
+
+
+    /**
+     * @Description: check校验数据点击我要买-展现可用金额信息时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkGetMoneyListData(RequestBank requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.BK00004.geteCode(), ErrorCode.ENUM_ERROR.BK00004.geteDesc());
+        }
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: check随机筛选的金额集合数据
+     * @param moneyList - 金额集合
+     * @return
+     * @author yoko
+     * @date 2020/7/3 16:59
+    */
+    public static void checkMoneyList(List<String> moneyList) throws Exception{
+        if (moneyList == null || moneyList.size() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.BK00005.geteCode(), ErrorCode.ENUM_ERROR.BK00005.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 点击我要买-展现可用金额信息数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param moneyList - 金额列表集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleBankMoneyListResult(long stime, String sign, List<String> moneyList, Integer rowCount){
+        ResponseBank dataModel = new ResponseBank();
+        if (moneyList != null && moneyList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            dataModel.moneyList = moneyList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
 
 
     public static void main(String [] args){
@@ -4544,6 +4621,10 @@ public class HodgepodgeMethod {
         System.out.println("sb1:" + sb1);
 
         Map<String, Object> map = getZfbKey();
+
+        String sb3 = "1000";
+        int sb4 = Integer.parseInt(sb3);
+        System.out.println("sb4:" + sb4);
 
     }
 

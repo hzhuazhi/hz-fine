@@ -193,4 +193,10 @@ public interface CacheKey {
      */
     String DID_ONOFF = "-30";
 
+    /**
+     * 需要锁的金额：无条件锁定金额3分钟
+     * 锁住
+     */
+    String LOCK_MONEY_BY_RANDOM = "-31";
+
 }

@@ -39,11 +39,18 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
     public long FIVE_MIN = 300;
 
     /**
+     * 3分钟
+     */
+    public long THREE_MIN = 180;
+
+    /**
      * 11分钟.
      */
     public long ELEVEN_MIN = 660;
 
     public long TWO_HOUR = 2;
+
+
 
     @Autowired
     private BankMapper bankMapper;
@@ -154,6 +161,85 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
                     // 解锁
                     ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
                     break;
+                }
+                count ++;
+            }else{
+                break;
+            }
+        }
+
+        return money;
+    }
+
+    @Override
+    public List<BankModel> screenBankByMoney(List<BankModel> bankList) {
+        List<BankModel> resList = new ArrayList<>();
+        for (BankModel dataModel : bankList){
+            boolean flag = checkBank(dataModel);
+            if (flag){
+                resList.add(dataModel);
+            }
+        }
+        return resList;
+    }
+
+    @Override
+    public List<String> screenMoneyList(BankModel bankModel, List<StrategyData> strategyMoneyList) {
+        List<String> strList = new ArrayList<>();
+        for (StrategyData stgData : strategyMoneyList){
+            String money = getScreenMoney(bankModel, stgData.getStgValue());
+            if (!StringUtils.isBlank(money)){
+                strList.add(money);
+            }
+        }
+        return strList;
+    }
+
+
+    /**
+     * @Description: 筛选出金额展现给用户选择
+     * @param bankModel - 银行卡
+     * @param orderMoney - 金额
+     * @return
+     * @author yoko
+     * @date 2020/7/3 16:50
+    */
+    public String getScreenMoney(BankModel bankModel, String orderMoney){
+        String money = "";
+        // 获取订单金额的百分之十的额度的值
+        String [] orderMoney_arr = orderMoney.split("\\.");
+        int minMoney = Integer.parseInt(orderMoney_arr[0]);
+        int maxMoney = (int) (minMoney + minMoney * 0.1);
+        int count = 0;// 加一把防止死循环的锁
+        while (true){
+            if (count <= 100){
+                int num = StringUtil.getRandom(minMoney, maxMoney);
+                // 先锁定这个数值
+                String str = String.valueOf(num) + ".00";
+                // 这个金额可以使用，判断这个金额是否被锁定；
+                String lockKey_orderMoney = CachedKeyUtils.getCacheKey(CacheKey.LOCK_MONEY_CENT, bankModel.getId(), str);
+                boolean flagLock_orderMoney = ComponentUtil.redisIdService.lock(lockKey_orderMoney);
+                if (flagLock_orderMoney){
+                    // redis获取无条件锁住3分钟的金额是否有此金额
+                    String lockKey_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_MONEY_BY_RANDOM, bankModel.getId(), str);
+                    String strCache_money = (String) ComponentUtil.redisService.get(lockKey_money);
+                    if (StringUtils.isBlank(strCache_money)){
+                        // 判断金额是否有挂单金额
+                        String redis_data = getRedisMoneyDataByKey(CacheKey.HANG_MONEY, bankModel.getId(), str);
+                        if (StringUtils.isBlank(redis_data)) {
+                            // 表示整数金额目前没有挂单的金额，可以直接给出订单金额
+                            money = str;
+                        }
+                    }
+
+                    if (!StringUtils.isBlank(money)){
+                        // 缓存这个金额- 表示这个银行卡的这个金额已经展现给用户了，无条件缓存3分钟
+                        String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_MONEY_BY_RANDOM, bankModel.getId(), money);
+                        ComponentUtil.redisService.set(strKeyCache, money, THREE_MIN);
+                        // 解锁
+                        ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
+                        break;
+                    }
                 }
                 count ++;
             }else{

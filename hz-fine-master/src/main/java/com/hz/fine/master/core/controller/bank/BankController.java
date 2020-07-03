@@ -13,6 +13,7 @@ import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
+import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.bank.RequestBank;
 import com.hz.fine.master.core.protocol.response.bank.BuyBank;
@@ -230,6 +231,114 @@ public class BankController {
             log.error(String.format("this BankController.getData() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
                 log.error(String.format("this BankController.getData() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+
+    /**
+     * @Description: 点击我要买-展现可用金额信息-集合
+     * <p>
+     *     当用户点击我要买之后，从有效的银行卡集合中筛选一张银行卡。
+     *     从金额档次中随机生成未给出充值订单的金额（并且给出的金额进行锁2分钟，因为可能用户展现了此金额，还不一定下单，所以才把金额锁2分钟）
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/buy/getMoneyList
+     * 请求的属性类:RequestBank
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJkYXRhTGlzdCI6W3siZGlzdHJpYnV0aW9uTW9uZXkiOiIxMDAwLjAwIiwiaW52YWxpZFRpbWUiOiIyMDIwLTA1LTIxIDE1OjUwOjIzIiwib3JkZXJNb25leSI6IjEwMDAuMDAiLCJvcmRlck5vIjoiMjAyMDA1MjExNTQwMTYwMDAwMDAxIiwib3JkZXJTdGF0dXMiOjEsInBpY3R1cmVBZHMiOiIifSx7ImRpc3RyaWJ1dGlvbk1vbmV5IjoiMTAwMC4wMCIsImludmFsaWRUaW1lIjoiMjAyMC0wNS0yMSAxNToxNDowNSIsIm9yZGVyTW9uZXkiOiIxMDAwLjAwIiwib3JkZXJObyI6IjIwMjAwNTIxMTUwMzU2MDAwMDAwMSIsIm9yZGVyU3RhdHVzIjoxLCJwaWN0dXJlQWRzIjoiIn0seyJkaXN0cmlidXRpb25Nb25leSI6Ijk5OS45NSIsImludmFsaWRUaW1lIjoiMjAyMC0wNS0yMSAxNToxMzoyNSIsIm9yZGVyTW9uZXkiOiIxMDAwLjAwIiwib3JkZXJObyI6IjIwMjAwNTIxMTUwMzIwMDAwMDAwMSIsIm9yZGVyU3RhdHVzIjoxLCJwaWN0dXJlQWRzIjoiIn1dLCJzaWduIjoiYjdjNjNjMmZmYjM0OTI2YmIwYWE4ZTI2ZWU1ZWMwYTMiLCJzdGltZSI6MTU5MDA0OTU3OTg4MX0="
+     *     },
+     *     "sgid": "202005211626180000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getMoneyList", method = {RequestMethod.POST})
+    public JsonResult<Object> getMoneyList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestBank requestModel = new RequestBank();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestBank.class);
+            //#临时数据
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
+            // check校验数据
+            did = HodgepodgeMethod.checkGetMoneyListData(requestModel);
+
+            // 查询正常使用的手机卡
+            MobileCardModel mobileCardQuery = HodgepodgeMethod.assembleMobileCardQueryByUseStatus(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+            List<MobileCardModel> mobileCardList = ComponentUtil.mobileCardService.findByCondition(mobileCardQuery);
+            HodgepodgeMethod.checkMobileCardDataIsNull(mobileCardList);
+
+            // 策略数据：查询银行工作日期
+            StrategyModel strategyBankWorkQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_WORK.getStgType());
+            StrategyModel strategyBankWorkModel = ComponentUtil.strategyService.getStrategyModel(strategyBankWorkQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyByBankWork(strategyBankWorkModel);
+
+            // 组装查询银行卡的查询条件
+            BankModel bankQuery = HodgepodgeMethod.assembleBankByBuyQuery(mobileCardList, strategyBankWorkModel.getStgValue(), requestModel);
+            List<BankModel> bankList = ComponentUtil.bankService.queryByList(bankQuery);
+            HodgepodgeMethod.checkBankListData(bankList);
+
+            // 筛选出可以使用的银行卡集合：未被日上月上限制的
+            List<BankModel> bankDataList = ComponentUtil.bankService.screenBankByMoney(bankList);
+            HodgepodgeMethod.checkBankListData(bankDataList);
+
+            // 随机筛选一张银行卡
+            BankModel bankModel = HodgepodgeMethod.screenBank(bankList);
+
+            // 查询策略里面的金额列表
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.MONEY.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyByMoney(strategyModel);
+
+            // 解析金额列表的值
+            List<StrategyData> strategyMoneyList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+
+            // 随机给出每个档次的随机金额
+            List<String> moneyList = ComponentUtil.bankService.screenMoneyList(bankModel, strategyMoneyList);
+            HodgepodgeMethod.checkMoneyList(moneyList);
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleBankMoneyListResult(stime, sign, moneyList, moneyList.size());
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this BankController.getMoneyList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this BankController.getMoneyList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
