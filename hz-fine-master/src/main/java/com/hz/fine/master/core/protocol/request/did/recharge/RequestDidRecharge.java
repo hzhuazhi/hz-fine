@@ -69,6 +69,11 @@ public class RequestDidRecharge extends BaseRequest implements Serializable {
      */
     public String lastNum;
 
+    /**
+     * 订单-用户在选择金额的时候，返回给客户端的订单：在对应的redis里面存储的是银行卡的主键ID
+     */
+    public String order;
+
 
     public RequestDidRecharge(){
 

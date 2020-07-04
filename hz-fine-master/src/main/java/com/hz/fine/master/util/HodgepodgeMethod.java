@@ -4622,6 +4622,108 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据当用户正式充值-拉起充值
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkRechargeBuyOrder(RequestDidRecharge requestModel) throws Exception{
+
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00023.geteCode(), ErrorCode.ENUM_ERROR.DR00023.geteDesc());
+        }
+
+        // 校验充值金额值
+        if (StringUtils.isBlank(requestModel.orderMoney)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00024.geteCode(), ErrorCode.ENUM_ERROR.DR00024.geteDesc());
+        }else {
+            // 金额是否有效
+            if (requestModel.orderMoney.indexOf(".") > -1){
+                boolean flag = StringUtil.isNumberByMoney(requestModel.orderMoney);
+                if (!flag){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.DR00025.geteCode(), ErrorCode.ENUM_ERROR.DR00025.geteDesc());
+                }
+            }else {
+                boolean flag = StringUtil.isNumer(requestModel.orderMoney);
+                if (!flag){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.DR00026.geteCode(), ErrorCode.ENUM_ERROR.DR00026.geteDesc());
+                }
+            }
+        }
+
+        // 校验order
+        if (StringUtils.isBlank(requestModel.order)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00027.geteCode(), ErrorCode.ENUM_ERROR.DR00027.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 获取redis存储的银行卡主键ID
+     * @param did - 用户ID
+     * @param order - 订单
+     * @return long
+     * @author yoko
+     * @date 2020/7/4 13:57
+     */
+    public static long getBankIdByRedis(long did, String order) throws Exception{
+        long bankId = 0;
+        String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ID_BY_SGID, did, order);
+        String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
+        if (!StringUtils.isBlank(strCache)) {
+            // 从缓存里面获取银行卡主键ID
+            bankId = Long.parseLong(strCache);
+        }else {
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00028.geteCode(), ErrorCode.ENUM_ERROR.DR00028.geteDesc());
+        }
+        return bankId;
+    }
+
+
+    /**
+     * @Description: 组装查询银行卡旗下订单金额是否有挂单的查询方法
+     * @param bankId - 银行卡主键ID
+     * @param orderMoney - 充值金额
+     * @return
+     * @author yoko
+     * @date 2020/7/4 14:19
+    */
+    public static DidRechargeModel assembleDidRechargeQuery(long bankId, String orderMoney){
+        DidRechargeModel resBean = new DidRechargeModel();
+        resBean.setBankId(bankId);
+        resBean.setDistributionMoney(orderMoney);
+        resBean.setOrderStatus(1);
+        return resBean;
+    }
+
+    /**
+     * @Description: check金额是否被抢占
+     * @param didRechargeModel
+     * @return
+     * @author yoko
+     * @date 2020/7/4 14:25
+    */
+    public static void checkBankMoneyIsHave(DidRechargeModel didRechargeModel) throws Exception{
+        if (didRechargeModel != null && didRechargeModel.getId() > 0 ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00030.geteCode(), ErrorCode.ENUM_ERROR.DR00030.geteDesc());
+        }
+    }
+
+
 
 
     public static void main(String [] args){

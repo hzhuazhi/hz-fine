@@ -204,4 +204,13 @@ public interface CacheKey {
      */
     String BANK_ID_BY_SGID = "-32";
 
+    /**
+     * 需要锁：银行卡ID + 充值金额的锁
+     * <p>
+     *     根据银行卡 + 充值金额 查询充值订单是否有存在相同金额的挂单
+     * </p>
+     * 锁住
+     */
+    String LOCK_BANK_ID_MONEY = "-33";
+
 }

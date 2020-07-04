@@ -28,4 +28,5 @@ public interface DidRechargeService<T> extends BaseService<T> {
      * @date 2020/6/29 17:33
     */
     public int updateDidRechargeByDeposit(DidRechargeModel model);
+
 }

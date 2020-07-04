@@ -2,11 +2,13 @@ package com.hz.fine.master.core.controller.did;
 
 import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ExceptionMethod;
+import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
+import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
@@ -107,7 +109,7 @@ public class DidRechargeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/recharge/add
-     * 请求的属性类:RequestDid
+     * 请求的属性类:RequestDidRecharge
      * 必填字段:{"orderMoney":"1000.00","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJvcmRlck1vbmV5IjoiMTAwMC4wMCIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
@@ -245,7 +247,7 @@ public class DidRechargeController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/recharge/buy
-     * 请求的属性类:RequestDid
+     * 请求的属性类:RequestDidRecharge
      * 必填字段:{"orderMoney":"1000.00","bankId":29,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJvcmRlck1vbmV5IjoiMTAwMC4wMCIsImJhbmtJZCI6MjksImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
@@ -345,6 +347,177 @@ public class DidRechargeController {
 
 
     /**
+     * @Description: 用户正式充值-拉起充值
+     * <p>
+     *     用户正式充值的主要全流程：
+     *     1.根据order找出redis里面存的bankId（银行卡ID）
+     *     2.check校验请求上来的充值金额是否是正常数字
+     *     3.锁住银行卡以及此金额，查询数据库中是否有还未完成的充值订单（银行卡旗下相同金额的订单）
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/recharge/buyOrder
+     * 请求的属性类:RequestDidRecharge
+     * 必填字段:{"orderMoney":"1000.00","order":"111111","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJvcmRlck1vbmV5IjoiMTAwMC4wMCIsImJhbmtJZCI6MjksImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJyZWNoYXJnZSI6eyJhY2NvdW50TmFtZSI6IuaLm+WVhumTtuihjDEiLCJiYW5rQ2FyZCI6IjQ1NzcyNjM2NjYyNzI2MzYzMjIxIiwiYmFua05hbWUiOiLmi5vllYbpk7booYwiLCJkZXBvc2l0VGltZSI6IiIsImRlcG9zaXRvciI6IiIsImRpc3RyaWJ1dGlvbk1vbmV5IjoiMTAwMC4wMCIsImludmFsaWRUaW1lIjoiMjAyMC0wNy0wNCAyMjo1MToxNiIsImxhc3ROdW0iOiIiLCJvcmRlck1vbmV5IjoiMTAwMC4wMCIsIm9yZGVyTm8iOiIyMDIwMDcwNDE0NTExMTAwMDAwMDEiLCJzdWJicmFuY2hOYW1lIjoieHh4eOmTtuihjOmSseaxn+aUr+ihjCJ9LCJzaWduIjoiNzI0YjAxZTU3YzQ2YzgwMTFlOWEyYjk0YmI4MmM4NzQiLCJzdGltZSI6MTU5Mzg0NTQ3NjkzOX0="
+     *     },
+     *     "sgid": "202007041451110000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/buyOrder", method = {RequestMethod.POST})
+    public JsonResult<Object> buyOrder(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+        RequestDidRecharge requestModel = new RequestDidRecharge();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDidRecharge.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.order)){
+//                if (requestModel.order.equals("111111")){
+//                    String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ID_BY_SGID, 1, requestModel.order);
+//                    ComponentUtil.redisService.set(strKeyCache, "29");
+//                }
+//            }
+
+            // check校验数据
+            did = HodgepodgeMethod.checkRechargeBuyOrder(requestModel);
+            if (requestModel.orderMoney.indexOf(".") <= -1){
+                requestModel.orderMoney = requestModel.orderMoney + ".00";
+            }
+            String strData = "";
+
+            // 判断是否还有未完成的订单
+            strData = HodgepodgeMethod.checkDidOrderByRedis(did);
+
+            // 通过redis获取缓存里面存储的银行卡的主键ID
+            long bankId = HodgepodgeMethod.getBankIdByRedis(did, requestModel.order);
+            if (StringUtils.isBlank(strData)){
+                // 获取银行卡信息
+                BankModel bankQuery = HodgepodgeMethod.assembleBankById(bankId);
+                BankModel bankData = (BankModel) ComponentUtil.bankService.findByObject(bankQuery);
+                HodgepodgeMethod.checkBank(bankData);
+
+                // 先锁住
+                String lockKey_orderMoney = CachedKeyUtils.getCacheKey(CacheKey.LOCK_BANK_ID_MONEY, bankId, requestModel.orderMoney);
+                boolean flagLock_orderMoney = ComponentUtil.redisIdService.lock(lockKey_orderMoney);
+                if (flagLock_orderMoney){
+                    // 根据银行卡ID + 充值金额查询的查询条件查询充值订单是否有相同银行卡相同金额挂单
+                    DidRechargeModel didRechargeQuery = HodgepodgeMethod.assembleDidRechargeQuery(bankId, requestModel.orderMoney);
+                    DidRechargeModel didRechargeModel = (DidRechargeModel) ComponentUtil.didRechargeService.findByObject(didRechargeQuery);
+                    HodgepodgeMethod.checkBankMoneyIsHave(didRechargeModel);
+
+                    // 查询策略里面的充值订单的失效时间
+                    StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ORDER_INVALID_TIME.getStgType());
+                    StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                    HodgepodgeMethod.checkStrategyInvalidTime(strategyInvalidTimeModel);
+
+                    // 组装添加用处充值记录的最初数据
+                    DidRechargeModel didRechargeAdd = HodgepodgeMethod.assembleDidRechargeBuy(requestModel.orderMoney, bankData.getId(), did, sgid, 0, requestModel.orderMoney, strategyInvalidTimeModel.getStgNumValue());
+                    ComponentUtil.didRechargeService.add(didRechargeAdd);
+                    // 组装返回客户端的数据
+                    long stime = System.currentTimeMillis();
+                    String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+                    strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime());
+
+                    // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
+                    String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
+                    ComponentUtil.redisService.set(strKeyCache, strData, strategyInvalidTimeModel.getStgNumValue(), TimeUnit.MINUTES);
+                    // 解锁
+                    ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
+                }else {
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.DR00029.geteCode(), ErrorCode.ENUM_ERROR.DR00029.geteDesc());
+                }
+            }else{
+                long stime = System.currentTimeMillis();
+                String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+                ResponseDidRecharge responseDidRecharge = JSON.parseObject(strData, ResponseDidRecharge.class);
+                if (StringUtils.isBlank(responseDidRecharge.recharge.depositor)){
+                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, responseDidRecharge, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+                }else {
+                    // 因为提交了存款人，则可以继续进行充值：如果用户没有充值，又乱填写存款人，排查数据会受到处罚；所以这里规定了提交了存款人信息，可以继续拉起充值订单
+
+                    // 获取银行卡信息
+                    BankModel bankQuery = HodgepodgeMethod.assembleBankById(bankId);
+                    BankModel bankData = (BankModel) ComponentUtil.bankService.findByObject(bankQuery);
+                    HodgepodgeMethod.checkBank(bankData);
+
+                    // 先锁住
+                    String lockKey_orderMoney = CachedKeyUtils.getCacheKey(CacheKey.LOCK_BANK_ID_MONEY, bankId, requestModel.orderMoney);
+                    boolean flagLock_orderMoney = ComponentUtil.redisIdService.lock(lockKey_orderMoney);
+                    if (flagLock_orderMoney){
+                        // 根据银行卡ID + 充值金额查询的查询条件查询充值订单是否有相同银行卡相同金额挂单
+                        DidRechargeModel didRechargeQuery = HodgepodgeMethod.assembleDidRechargeQuery(bankId, requestModel.orderMoney);
+                        DidRechargeModel didRechargeModel = (DidRechargeModel) ComponentUtil.didRechargeService.findByObject(didRechargeQuery);
+                        HodgepodgeMethod.checkBankMoneyIsHave(didRechargeModel);
+
+                        // 查询策略里面的充值订单的失效时间
+                        StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ORDER_INVALID_TIME.getStgType());
+                        StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                        HodgepodgeMethod.checkStrategyInvalidTime(strategyInvalidTimeModel);
+
+                        // 组装添加用处充值记录的最初数据
+                        DidRechargeModel didRechargeAdd = HodgepodgeMethod.assembleDidRechargeBuy(requestModel.orderMoney, bankData.getId(), did, sgid, 0, requestModel.orderMoney, strategyInvalidTimeModel.getStgNumValue());
+                        ComponentUtil.didRechargeService.add(didRechargeAdd);
+                        // 组装返回客户端的数据
+                        strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime());
+
+                        // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
+                        String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
+                        ComponentUtil.redisService.set(strKeyCache, strData, strategyInvalidTimeModel.getStgNumValue(), TimeUnit.MINUTES);
+                        // 解锁
+                        ComponentUtil.redisIdService.delLock(lockKey_orderMoney);
+                    }else {
+                        throw new ServiceException(ErrorCode.ENUM_ERROR.DR00029.geteCode(), ErrorCode.ENUM_ERROR.DR00029.geteDesc());
+                    }
+                }
+            }
+
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidRechargeController.buyOrder() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidRechargeController.buyOrder() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+    /**
      * @Description: 用户充值之后，更新充值存入账号的信息
      *
      * <p>
@@ -357,7 +530,7 @@ public class DidRechargeController {
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/recharge/deposit
      * 请求的属性类:RequestDidRecharge
-     * 必填字段:{"orderNo":"202006291718230000001","depositor":"存入人","depositMoney":"1000.00","depositTime":"存入时间","lastNum":"存入尾号","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 必填字段:{"orderNo":"202007041451110000001","depositor":"存入人","depositMoney":"1000.00","depositTime":"存入时间","lastNum":"存入尾号","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA2MjkxNzE4MjMwMDAwMDAxIiwiZGVwb3NpdG9yIjoi5a2Y5YWl5Lq6IiwiZGVwb3NpdFRpbWUiOiLlrZjlhaXml7bpl7QiLCJsYXN0TnVtIjoi5a2Y5YWl5bC+5Y+3IiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
