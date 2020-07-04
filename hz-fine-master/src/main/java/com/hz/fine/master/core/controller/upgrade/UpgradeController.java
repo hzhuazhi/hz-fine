@@ -64,8 +64,8 @@ public class UpgradeController {
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8082/fine/up/getData
-     * 请求的属性类:RequestAppeal
+     * local:http://localhost:8086/fine/up/getData
+     * 请求的属性类:RequestUpgrade
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+clientType+clientVer+md5Value+resUrl+upType+秘钥=sign
