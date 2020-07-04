@@ -13,9 +13,9 @@ public class BankMoney implements Serializable {
     private static final long   serialVersionUID = 2233023531141L;
 
     /**
-     * 银行卡主键ID
+     * 请求的会话ID，是redis的key，里面存了银行卡的主键ID
      */
-    public Long bankId;
+    public String order;
 
     /**
      * 展现给用户的金额集合
@@ -26,12 +26,12 @@ public class BankMoney implements Serializable {
 
     }
 
-    public Long getBankId() {
-        return bankId;
+    public String getOrder() {
+        return order;
     }
 
-    public void setBankId(Long bankId) {
-        this.bankId = bankId;
+    public void setOrder(String order) {
+        this.order = order;
     }
 
     public List<String> getMoneyList() {

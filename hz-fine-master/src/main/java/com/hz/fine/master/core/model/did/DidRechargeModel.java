@@ -69,6 +69,11 @@ public class DidRechargeModel extends BasePage implements Serializable {
     private String depositor;
 
     /**
+     * 存款金额
+     */
+    private String depositMoney;
+
+    /**
      * 存款时间
      */
     private String depositTime;
@@ -356,5 +361,13 @@ public class DidRechargeModel extends BasePage implements Serializable {
 
     public void setDataType(Integer dataType) {
         this.dataType = dataType;
+    }
+
+    public String getDepositMoney() {
+        return depositMoney;
+    }
+
+    public void setDepositMoney(String depositMoney) {
+        this.depositMoney = depositMoney;
     }
 }

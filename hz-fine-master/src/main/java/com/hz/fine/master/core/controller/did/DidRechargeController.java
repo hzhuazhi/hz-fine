@@ -69,7 +69,15 @@ public class DidRechargeController {
      */
     public long THIRTY_MIN = 30;
 
+    /**
+     * 2小时
+     */
     public long TWO_HOUR = 2;
+
+    /**
+     * 8小时
+     */
+    public long EIGHT_HOUR = 8;
 
     @Value("${secret.key.token}")
     private String secretKeyToken;
@@ -349,7 +357,7 @@ public class DidRechargeController {
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/recharge/deposit
      * 请求的属性类:RequestDidRecharge
-     * 必填字段:{"orderNo":"202006291718230000001","depositor":"存入人","depositTime":"存入时间","lastNum":"存入尾号","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 必填字段:{"orderNo":"202006291718230000001","depositor":"存入人","depositMoney":"1000.00","depositTime":"存入时间","lastNum":"存入尾号","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA2MjkxNzE4MjMwMDAwMDAxIiwiZGVwb3NpdG9yIjoi5a2Y5YWl5Lq6IiwiZGVwb3NpdFRpbWUiOiLlrZjlhaXml7bpl7QiLCJsYXN0TnVtIjoi5a2Y5YWl5bC+5Y+3IiwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
@@ -396,7 +404,7 @@ public class DidRechargeController {
                 String resRedis = HodgepodgeMethod.assembleDidRechargeUpdateRedisByDeposit(redis_data, requestModel);
                 // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
-                ComponentUtil.redisService.set(strKeyCache, resRedis, TWO_HOUR, TimeUnit.HOURS);
+                ComponentUtil.redisService.set(strKeyCache, resRedis, EIGHT_HOUR, TimeUnit.HOURS);
             }
 
             // 组装返回客户端的数据

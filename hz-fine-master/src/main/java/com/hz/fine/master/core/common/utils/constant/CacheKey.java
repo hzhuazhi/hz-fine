@@ -199,4 +199,9 @@ public interface CacheKey {
      */
     String LOCK_MONEY_BY_RANDOM = "-31";
 
+    /**
+     * 会话ID存储银行卡的主键ID
+     */
+    String BANK_ID_BY_SGID = "-32";
+
 }

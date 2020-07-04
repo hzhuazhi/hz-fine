@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description 银行卡信息的Controller层
@@ -49,6 +50,8 @@ public class BankController {
      * 5分钟.
      */
     public long FIVE_MIN = 300;
+
+    public long THREE_MIN = 180;
 
     /**
      * 11分钟.
@@ -261,9 +264,9 @@ public class BankController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJiYW5rTW9uZXkiOnsiYmFua0lkIjoyOSwibW9uZXlMaXN0IjpbIjEwMDQuMDAiLCIyMTE3LjAwIiwiMzI1NS4wMCIsIjQyODAuMDAiLCI1NDc1LjAwIl19LCJyb3dDb3VudCI6NSwic2lnbiI6ImM1NzNlMTU5OTUyMTBkNmI1ZDM4MTFlZjU5ZjQzYjViIiwic3RpbWUiOjE1OTM3NzQ1ODMzMzd9"
+     *         "jsonData": "eyJiYW5rTW9uZXkiOnsibW9uZXlMaXN0IjpbIjEwNTUuMDAiLCIyMTQ5LjAwIiwiMzA3OS4wMCIsIjQyMzAuMDAiLCI1MjYxLjAwIl0sIm9yZGVyIjoiMjAyMDA3MDMxOTM0MjQwMDAwMDAxIn0sInJvd0NvdW50Ijo1LCJzaWduIjoiOWJjNGIxZDc2MzBhNjRhNTYwYzQ0YTMzOTMzMGIzYzUiLCJzdGltZSI6MTU5Mzc3NjA2NTc4MX0="
      *     },
-     *     "sgid": "202007031909420000001",
+     *     "sgid": "202007031934240000001",
      *     "cgid": ""
      * }
      */
@@ -323,10 +326,14 @@ public class BankController {
             List<String> moneyList = ComponentUtil.bankService.screenMoneyList(bankModel, strategyMoneyList);
             HodgepodgeMethod.checkMoneyList(moneyList);
 
+            // sgid存储此次会话选中的银行卡ID
+            String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ID_BY_SGID, did, sgid);
+            ComponentUtil.redisService.set(strKeyCache, String.valueOf(bankModel.getId()), THREE_MIN);
+
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleBankMoneyListResult(stime, sign, bankModel.getId(), moneyList, moneyList.size());
+            String strData = HodgepodgeMethod.assembleBankMoneyListResult(stime, sign, sgid, moneyList, moneyList.size());
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

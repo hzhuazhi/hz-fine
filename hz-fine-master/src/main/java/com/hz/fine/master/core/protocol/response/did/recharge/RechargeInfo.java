@@ -58,6 +58,11 @@ public class RechargeInfo implements Serializable {
     public String depositor;
 
     /**
+     * 存款金额
+     */
+    public String depositMoney;
+
+    /**
      * 存款时间
      */
     public String depositTime;
@@ -157,5 +162,13 @@ public class RechargeInfo implements Serializable {
 
     public void setLastNum(String lastNum) {
         this.lastNum = lastNum;
+    }
+
+    public String getDepositMoney() {
+        return depositMoney;
+    }
+
+    public void setDepositMoney(String depositMoney) {
+        this.depositMoney = depositMoney;
     }
 }

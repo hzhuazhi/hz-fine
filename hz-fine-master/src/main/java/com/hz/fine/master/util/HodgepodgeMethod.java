@@ -3798,6 +3798,11 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.DR00018.geteCode(), ErrorCode.ENUM_ERROR.DR00018.geteDesc());
         }
 
+        // 校验存款金额的值
+        if (StringUtils.isBlank(requestModel.depositMoney)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DR00022.geteCode(), ErrorCode.ENUM_ERROR.DR00022.geteDesc());
+        }
+
         // 校验存入时间的值
         if (StringUtils.isBlank(requestModel.depositTime)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.DR00019.geteCode(), ErrorCode.ENUM_ERROR.DR00019.geteDesc());
@@ -3847,6 +3852,7 @@ public class HodgepodgeMethod {
     public static String assembleDidRechargeUpdateRedisByDeposit(String redisData, RequestDidRecharge requestModel){
         ResponseDidRecharge dataModel = JSON.parseObject(redisData, ResponseDidRecharge.class);
         dataModel.recharge.depositor = requestModel.depositor;
+        dataModel.recharge.depositMoney = requestModel.depositMoney;
         dataModel.recharge.depositTime = requestModel.depositTime;
         dataModel.recharge.lastNum = requestModel.lastNum;
         return JSON.toJSONString(dataModel);
@@ -4551,11 +4557,11 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleBankMoneyListResult(long stime, String sign,long bankId, List<String> moneyList, Integer rowCount){
+    public static String assembleBankMoneyListResult(long stime, String sign,String order, List<String> moneyList, Integer rowCount){
         ResponseBank dataModel = new ResponseBank();
         if (moneyList != null && moneyList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
             BankMoney bankMoney = new BankMoney();
-            bankMoney.bankId = bankId;
+            bankMoney.order = order;
             bankMoney.moneyList = moneyList;
             dataModel.bankMoney = bankMoney;
         }
