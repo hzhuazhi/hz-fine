@@ -39,6 +39,8 @@ public class ComponentUtil {
     public static WxClerkUnboundService wxClerkUnboundService;
     public static DidOnoffService didOnoffService;
     public static DidBalanceDeductService didBalanceDeductService;
+    public static NoticeService noticeService;
+    public static UpgradeService upgradeService;
 
 
 

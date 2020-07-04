@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.UpgradeMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.up_name,a.client_ver,a.client_type,a.limit_type,a.limit_num,a.is_limit_num,a.is_limit_ok,
+        a.md5_value,a.res_url,a.up_type,a.show_ver,a.content,a.create_time,a.update_time,a.yn
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="categoryName != null and categoryName != '' " >
+                and a.category_name = #{categoryName}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_upgrade a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_upgrade a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_upgrade a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_upgrade a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_upgrade a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_upgrade a
+        <include refid="Example_Where_Clause"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.upgrade.UpgradeModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_upgrade
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="upName != null and upName != '' " >
+                up_name,
+            </if>
+            <if test="clientVer != null and clientVer != '' " >
+                client_ver,
+            </if>
+            <if test="clientType != null and clientType != '' " >
+                client_type,
+            </if>
+            <if test="limitType != null and limitType != '' " >
+                limit_type,
+            </if>
+            <if test="limitNum != null and limitNum != '' " >
+                limit_num,
+            </if>
+            <if test="isLimitNum != null and isLimitNum != '' " >
+                is_limit_num,
+            </if>
+            <if test="isLimitOk != null and isLimitOk != '' " >
+                is_limit_ok,
+            </if>
+            <if test="md5Value != null and md5Value != '' " >
+                md5_value,
+            </if>
+            <if test="resUrl != null and resUrl != '' " >
+                res_url,
+            </if>
+            <if test="upType != null and upType != '' " >
+                up_type,
+            </if>
+            <if test="content != null and content != '' " >
+                content,
+            </if>
+            <if test="showVer != null and showVer != '' " >
+                show_ver,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="upName != null and upName != '' " >
+                <![CDATA[  #{upName}, ]]>
+            </if>
+            <if test="clientVer != null and clientVer != '' " >
+                <![CDATA[  #{clientVer}, ]]>
+            </if>
+            <if test="clientType != null and clientType != '' " >
+                <![CDATA[  #{clientType}, ]]>
+            </if>
+            <if test="limitType != null and limitType != '' " >
+                <![CDATA[  #{limitType}, ]]>
+            </if>
+            <if test="limitNum != null and limitNum != '' " >
+                <![CDATA[  #{limitNum}, ]]>
+            </if>
+            <if test="isLimitNum != null and isLimitNum != '' " >
+                <![CDATA[  #{isLimitNum}, ]]>
+            </if>
+            <if test="isLimitOk != null and isLimitOk != '' " >
+                <![CDATA[  #{isLimitOk}, ]]>
+            </if>
+            <if test="md5Value != null and md5Value != '' " >
+                <![CDATA[  #{md5Value}, ]]>
+            </if>
+            <if test="resUrl != null and resUrl != '' " >
+                <![CDATA[  #{resUrl}, ]]>
+            </if>
+            <if test="upType != null and upType != '' " >
+                <![CDATA[  #{upType}, ]]>
+            </if>
+            <if test="content != null and content != '' " >
+                <![CDATA[  #{content}, ]]>
+            </if>
+            <if test="showVer != null and showVer != '' " >
+                <![CDATA[  #{showVer}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        UPDATE tb_fn_upgrade a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="upName != null and upName != '' " >
+                a.up_name = #{upName},
+            </if>
+            <if test="clientVer != null and clientVer != '' " >
+                a.client_ver = #{clientVer},
+            </if>
+            <if test="clientType != null and clientType != '' " >
+                a.client_type = #{clientType},
+            </if>
+            <if test="limitType != null and limitType != '' " >
+                a.limit_type = #{limitType},
+            </if>
+            <if test="limitNum != null and limitNum != '' " >
+                a.limit_num = #{limitNum},
+            </if>
+            <if test="isLimitNum != null and isLimitNum != '' " >
+                a.is_limit_num = #{isLimitNum},
+            </if>
+            <if test="isLimitOk != null and isLimitOk != '' " >
+                a.is_limit_ok = #{isLimitOk},
+            </if>
+            <if test="md5Value != null and md5Value != '' " >
+                a.md5_value = #{md5Value},
+            </if>
+            <if test="resUrl != null and resUrl != '' " >
+                a.res_url = #{resUrl},
+            </if>
+            <if test="upType != null and upType != '' " >
+                a.up_type = #{upType},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_upgrade a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+    <!-- 根据用户版本号查询最大版本号的客户端更新信息-->
+    <select id="getMaxUpgradeData" parameterType="Object" resultType="com.hz.fine.master.core.model.upgrade.UpgradeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_upgrade a
+        where 1=1
+        and a.client_ver =(
+            select max(client_ver) from tb_fn_upgrade
+            where 1=1
+            and client_ver > #{clientVer}
+            and client_type = #{clientType}
+            and yn = 0
+        )
+        and a.client_type = #{clientType}
+        and a.yn = 0
+        limit 1
+    </select>
+
+
+
+
+
+</mapper>

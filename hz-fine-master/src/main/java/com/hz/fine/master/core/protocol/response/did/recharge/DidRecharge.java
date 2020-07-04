@@ -42,6 +42,26 @@ public class DidRecharge implements Serializable {
     public Integer orderStatus;
 
     /**
+     * 存款人
+     */
+    public String depositor;
+
+    /**
+     * 存款金额
+     */
+    public String depositMoney;
+
+    /**
+     * 存款时间
+     */
+    public String depositTime;
+
+    /**
+     * 存款账号尾号
+     */
+    public String lastNum;
+
+    /**
      * 申诉状态：1初始化，2申诉中，3申诉失败，4申诉成功
      */
     public Integer appealStatus;
@@ -170,5 +190,37 @@ public class DidRecharge implements Serializable {
 
     public void setAppealOrigin(String appealOrigin) {
         this.appealOrigin = appealOrigin;
+    }
+
+    public String getDepositor() {
+        return depositor;
+    }
+
+    public void setDepositor(String depositor) {
+        this.depositor = depositor;
+    }
+
+    public String getDepositMoney() {
+        return depositMoney;
+    }
+
+    public void setDepositMoney(String depositMoney) {
+        this.depositMoney = depositMoney;
+    }
+
+    public String getDepositTime() {
+        return depositTime;
+    }
+
+    public void setDepositTime(String depositTime) {
+        this.depositTime = depositTime;
+    }
+
+    public String getLastNum() {
+        return lastNum;
+    }
+
+    public void setLastNum(String lastNum) {
+        this.lastNum = lastNum;
     }
 }

@@ -10,12 +10,14 @@ import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
+import com.hz.fine.master.core.model.notice.NoticeModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
 import com.hz.fine.master.core.model.question.QuestionMModel;
 import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
+import com.hz.fine.master.core.model.upgrade.UpgradeModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.model.wx.WxModel;
@@ -29,6 +31,7 @@ import com.hz.fine.master.core.protocol.request.did.qrcode.DidCollectionAccountQ
 import com.hz.fine.master.core.protocol.request.did.qrcode.RequestDidCollectionAccountQrCode;
 import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
+import com.hz.fine.master.core.protocol.request.notice.RequestNotice;
 import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
@@ -50,6 +53,8 @@ import com.hz.fine.master.core.protocol.response.did.recharge.ResponseDidRecharg
 import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
 import com.hz.fine.master.core.protocol.response.did.reward.DidShare;
 import com.hz.fine.master.core.protocol.response.did.reward.ResponseDidReward;
+import com.hz.fine.master.core.protocol.response.notice.Notice;
+import com.hz.fine.master.core.protocol.response.notice.ResponseNotice;
 import com.hz.fine.master.core.protocol.response.order.Order;
 import com.hz.fine.master.core.protocol.response.order.OrderDistribution;
 import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
@@ -63,6 +68,7 @@ import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
 import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
 import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
+import com.hz.fine.master.core.protocol.response.upgrade.ResponseUpgrade;
 import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
 import com.hz.fine.master.core.protocol.response.vcode.Vcode;
 import org.apache.commons.lang.StringUtils;
@@ -4841,6 +4847,92 @@ public class HodgepodgeMethod {
         }
     }
 
+
+    /**
+     * @Description: 公告集合的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param noticeList - 公告集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleNoticeResult(long stime, String sign, List<NoticeModel> noticeList, Integer rowCount){
+        ResponseNotice dataModel = new ResponseNotice();
+        if (noticeList != null && noticeList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<Notice> dataList = BeanUtils.copyList(noticeList, Notice.class);
+            dataModel.dataList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 获取公告信息时，校验数据
+     * @param requestModel - 用户数据
+     * @return void
+     * @author yoko
+     * @date 2019/11/21 18:59
+     */
+    public static void checkNoticeGetData(RequestNotice requestModel) throws Exception{
+        long did;
+        // 校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.N00001.geteCode(), ErrorCode.ENUM_ERROR.N00001.geteDesc());
+        }
+
+        // 校验ID值
+        if (requestModel.id == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.N00002.geteCode(), ErrorCode.ENUM_ERROR.N00002.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 公告-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param noticeModel - 公告的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleNoticeDataResult(long stime, String sign, NoticeModel noticeModel){
+        ResponseNotice dataModel = new ResponseNotice();
+        if (noticeModel != null){
+            Notice data = BeanUtils.copy(noticeModel, Notice.class);
+            dataModel.dataModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 客户端升级的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param upgradeModel - 客户端更新要更新的数据
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleUpgradeDataResult(long stime, String sign, UpgradeModel upgradeModel){
+        ResponseUpgrade dataModel = new ResponseUpgrade();
+        if (upgradeModel != null){
+            dataModel = BeanUtils.copy(upgradeModel, ResponseUpgrade.class);
+        }
+
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
 
 
 

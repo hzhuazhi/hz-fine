@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.NoticeMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.notice_name,a.title,a.sketch,a.content,a.icon_ads,a.page_ads,a.start_time,a.end_time,a.seat,a.notice_type,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="noticeName != null and noticeName != '' " >
+                and a.notice_name = #{noticeName}
+            </if>
+            <if test="nowTime != null and nowTime != '' " >
+                and a.start_time &lt;= #{nowTime} and a.end_time >= #{nowTime}
+            </if>
+            <if test="noticeType != null and noticeType != '' " >
+                and a.notice_type = #{noticeType}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time asc
+    </sql>
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.notice.NoticeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_notice a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.notice.NoticeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_notice a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.notice.NoticeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_notice a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.notice.NoticeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_notice a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_notice a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.notice.NoticeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_notice a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+</mapper>

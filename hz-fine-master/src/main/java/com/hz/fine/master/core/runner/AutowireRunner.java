@@ -116,6 +116,12 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private DidBalanceDeductService didBalanceDeductService;
 
+    @Autowired
+    private NoticeService noticeService;
+
+    @Autowired
+    private UpgradeService upgradeService;
+
 
 
 
@@ -156,6 +162,8 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.wxClerkUnboundService = wxClerkUnboundService;
         ComponentUtil.didOnoffService = didOnoffService;
         ComponentUtil.didBalanceDeductService = didBalanceDeductService;
+        ComponentUtil.noticeService = noticeService;
+        ComponentUtil.upgradeService = upgradeService;
 
         runThread = new RunThread();
         runThread.start();
