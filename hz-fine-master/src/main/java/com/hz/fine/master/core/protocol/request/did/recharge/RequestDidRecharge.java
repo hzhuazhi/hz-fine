@@ -35,6 +35,11 @@ public class RequestDidRecharge extends BaseRequest implements Serializable {
     public Integer orderStatus;
 
     /**
+     * 存款数据录入状态（存款人，存款人时间，尾号）：1初始化，2录入完毕
+     */
+    public Integer workType;
+
+    /**
      * 根据日期查询-开始时间
      */
     public Integer curdayStart;
@@ -166,5 +171,21 @@ public class RequestDidRecharge extends BaseRequest implements Serializable {
 
     public void setDepositMoney(String depositMoney) {
         this.depositMoney = depositMoney;
+    }
+
+    public Integer getWorkType() {
+        return workType;
+    }
+
+    public void setWorkType(Integer workType) {
+        this.workType = workType;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
     }
 }

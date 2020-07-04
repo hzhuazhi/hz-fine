@@ -801,7 +801,7 @@ public class DidRechargeController {
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/recharge/getDataList
      * 请求的属性类:RequestDidRecharge
-     * 必填字段:{"orderStatus":1,"curdayStart":20200521,"curdayEnd":20200521,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
+     * 必填字段:{"orderStatus":1,"workType":1,"curdayStart":20200521,"curdayEnd":20200521,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
      * 加密字段:{"jsonData":"eyJvcmRlclN0YXR1cyI6MSwiY3VyZGF5U3RhcnQiOjIwMjAwNTIxLCJjdXJkYXlFbmQiOjIwMjAwNTIxLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+秘钥=sign
      * 返回加密字段:stime+秘钥=sign
@@ -838,7 +838,11 @@ public class DidRechargeController {
             did = HodgepodgeMethod.checkDidRechargeListData(requestModel);
 
             // 获取用户充值订单记录集合数据
+            if (requestModel.orderStatus != 1){
+                requestModel.workType = null;
+            }
             DidRechargeModel didRechargeModelQuery = HodgepodgeMethod.assembleDidRechargeListByDid(requestModel, did);
+
             List<DidRechargeModel> didRechargeList = ComponentUtil.didRechargeService.queryByList(didRechargeModelQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
