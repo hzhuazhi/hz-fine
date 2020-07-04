@@ -120,12 +120,20 @@ public class DidCollectionAccountController {
             DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
             HodgepodgeMethod.checkDidInfo(didModel);
 
+            if (requestModel.acType == 1){
+                // 校验收款账号是否存在：收款账号昵称只能存在唯一
+                DidCollectionAccountModel didCollectionAccountByAcNumQuery = HodgepodgeMethod.assembleDidCollectionAccountByPayee(requestModel.payee);
+                DidCollectionAccountModel didCollectionAccountByAcNumData = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountByAcNumQuery);
+                // check校验收款具体账号是否已被录入过
+                HodgepodgeMethod.checkDidCollectionAccountAddByAcNum(didCollectionAccountByAcNumData);
+            }else if (requestModel.acType == 2){
+                // 校验支付宝收款账号:收款账号只能存在唯一
+                DidCollectionAccountModel didCollectionAccountByAcNumQuery = HodgepodgeMethod.assembleDidCollectionAccountByPayee(requestModel.acNum);
+                DidCollectionAccountModel didCollectionAccountByAcNumData = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountByAcNumQuery);
+                // check校验收款具体账号是否已被录入过
+                HodgepodgeMethod.checkDidCollectionAccountAddByAcNum(didCollectionAccountByAcNumData);
+            }
 
-            // 校验收款账号是否存在：收款账号只能存在唯一
-            DidCollectionAccountModel didCollectionAccountByAcNumQuery = HodgepodgeMethod.assembleDidCollectionAccountByPayee(requestModel.payee);
-            DidCollectionAccountModel didCollectionAccountByAcNumData = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountByAcNumQuery);
-            // check校验收款具体账号是否已被录入过
-            HodgepodgeMethod.checkDidCollectionAccountAddByAcNum(didCollectionAccountByAcNumData);
 
             // 组装要录入的用户收款账号信息
             DidCollectionAccountModel addData = HodgepodgeMethod.assembleDidCollectionAccount(requestModel, did);

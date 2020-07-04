@@ -947,21 +947,7 @@ public class HodgepodgeMethod {
 //            }
 //        }
 
-        if (StringUtils.isBlank(requestModel.mmQrCode)){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00004.geteCode(), ErrorCode.ENUM_ERROR.DC00004.geteDesc());
-        }
 
-        // check收款人
-        if (StringUtils.isBlank(requestModel.payee)){
-            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00005.geteCode(), ErrorCode.ENUM_ERROR.DC00005.geteDesc());
-        }
-
-        if (requestModel.acType == 3){
-            // check银行名称/银行卡开户行
-            if (StringUtils.isBlank(requestModel.bankName)){
-                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00006.geteCode(), ErrorCode.ENUM_ERROR.DC00006.geteDesc());
-            }
-        }
 
 
         // check经营范围类型
@@ -973,6 +959,35 @@ public class HodgepodgeMethod {
         if (requestModel.acType == 1){
             if (StringUtils.isBlank(requestModel.wxQrCodeAds)){
                 throw new ServiceException(ErrorCode.ENUM_ERROR.DC00008.geteCode(), ErrorCode.ENUM_ERROR.DC00008.geteDesc());
+            }
+
+            if (StringUtils.isBlank(requestModel.mmQrCode)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00004.geteCode(), ErrorCode.ENUM_ERROR.DC00004.geteDesc());
+            }
+
+            // check收款人
+            if (StringUtils.isBlank(requestModel.payee)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00005.geteCode(), ErrorCode.ENUM_ERROR.DC00005.geteDesc());
+            }
+        }else if (requestModel.acType == 2){
+            // 收款账号
+            if (StringUtils.isBlank(requestModel.acNum)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00003.geteCode(), ErrorCode.ENUM_ERROR.DC00003.geteDesc());
+            }
+
+            // 支付宝userId
+            if (StringUtils.isBlank(requestModel.userId)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00029.geteCode(), ErrorCode.ENUM_ERROR.DC00029.geteDesc());
+            }
+
+            // check支付宝持卡人真实姓名
+            if (StringUtils.isBlank(requestModel.payee)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00005.geteCode(), ErrorCode.ENUM_ERROR.DC00005.geteDesc());
+            }
+        }else if (requestModel.acType == 3){
+            // check银行名称/银行卡开户行
+            if (StringUtils.isBlank(requestModel.bankName)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00006.geteCode(), ErrorCode.ENUM_ERROR.DC00006.geteDesc());
             }
         }
 
@@ -1009,7 +1024,7 @@ public class HodgepodgeMethod {
     }
 
     /**
-     * @Description: 组装根据收款具体账号查询的查询条件
+     * @Description: 组装根据收款具体账号昵称查询的查询条件
      * @param payee - 收款账号昵称
      * @return
      * @author yoko
@@ -1018,6 +1033,19 @@ public class HodgepodgeMethod {
     public static DidCollectionAccountModel assembleDidCollectionAccountByPayee(String payee){
         DidCollectionAccountModel resBean = new DidCollectionAccountModel();
         resBean.setPayee(payee);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装根据收款具体账号查询的查询条件
+     * @param acNum - 收款账号
+     * @return
+     * @author yoko
+     * @date 2020/5/15 16:10
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountByAcNum(String acNum){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setAcNum(acNum);
         return resBean;
     }
 
@@ -1766,6 +1794,23 @@ public class HodgepodgeMethod {
         }else{
             return null;
         }
+    }
+
+    /**
+     * @Description: 组装查询充值订单信息的查询条件
+     * @param did - 用户ID
+     * @param orderStatus - 订单状态：-1申诉状态（被申诉），1初始化，2超时/失败，3成功
+     * @param workType - 存款数据录入状态（存款人，存款人时间，尾号）：1初始化，2录入完毕
+     * @return com.hz.fine.master.core.model.did.DidRechargeModel
+     * @author yoko
+     * @date 2020/7/4 16:57
+     */
+    public static DidRechargeModel assembleDidRechargeQueryByWorkType(long did, int orderStatus, int workType){
+        DidRechargeModel resBean = new DidRechargeModel();
+        resBean.setDid(did);
+        resBean.setOrderStatus(orderStatus);
+        resBean.setWorkType(workType);
+        return resBean;
     }
 
 
@@ -4651,6 +4696,42 @@ public class HodgepodgeMethod {
         ResponseDidRecharge dataModel = new ResponseDidRecharge();
         if (responseDidRecharge != null && responseDidRecharge.recharge != null && !StringUtils.isBlank(responseDidRecharge.recharge.orderNo)){
             dataModel = responseDidRecharge;
+        }
+        dataModel.haveType = haveType;
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 获取用户是否有充值挂单数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didRechargeModel - 数据库的挂单信息
+     * @param bankModel - 银行卡信息
+     * @param haveType - 用户名下是否充值挂单：1没有挂单，2有挂单
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidRechargeHaveOrderByQueryDataResult(long stime, String sign, DidRechargeModel didRechargeModel, BankModel bankModel, int haveType){
+        ResponseDidRecharge dataModel = new ResponseDidRecharge();
+        if (didRechargeModel != null && didRechargeModel.getId() > 0 && bankModel != null && bankModel.getId() > 0){
+            RechargeInfo recharge = BeanUtils.copy(didRechargeModel, RechargeInfo.class);
+            if (!StringUtils.isBlank(bankModel.getBankName())){
+                recharge.bankName = bankModel.getBankName();
+            }
+            if (!StringUtils.isBlank(bankModel.getBankCard())){
+                recharge.bankCard = bankModel.getBankCard();
+            }
+            if (!StringUtils.isBlank(bankModel.getSubbranchName())){
+                recharge.subbranchName = bankModel.getSubbranchName();
+            }
+            if (!StringUtils.isBlank(bankModel.getAccountName())){
+                recharge.accountName = bankModel.getAccountName();
+            }
+            dataModel.recharge = recharge;
         }
         dataModel.haveType = haveType;
         dataModel.setStime(stime);

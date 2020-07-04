@@ -146,6 +146,10 @@ public class DidRechargeModel extends BasePage implements Serializable {
     private Integer curdayStart;
     private Integer curdayEnd;
 
+    public DidRechargeModel(){
+
+    }
+
     public Long getId() {
         return id;
     }

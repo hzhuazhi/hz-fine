@@ -41,6 +41,9 @@
             <if test="orderStatus != null and orderStatus != '' " >
                 and a.order_status = #{orderStatus}
             </if>
+            <if test="workType != null and workType != '' " >
+                and a.work_type = #{workType}
+            </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
             </if>

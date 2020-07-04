@@ -34,6 +34,11 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
     public String acNum;
 
     /**
+     * 支付宝的账号ID
+     */
+    public String userId;
+
+    /**
      * 收款账号/地址（原）：二维码
      */
     public String mmQrCode;
@@ -160,5 +165,13 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

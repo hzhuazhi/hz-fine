@@ -444,6 +444,10 @@ public class DidRechargeController {
                     String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
                     strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime());
 
+                    // 缓存挂单- 表示这个银行卡的这个金额已经给出去了
+                    String strKeyCache_bank_money = CachedKeyUtils.getCacheKey(CacheKey.HANG_MONEY, bankData.getId(), didRechargeAdd.getDistributionMoney());
+                    ComponentUtil.redisService.set(strKeyCache_bank_money, didRechargeAdd.getDistributionMoney(), strategyInvalidTimeModel.getStgNumValue(), TimeUnit.MINUTES);
+
                     // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                     String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
                     ComponentUtil.redisService.set(strKeyCache, strData, strategyInvalidTimeModel.getStgNumValue(), TimeUnit.MINUTES);
@@ -664,7 +668,19 @@ public class DidRechargeController {
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
             if (StringUtils.isBlank(strData)){
-                strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, null, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+                // 查询数据库数据
+                DidRechargeModel didRechargeQuery = HodgepodgeMethod.assembleDidRechargeQueryByWorkType(did, 1, 1);
+                DidRechargeModel didRechargeModel = (DidRechargeModel) ComponentUtil.didRechargeService.findByObject(didRechargeQuery);
+                if (didRechargeModel == null || didRechargeModel.getId() <= 0){
+                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, null, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+                }else {
+                    // 数据库有挂单数据
+                    // 获取银行卡信息
+                    BankModel bankQuery = HodgepodgeMethod.assembleBankById(didRechargeModel.getBankId());
+                    BankModel bankData = (BankModel) ComponentUtil.bankService.findByObject(bankQuery);
+                    HodgepodgeMethod.checkBank(bankData);
+                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderByQueryDataResult(stime, sign, didRechargeModel, bankData, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+                }
             }else{
                 ResponseDidRecharge responseDidRecharge = JSON.parseObject(strData, ResponseDidRecharge.class);
                 if (StringUtils.isBlank(responseDidRecharge.recharge.depositor)){
