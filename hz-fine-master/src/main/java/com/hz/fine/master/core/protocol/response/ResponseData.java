@@ -13,8 +13,20 @@ import java.io.Serializable;
 public class ResponseData extends BaseResponse implements Serializable {
     private static final long   serialVersionUID = 1233023331141L;
 
+    /**
+     * 是否有绑定的支付宝账号：1没有绑定，2绑定
+     */
+    public Integer haveType;
 
     public ResponseData(){
 
+    }
+
+    public Integer getHaveType() {
+        return haveType;
+    }
+
+    public void setHaveType(Integer haveType) {
+        this.haveType = haveType;
     }
 }

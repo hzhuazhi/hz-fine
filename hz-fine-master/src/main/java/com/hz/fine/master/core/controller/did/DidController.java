@@ -10,6 +10,7 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidLevelModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.did.DidRewardModel;
@@ -184,7 +185,7 @@ public class DidController {
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/did/logOn
      * 请求的属性类:RequestDid
-     * 必填字段:{"acNum":"15967171415","passWd":"passWd1","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":""}
+     * 必填字段:{"acNum":"15967171415","passWd":"passWd1","logOnType":2,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":""}
      * 加密字段:{"jsonData":"eyJhY051bSI6IjE1OTY3MTcxNDE1IiwicGFzc1dkIjoicGFzc1dkMSIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IiJ9"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
@@ -224,6 +225,20 @@ public class DidController {
             // check用户是否登录成功
             HodgepodgeMethod.checkLogOn(didLogOnData);
 
+            int haveType = 1;// 是否有绑定的支付宝账号：1没有绑定，2绑定
+            // 校验是否绑定了支付宝账号
+            if (requestModel.logOnType == 2){
+                // 查询支付宝收款账号
+                DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountQueryByAcType(didLogOnData.getId(), 2);
+                DidCollectionAccountModel didCollectionAccountModel = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountQuery);
+                if (didCollectionAccountModel == null || didCollectionAccountModel.getId() <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+                    haveType = 1;
+                }else {
+                    haveType = 2;
+                }
+            }
+
+
             // 删除之前登陆成功的token（上一次登陆的token）
             String strKeyCache_token = CachedKeyUtils.getCacheKey(CacheKey.DID_TOKEN_BY_ID, didLogOnData.getId());
             String strCache_token = (String) ComponentUtil.redisService.get(strKeyCache_token);
@@ -250,7 +265,7 @@ public class DidController {
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            String strData = HodgepodgeMethod.assembleLogOnResult(stime, token, sign, haveType);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

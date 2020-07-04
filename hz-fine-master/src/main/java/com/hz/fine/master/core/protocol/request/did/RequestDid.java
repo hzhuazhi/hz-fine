@@ -24,6 +24,11 @@ public class RequestDid extends BaseRequest implements Serializable {
     public String acNum;
 
     /**
+     * 登录类型：1以之前微信协议，2以支付宝协议
+     */
+    public Integer logOnType;
+
+    /**
      * 登录密码
      */
     public String passWd;
@@ -135,5 +140,13 @@ public class RequestDid extends BaseRequest implements Serializable {
 
     public void setVtoken(String vtoken) {
         this.vtoken = vtoken;
+    }
+
+    public Integer getLogOnType() {
+        return logOnType;
+    }
+
+    public void setLogOnType(Integer logOnType) {
+        this.logOnType = logOnType;
     }
 }

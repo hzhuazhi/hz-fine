@@ -345,6 +345,27 @@ public class HodgepodgeMethod {
         return JSON.toJSONString(dataModel);
     }
 
+    /**
+     * @Description: 登录成功后返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param token - 登录token
+     * @param sign - 签名
+     * @param haveType - 是否有绑定的支付宝账号：1没有绑定，2绑定
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/13 21:45
+     */
+    public static String assembleLogOnResult(long stime, String token, String sign, int haveType){
+        ResponseData dataModel = new ResponseData();
+        dataModel.stime = stime;
+        if (!StringUtils.isBlank(token)){
+            dataModel.token = token;
+        }
+        dataModel.sign = sign;
+        dataModel.haveType = haveType;
+        return JSON.toJSONString(dataModel);
+    }
+
 
     /**
      * @Description: 提交验证码的返回客户端的方法-返回vtoken
@@ -718,6 +739,21 @@ public class HodgepodgeMethod {
         DidModel resBean = new DidModel();
         resBean.setAcNum(acNum);
         resBean.setPassWd(passWd);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询支付宝账号的查询条件
+     * @param did - 用户ID
+     * @param acType - 收款账户类型：1微信，2支付宝，3银行卡
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/7/4 15:39
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountQueryByAcType(long did, int acType){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setAcType(acType);
         return resBean;
     }
 
@@ -1704,6 +1740,7 @@ public class HodgepodgeMethod {
         data.distributionMoney = distributionMoney;
         data.invalidTime = invalidTime;
         data.depositor = "";
+        data.depositMoney = "";
         data.depositTime = "";
         data.lastNum = "";
         dataModel.setStime(stime);
