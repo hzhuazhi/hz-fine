@@ -69,7 +69,7 @@ public class UpgradeController {
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+clientType+clientVer+md5Value+resUrl+upType+秘钥=sign
-     * {
+     * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
@@ -95,13 +95,6 @@ public class UpgradeController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestUpgrade.class);
 
-            // 获取用户ID
-            if (requestModel != null && !StringUtils.isBlank(requestModel.token)){
-                token = requestModel.token;
-                // #零时数据
-//                ComponentUtil.redisService.set(token, "3");
-
-            }
 
             // 客户端升级详情数据
             UpgradeModel upgradeQuery = BeanUtils.copy(requestModel, UpgradeModel.class);

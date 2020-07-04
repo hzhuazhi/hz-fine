@@ -17,6 +17,7 @@ public class Notice implements Serializable {
     public String content;
     public String iconAds;
     public String pageAds;
+    public Integer seat;
     public String createTime;
 
     public Notice(){
@@ -77,5 +78,13 @@ public class Notice implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getSeat() {
+        return seat;
+    }
+
+    public void setSeat(Integer seat) {
+        this.seat = seat;
     }
 }

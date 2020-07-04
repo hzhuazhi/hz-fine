@@ -69,18 +69,19 @@ public class QuestionController {
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8082/fine/qt/getDataMList
-     * 请求的属性类:RequestAppeal
+     * local:http://localhost:8086/fine/qt/getDataMList
+     * 请求的属性类:RequestQuestion
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111","androidVer":"7.1.2"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIiwiYW5kcm9pZFZlciI6IjcuMS4yIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJxTUxpc3QiOlt7ImNhdGVnb3J5TmFtZSI6Iui0puWPt+mXrumimF8xIiwiaWNvbkFkcyI6Imh0dHBzOi8vcGljczcuYmFpZHUuY29tL2ZlZWQvMjFhNDQ2MjMwOWY3OTA1Mjg4MTBhNTA2NzM4YjAwY2Y3YmNiZDU3ZC5qcGVnP3Rva2VuPTEzZTFmODhkNjc5NjQzNmY5YmVlMGY3NDBkOGNjN2IzJnM9MEUyMUQyMDU1RTcyMTA5NDc0ODQ2OEI3MDMwMEEwMDIiLCJpZCI6MSwic2VhdE0iOjF9LHsiY2F0ZWdvcnlOYW1lIjoiWFjpl67pophfMiIsImljb25BZHMiOiJodHRwczovL3BpY3M3LmJhaWR1LmNvbS9mZWVkLzIxYTQ0NjIzMDlmNzkwNTI4ODEwYTUwNjczOGIwMGNmN2JjYmQ1N2QuanBlZz90b2tlbj0xM2UxZjg4ZDY3OTY0MzZmOWJlZTBmNzQwZDhjYzdiMyZzPTBFMjFEMjA1NUU3MjEwOTQ3NDg0NjhCNzAzMDBBMDAyIiwiaWQiOjIsInNlYXRNIjoyfSx7ImNhdGVnb3J5TmFtZSI6IllZ6Zeu6aKYXzMiLCJpY29uQWRzIjoiaHR0cHM6Ly9waWNzNy5iYWlkdS5jb20vZmVlZC8yMWE0NDYyMzA5Zjc5MDUyODgxMGE1MDY3MzhiMDBjZjdiY2JkNTdkLmpwZWc/dG9rZW49MTNlMWY4OGQ2Nzk2NDM2ZjliZWUwZjc0MGQ4Y2M3YjMmcz0wRTIxRDIwNTVFNzIxMDk0NzQ4NDY4QjcwMzAwQTAwMiIsImlkIjozLCJzZWF0TSI6M30seyJjYXRlZ29yeU5hbWUiOiJaWumXrumimF80IiwiaWNvbkFkcyI6Imh0dHBzOi8vcGljczcuYmFpZHUuY29tL2ZlZWQvMjFhNDQ2MjMwOWY3OTA1Mjg4MTBhNTA2NzM4YjAwY2Y3YmNiZDU3ZC5qcGVnP3Rva2VuPTEzZTFmODhkNjc5NjQzNmY5YmVlMGY3NDBkOGNjN2IzJnM9MEUyMUQyMDU1RTcyMTA5NDc0ODQ2OEI3MDMwMEEwMDIiLCJpZCI6NCwic2VhdE0iOjR9XSwicm93Q291bnQiOjQsInNpZ24iOiIzOGFmYTBjYzY3YzlhMWNiMmI0ODBjOTBlMzcwMmY3YSIsInN0aW1lIjoxNTc4NDUzODk4MjU2fQ=="
+     *         "jsonData": "eyJxTUxpc3QiOlt7ImNhdGVnb3J5TmFtZSI6IuWvhueggeebuOWFsyIsImljb25BZHMiOiJodHRwOi8vcTU1dm5kYmlmLmJrdC5jbG91ZGRuLmNvbS9tbXhnLnBuZyIsImlkIjoxLCJzZWF0TSI6MX0seyJjYXRlZ29yeU5hbWUiOiLnkIbotKLmlLvnlaUiLCJpY29uQWRzIjoiaHR0cDovL3E1NXZuZGJpZi5ia3QuY2xvdWRkbi5jb20vbGNjbC5wbmciLCJpZCI6Miwic2VhdE0iOjJ9LHsiY2F0ZWdvcnlOYW1lIjoi5aW95Y+L5biu5YqpIiwiaWNvbkFkcyI6Imh0dHA6Ly9xNTV2bmRiaWYuYmt0LmNsb3VkZG4uY29tL2h5YnoucG5nIiwiaWQiOjMsInNlYXRNIjozfV0sInJvd0NvdW50Ijo0LCJzaWduIjoiNTgwMzg5Njc0NGI3M2JkZDkzZDBlOGM2NTE4OTJhN2YiLCJzdGltZSI6MTU5Mzg2MzM0ODM5NH0="
      *     },
-     *     "sgid": "202001081124540000001",
+     *     "sgid": "202007041949080000001",
      *     "cgid": ""
      * }
      */
@@ -99,13 +100,6 @@ public class QuestionController {
             // 解密
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestQuestion.class);
-
-            // 获取用户ID
-            if (requestModel != null && !StringUtils.isBlank(requestModel.token)){
-                token = requestModel.token;
-                // #零时数据
-                did = HodgepodgeMethod.getDidByToken(requestModel.token);
-            }
 
             // 百问百答类别数据
             QuestionMModel questionMQuery = BeanUtils.copy(requestModel, QuestionMModel.class);
@@ -136,18 +130,19 @@ public class QuestionController {
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8082/fine/qt/getDataDList
-     * 请求的属性类:RequestAppeal
-     * 必填字段:{"questionMId":1,"searchKey":"YY简述_1_1","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111","androidVer":"7.1.2","channel":"channel_1","channelNum":"channelNum_1","spreadValue":"spreadValue_1"}
+     * local:http://localhost:8086/fine/qt/getDataDList
+     * 请求的属性类:RequestQuestion
+     * 必填字段:{"questionMId":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
+     * 加密字段:{"jsonData":"eyJxdWVzdGlvbk1JZCI6MSwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInBhZ2VOdW1iZXIiOjEsInBhZ2VTaXplIjozLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJxRExpc3QiOlt7ImNhdGVnb3J5TmFtZSI6Iui0puWPt+mXrumimF8xIiwiaWQiOjEsInBhZ2VBZHMiOiJodHRwczovL3d3dy5iYWlkdS5jb20vIzEiLCJzZWF0RCI6MSwic2tldGNoIjoi6LSm5Y+3566A6L+wXzFfMSIsInRpdGxlIjoi6LSm5Y+35qCH6aKYXzFfMSJ9LHsiY2F0ZWdvcnlOYW1lIjoi6LSm5Y+36Zeu6aKYXzEiLCJpZCI6MiwicGFnZUFkcyI6Imh0dHBzOi8vd3d3LmJhaWR1LmNvbS8jMiIsInNlYXREIjoyLCJza2V0Y2giOiLotKblj7fnroDov7BfMV8yIiwidGl0bGUiOiLotKblj7fmoIfpophfMV8yIn0seyJjYXRlZ29yeU5hbWUiOiLotKblj7fpl67pophfMSIsImlkIjozLCJwYWdlQWRzIjoiaHR0cHM6Ly93d3cuYmFpZHUuY29tLyMzIiwic2VhdEQiOjMsInNrZXRjaCI6Iui0puWPt+eugOi/sF8xXzMiLCJ0aXRsZSI6Iui0puWPt+agh+mimF8xXzMifSx7ImNhdGVnb3J5TmFtZSI6Iui0puWPt+mXrumimF8xIiwiaWQiOjQsInBhZ2VBZHMiOiJodHRwczovL3d3dy5iYWlkdS5jb20vIzQiLCJzZWF0RCI6NCwic2tldGNoIjoi6LSm5Y+3566A6L+wXzFfNCIsInRpdGxlIjoi6LSm5Y+35qCH6aKYXzFfNCJ9LHsiY2F0ZWdvcnlOYW1lIjoi6LSm5Y+36Zeu6aKYXzEiLCJpZCI6NSwicGFnZUFkcyI6Imh0dHBzOi8vd3d3LmJhaWR1LmNvbS8jNSIsInNlYXREIjo1LCJza2V0Y2giOiLotKblj7fnroDov7BfMV81IiwidGl0bGUiOiLotKblj7fmoIfpophfMV81In0seyJjYXRlZ29yeU5hbWUiOiLotKblj7fpl67pophfMSIsImlkIjo2LCJwYWdlQWRzIjoiaHR0cHM6Ly93d3cuYmFpZHUuY29tLyM2Iiwic2VhdEQiOjYsInNrZXRjaCI6Iui0puWPt+eugOi/sF8xXzYiLCJ0aXRsZSI6Iui0puWPt+agh+mimF8xXzYifSx7ImNhdGVnb3J5TmFtZSI6Iui0puWPt+mXrumimF8xIiwiaWQiOjcsInBhZ2VBZHMiOiJodHRwczovL3d3dy5iYWlkdS5jb20vIzciLCJzZWF0RCI6Nywic2tldGNoIjoi6LSm5Y+3566A6L+wXzFfNyIsInRpdGxlIjoi6LSm5Y+35qCH6aKYXzFfNyJ9LHsiY2F0ZWdvcnlOYW1lIjoi6LSm5Y+36Zeu6aKYXzEiLCJpZCI6OCwicGFnZUFkcyI6Imh0dHBzOi8vd3d3LmJhaWR1LmNvbS8jOCIsInNlYXREIjo4LCJza2V0Y2giOiLotKblj7fnroDov7BfMV84IiwidGl0bGUiOiLotKblj7fmoIfpophfMV84In0seyJjYXRlZ29yeU5hbWUiOiLotKblj7fpl67pophfMSIsImlkIjo5LCJwYWdlQWRzIjoiaHR0cHM6Ly93d3cuYmFpZHUuY29tLyM5Iiwic2VhdEQiOjksInNrZXRjaCI6Iui0puWPt+eugOi/sF8xXzkiLCJ0aXRsZSI6Iui0puWPt+agh+mimF8xXzkifSx7ImNhdGVnb3J5TmFtZSI6Iui0puWPt+mXrumimF8xIiwiaWQiOjEwLCJwYWdlQWRzIjoiaHR0cHM6Ly93d3cuYmFpZHUuY29tLyMxMCIsInNlYXREIjoxMCwic2tldGNoIjoi6LSm5Y+3566A6L+wXzFfMTAiLCJ0aXRsZSI6Iui0puWPt+agh+mimF8xXzEwIn1dLCJyb3dDb3VudCI6MTAsInNpZ24iOiJlM2VjYjYyOWViOTJjYzg5ZTA3ZjZiZmUzN2U1ZjI1MCIsInN0aW1lIjoxNTc4NDY1NzAxNzkzfQ=="
+     *         "jsonData": "eyJxRExpc3QiOlt7ImNhdGVnb3J5TmFtZSI6IuWvhueggeebuOWFsyIsImlkIjo0MSwicGFnZUFkcyI6Imh0dHA6Ly9xNTV2bmRiaWYuYmt0LmNsb3VkZG4uY29tL3VwbG9hZCUyRmltYWdlJTJGMjAyMF8wMl8wNCUyRjAyNGI4OWQ0NDU5OGE2MmQ1ZmI1N2M1MjliMjZjODI3MWJiYzAyZjEucG5nIiwic2VhdEQiOjEsInNrZXRjaCI6IuW/mOiusOeZu+mZhuWvhueggeS6huaAjuS5iOWKnu+8nyIsInRpdGxlIjoi5b+Y6K6w55m76ZmG5a+G56CB5LqG5oCO5LmI5Yqe77yfIn0seyJjYXRlZ29yeU5hbWUiOiLlr4bnoIHnm7jlhbMiLCJpZCI6NDIsInBhZ2VBZHMiOiJodHRwOi8vcTU1dm5kYmlmLmJrdC5jbG91ZGRuLmNvbS91cGxvYWQlMkZpbWFnZSUyRjIwMjBfMDJfMDQlMkY5OWJjMjNmNzNkOThkYWJmOTVmN2Y0MDY4NTJlMTFjYWE5MTI1NzA5LnBuZyIsInNlYXREIjoyLCJza2V0Y2giOiLmj5DnjrDlr4bnoIHlv5jorrDkuobmgI7kuYjlip7vvJ8iLCJ0aXRsZSI6IuaPkOeOsOWvhueggeW/mOiusOS6huaAjuS5iOWKnu+8nyJ9XSwicm93Q291bnQiOjIsInNpZ24iOiI1YzI4YzIyMDYxNTMxYzkyYmNjMDZjYTFjMmZjMjgwMCIsInN0aW1lIjoxNTkzODYzNjUyMzUzfQ=="
      *     },
-     *     "sgid": "202001081441360000001",
+     *     "sgid": "202007041954110000001",
      *     "cgid": ""
      * }
      */
@@ -167,14 +162,6 @@ public class QuestionController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestQuestion.class);
 
-            // 获取用户ID
-            if (requestModel != null && !StringUtils.isBlank(requestModel.token)){
-                token = requestModel.token;
-                // #零时数据
-//                ComponentUtil.redisService.set(token, "3");
-                did = HodgepodgeMethod.getDidByToken(requestModel.token);
-
-            }
 
             // 百问百答-详情集合数据
             QuestionDModel questionDQuery = BeanUtils.copy(requestModel, QuestionDModel.class);
@@ -205,18 +192,19 @@ public class QuestionController {
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8082/fine/qt/getDataD
-     * 请求的属性类:RequestAppeal
-     * 必填字段:{"id":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111","androidVer":"7.1.2","channel":"channel_1","channelNum":"channelNum_1","spreadValue":"spreadValue_1"}
+     * local:http://localhost:8086/fine/qt/getDataD
+     * 请求的属性类:RequestQuestion
+     * 必填字段:{"id":41,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIiwiYW5kcm9pZFZlciI6IjcuMS4yIn0="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJxRCI6eyJjYXRlZ29yeU5hbWUiOiLotKblj7fpl67pophfMSIsImlkIjoxLCJwYWdlQWRzIjoiaHR0cHM6Ly93d3cuYmFpZHUuY29tLyMxIiwic2VhdEQiOjEsInNrZXRjaCI6Iui0puWPt+eugOi/sF8xXzEiLCJ0aXRsZSI6Iui0puWPt+agh+mimF8xXzEifSwic2lnbiI6IjQ2OWQwZTIzZmVmZjY4ODg1MDlmYzZkZTljOTRiYmU2Iiwic3RpbWUiOjE1Nzg0NjYyNTIwOTV9"
+     *         "jsonData": "eyJxRCI6eyJjYXRlZ29yeU5hbWUiOiLlr4bnoIHnm7jlhbMiLCJpZCI6NDEsInBhZ2VBZHMiOiJodHRwOi8vcTU1dm5kYmlmLmJrdC5jbG91ZGRuLmNvbS91cGxvYWQlMkZpbWFnZSUyRjIwMjBfMDJfMDQlMkYwMjRiODlkNDQ1OThhNjJkNWZiNTdjNTI5YjI2YzgyNzFiYmMwMmYxLnBuZyIsInNlYXREIjoxLCJza2V0Y2giOiLlv5jorrDnmbvpmYblr4bnoIHkuobmgI7kuYjlip7vvJ8iLCJ0aXRsZSI6IuW/mOiusOeZu+mZhuWvhueggeS6huaAjuS5iOWKnu+8nyJ9LCJzaWduIjoiMDUyYTgzNDRhZWU2YmJjYTBkYjgzZjY3N2FiZDUwOGUiLCJzdGltZSI6MTU5Mzg2Mzc1Mjg3Mn0="
      *     },
-     *     "sgid": "202001081450490000001",
+     *     "sgid": "202007041955520000001",
      *     "cgid": ""
      * }
      */
@@ -235,15 +223,6 @@ public class QuestionController {
             // 解密
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestQuestion.class);
-
-            // 获取用户ID
-            if (requestModel != null && !StringUtils.isBlank(requestModel.token)){
-                token = requestModel.token;
-                // #零时数据
-//                ComponentUtil.redisService.set(token, "3");
-                did = HodgepodgeMethod.getDidByToken(requestModel.token);
-
-            }
 
             // 百问百答详情数据
             QuestionDModel questionDQuery = BeanUtils.copy(requestModel, QuestionDModel.class);

@@ -72,14 +72,13 @@ public class NoticeDController {
      * 加密字段:{"jsonData":"eyJub3RpY2VUeXBlIjoxLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+秘钥=sign
      * 返回加密字段:stime+秘钥=sign
-     *
-     * {
+     * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJuY0xpc3QiOlt7ImNvbnRlbnQiOiIiLCJjcmVhdGVUaW1lIjoiMjAyMC0wMS0yMCAxODozMDozMCIsImljb25BZHMiOiJodHRwOi8vNTAwLmx6c2h1LmNuLzE1Nzk1MjY4MzMxMzAuanBnIiwiaWQiOjExLCJwYWdlQWRzIjoiaHR0cDovLzUwMC5senNodS5jbi8xNTc5NTI2NDM0NjkyLmpwZyIsInNrZXRjaCI6IuesrOS4gOadoeWFrOWRiiIsInRpdGxlIjoiNTAw55CG6LSiIOivlei/kOihjOmAmuefpSJ9XSwicm93Q291bnQiOjEsInNpZ24iOiI5NjM1MDllOWU4OWM4MWNjYjA3ZjI3OTIwODMxZGI3OSIsInN0aW1lIjoxNTgzMjE0ODIwMzMwfQ=="
+     *         "jsonData": "eyJkYXRhTGlzdCI6W3siY29udGVudCI6IiIsImNyZWF0ZVRpbWUiOiIyMDIwLTAxLTIwIDE4OjMwOjMwIiwiaWNvbkFkcyI6Imh0dHA6Ly9xNmxta3U4dTcuYmt0LmNsb3VkZG4uY29tL3VwbG9hZCUyRmltYWdlJTJGMjAyMF8wM18wMyUyRjY3NmNmNTE0NTFjMDY0ZTkzMTc2ZTM5NmZjZThlOTcyNjM2MTlhZjYuanBnIiwiaWQiOjExLCJwYWdlQWRzIjoiaHR0cDovL3E2bG1rdTh1Ny5ia3QuY2xvdWRkbi5jb20vdXBsb2FkJTJGaW1hZ2UlMkYyMDIwXzAzXzAzJTJGZWU3NTIwZWQyMzcwNTFiMDg2MmExZjkzNmIwMzFkNjU3YTBiMmU4Yi5wbmciLCJza2V0Y2giOiLnrKzkuIDmnaHlhazlkYoiLCJ0aXRsZSI6IjUwMOeQhui0oiDor5Xov5DooYzpgJrnn6UifSx7ImNvbnRlbnQiOiLllabllabllaYiLCJjcmVhdGVUaW1lIjoiMjAyMC0wMy0wMyAxNTo0ODo0NCIsImljb25BZHMiOiJodHRwOi8vcTZsbWt1OHU3LmJrdC5jbG91ZGRuLmNvbS91cGxvYWQlMkZpbWFnZSUyRjIwMjBfMDNfMDMlMkY2NzZjZjUxNDUxYzA2NGU5MzE3NmUzOTZmY2U4ZTk3MjYzNjE5YWY2LmpwZyIsImlkIjoxMiwicGFnZUFkcyI6Imh0dHA6Ly9xNmxta3U4dTcuYmt0LmNsb3VkZG4uY29tL3VwbG9hZCUyRmltYWdlJTJGMjAyMF8wM18wMyUyRmVlNzUyMGVkMjM3MDUxYjA4NjJhMWY5MzZiMDMxZDY1N2EwYjJlOGIucG5nIiwic2tldGNoIjoi5rWL6K+V5ZOmMzMiLCJ0aXRsZSI6Iua1i+ivlTIyIn0seyJjb250ZW50IjoiMzEzMTMxMiIsImNyZWF0ZVRpbWUiOiIyMDIwLTAzLTAzIDE2OjE5OjM2IiwiaWNvbkFkcyI6Imh0dHA6Ly9xNmxta3U4dTcuYmt0LmNsb3VkZG4uY29tL3VwbG9hZCUyRmltYWdlJTJGMjAyMF8wM18wMyUyRjcwMzVjODQxZTAzNWQ0MjVlNjU0NzdjMjk1ZjMzZjQ5MDdhYmFmY2EuanBnIiwiaWQiOjEzLCJwYWdlQWRzIjoiIiwic2tldGNoIjoiMzEzMSIsInRpdGxlIjoiMzEzMSJ9XSwicm93Q291bnQiOjUsInNpZ24iOiIwZGRlZTZkOTNhZjliZWMxMzY1OGFhM2ZiY2U3YWM4ZSIsInN0aW1lIjoxNTkzODYxNjczODMyfQ=="
      *     },
-     *     "sgid": "202003031353400000001",
+     *     "sgid": "202007041921130000001",
      *     "cgid": ""
      * }
      */
@@ -133,13 +132,13 @@ public class NoticeDController {
      * 加密字段:{"jsonData":"eyJpZCI6MTIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:id+ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
-     * {
+     * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJuYyI6eyJjb250ZW50IjoiIiwiY3JlYXRlVGltZSI6IjIwMjAtMDEtMjAgMTg6MzA6MzAiLCJpY29uQWRzIjoiaHR0cDovLzUwMC5senNodS5jbi8xNTc5NTI2ODMzMTMwLmpwZyIsImlkIjoxMSwicGFnZUFkcyI6Imh0dHA6Ly81MDAubHpzaHUuY24vMTU3OTUyNjQzNDY5Mi5qcGciLCJza2V0Y2giOiLnrKzkuIDmnaHlhazlkYoiLCJ0aXRsZSI6IjUwMOeQhui0oiDor5Xov5DooYzpgJrnn6UifSwic2lnbiI6ImI1ZTBiMTdiNGIxNWIzNjlhMGNkOTlmNTEzNTYzOGJiIiwic3RpbWUiOjE1ODMyMTQ4NzU1NDd9"
+     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiY29udGVudCI6IuWVpuWVpuWVpiIsImNyZWF0ZVRpbWUiOiIyMDIwLTAzLTAzIDE1OjQ4OjQ0IiwiaWNvbkFkcyI6Imh0dHA6Ly9xNmxta3U4dTcuYmt0LmNsb3VkZG4uY29tL3VwbG9hZCUyRmltYWdlJTJGMjAyMF8wM18wMyUyRjY3NmNmNTE0NTFjMDY0ZTkzMTc2ZTM5NmZjZThlOTcyNjM2MTlhZjYuanBnIiwiaWQiOjEyLCJwYWdlQWRzIjoiaHR0cDovL3E2bG1rdTh1Ny5ia3QuY2xvdWRkbi5jb20vdXBsb2FkJTJGaW1hZ2UlMkYyMDIwXzAzXzAzJTJGZWU3NTIwZWQyMzcwNTFiMDg2MmExZjkzNmIwMzFkNjU3YTBiMmU4Yi5wbmciLCJzZWF0IjoxLCJza2V0Y2giOiLmtYvor5Xlk6YzMyIsInRpdGxlIjoi5rWL6K+VMjIifSwic2lnbiI6IjJiYWUyMjk4YWFkNGIzMjJkMTNlOWI5NTU0MWQ4MjM5Iiwic3RpbWUiOjE1OTM4NjI5MTM0Njl9"
      *     },
-     *     "sgid": "202003031354350000001",
+     *     "sgid": "202007041941530000001",
      *     "cgid": ""
      * }
      */

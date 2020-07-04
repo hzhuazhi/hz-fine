@@ -50,7 +50,7 @@
     <select id="findAll" resultType="com.hz.fine.master.core.model.question.QuestionDModel">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_question_d a left join tb_ga_question_m b on a.question_m_id = b.id
+        from tb_fn_question_d a left join tb_fn_question_m b on a.question_m_id = b.id
         <include refid="Example_Where_Clause"/>
     </select>
 
@@ -58,7 +58,7 @@
     <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.question.QuestionDModel">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_question_d a left join tb_ga_question_m b on a.question_m_id = b.id
+        from tb_fn_question_d a left join tb_fn_question_m b on a.question_m_id = b.id
         <include refid="Example_Where_Clause"/>
         <include refid="Example_Order_By"/>
     </select>
@@ -67,7 +67,7 @@
     <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.question.QuestionDModel">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_question_d a left join tb_ga_question_m b on a.question_m_id = b.id
+        from tb_fn_question_d a left join tb_fn_question_m b on a.question_m_id = b.id
         <include refid="Example_Where_Clause"/>
         limit 1
     </select>
@@ -76,7 +76,7 @@
     <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.question.QuestionDModel">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_question_d a left join tb_ga_question_m b on a.question_m_id = b.id
+        from tb_fn_question_d a left join tb_fn_question_m b on a.question_m_id = b.id
         <include refid="Example_Where_Clause_id"/>
     </select>
 
@@ -85,7 +85,7 @@
     <!-- 查询总数-->
     <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
         select count(1)
-        from tb_ga_question_d a left join tb_ga_question_m b on a.question_m_id = b.id
+        from tb_fn_question_d a left join tb_fn_question_m b on a.question_m_id = b.id
         <include refid="Example_Where_Clause"/>
     </select>
 
@@ -93,7 +93,7 @@
     <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.question.QuestionDModel">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_question_d a left join tb_ga_question_m b on a.question_m_id = b.id
+        from tb_fn_question_d a left join tb_fn_question_m b on a.question_m_id = b.id
         <include refid="Example_Where_Clause"/>
         <include refid="Example_Order_By"/>
         <if test="pageNumber != null and pageNumber != ''" >
@@ -107,7 +107,7 @@
         <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
         <!--SELECT LAST_INSERT_ID() as id-->
         <!--</selectKey>-->
-        insert into tb_ga_question_d
+        insert into tb_fn_question_d
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="questionMId != null and questionMId != '' " >
                 question_m_id,
@@ -155,7 +155,7 @@
 
     <!-- 更新基本信息 -->
     <update id="update" parameterType="com.hz.fine.master.core.model.question.QuestionDModel">
-        UPDATE tb_ga_question_d a
+        UPDATE tb_fn_question_d a
         <trim prefix="set" suffixOverrides=",">
             <if test="questionMId != null and questionMId != '' " >
                 a.question_m_id = #{questionMId},
@@ -182,7 +182,7 @@
 
     <!-- 主要作用1.逻辑删除，2更新状态 -->
     <update id="manyOperation" parameterType="Object">
-        update tb_ga_question_d a
+        update tb_fn_question_d a
         <trim prefix="set" suffixOverrides=",">
             <if test="yn != 0 and yn >0 " >
                 a.yn = #{yn},
