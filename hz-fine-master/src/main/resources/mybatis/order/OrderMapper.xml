@@ -405,6 +405,7 @@
         and a.did = #{did}
         and a.order_no = #{orderNo}
         and a.did_status = 1
+        and a.order_status != 2
         and a.yn = 0
     </update>
 

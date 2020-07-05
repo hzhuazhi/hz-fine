@@ -4335,6 +4335,11 @@ public class HodgepodgeMethod {
         if (orderModel != null && !StringUtils.isBlank(orderModel.getOrderNo())){
             Order data = BeanUtils.copy(orderModel, Order.class);
             if (lastTime > 0){
+                data.invalidTime = DateUtil.addAndSubtractDateSecond(data.invalidTime, - lastTime);
+                data.invalidSecond = String.valueOf(Integer.parseInt(data.invalidSecond) - lastTime - 1);
+                if (data.invalidSecond.indexOf("-") > -1){
+                    data.invalidSecond = "0";
+                }
                 data.lastTime = lastTime;
             }
             dataModel.dataModel = data;
