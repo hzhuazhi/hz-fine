@@ -227,6 +227,7 @@ public class DidController {
 
             int haveType = 1;// 是否有绑定的支付宝账号：1没有绑定，2绑定
             // 校验是否绑定了支付宝账号
+            String userId = "";
             if (requestModel.logOnType == 2){
                 // 查询支付宝收款账号
                 DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountQueryByAcType(didLogOnData.getId(), 2);
@@ -235,6 +236,9 @@ public class DidController {
                     haveType = 1;
                 }else {
                     haveType = 2;
+                    if (!StringUtils.isBlank(didCollectionAccountModel.getUserId())){
+                        userId = didCollectionAccountModel.getUserId();
+                    }
                 }
             }
 
@@ -265,7 +269,7 @@ public class DidController {
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleLogOnResult(stime, token, sign, haveType);
+            String strData = HodgepodgeMethod.assembleLogOnResult(stime, token, sign, haveType, userId);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

@@ -18,6 +18,11 @@ public class ResponseData extends BaseResponse implements Serializable {
      */
     public Integer haveType;
 
+    /**
+     * 支付宝用户ID
+     */
+    public String userId;
+
     public ResponseData(){
 
     }
@@ -28,5 +33,13 @@ public class ResponseData extends BaseResponse implements Serializable {
 
     public void setHaveType(Integer haveType) {
         this.haveType = haveType;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

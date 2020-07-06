@@ -388,15 +388,19 @@ public class HodgepodgeMethod {
      * @param token - 登录token
      * @param sign - 签名
      * @param haveType - 是否有绑定的支付宝账号：1没有绑定，2绑定
+     * @param userId - 支付宝账号ID
      * @return java.lang.String
      * @author yoko
      * @date 2019/11/13 21:45
      */
-    public static String assembleLogOnResult(long stime, String token, String sign, int haveType){
+    public static String assembleLogOnResult(long stime, String token, String sign, int haveType, String userId){
         ResponseData dataModel = new ResponseData();
         dataModel.stime = stime;
         if (!StringUtils.isBlank(token)){
             dataModel.token = token;
+        }
+        if (!StringUtils.isBlank(userId)){
+            dataModel.userId = userId;
         }
         dataModel.sign = sign;
         dataModel.haveType = haveType;
