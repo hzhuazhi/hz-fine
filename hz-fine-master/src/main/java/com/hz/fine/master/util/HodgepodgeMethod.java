@@ -8,10 +8,12 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
+import com.hz.fine.master.core.model.consult.ConsultModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
 import com.hz.fine.master.core.model.notice.NoticeModel;
 import com.hz.fine.master.core.model.order.OrderModel;
+import com.hz.fine.master.core.model.question.QuestionDDModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
 import com.hz.fine.master.core.model.question.QuestionMModel;
 import com.hz.fine.master.core.model.region.RegionModel;
@@ -40,6 +42,8 @@ import com.hz.fine.master.core.protocol.response.bank.Bank;
 import com.hz.fine.master.core.protocol.response.bank.BankMoney;
 import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 import com.hz.fine.master.core.protocol.response.bank.ResponseBank;
+import com.hz.fine.master.core.protocol.response.consult.Consult;
+import com.hz.fine.master.core.protocol.response.consult.ResponseConsult;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
@@ -59,6 +63,7 @@ import com.hz.fine.master.core.protocol.response.order.Order;
 import com.hz.fine.master.core.protocol.response.order.OrderDistribution;
 import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
+import com.hz.fine.master.core.protocol.response.question.QuestionDD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
 import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
 import com.hz.fine.master.core.protocol.response.sell.ResponseSell;
@@ -166,6 +171,31 @@ public class HodgepodgeMethod {
         if (questionDList != null && questionDList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
             List<QuestionD> dataList = BeanUtils.copyList(questionDList, QuestionD.class);
             dataModel.qDList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 百问百答-详情-步骤集合的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param questionDDList - 百问百答详情-步骤集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleQuestionDDResult(long stime, String sign, List<QuestionDDModel> questionDDList, Integer rowCount){
+        ResponseQuestion dataModel = new ResponseQuestion();
+        if (questionDDList != null && questionDDList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<QuestionDD> dataList = BeanUtils.copyList(questionDDList, QuestionDD.class);
+            dataModel.qDdList = dataList;
         }
         if (rowCount != null){
             dataModel.rowCount = rowCount;
@@ -4951,6 +4981,30 @@ public class HodgepodgeMethod {
         QuestionDModel resBean = new QuestionDModel();
         resBean.setQuestionMId(questionMId);
         return resBean;
+    }
+
+    /**
+     * @Description: 在线客服、咨询集合的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param consultList - 在线客服、咨询集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleConsultDataListResult(long stime, String sign, List<ConsultModel> consultList, Integer rowCount){
+        ResponseConsult dataModel = new ResponseConsult();
+        if (consultList != null && consultList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<Consult> dataList = BeanUtils.copyList(consultList, Consult.class);
+            dataModel.dataList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
     }
 
 

@@ -122,6 +122,12 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private UpgradeService upgradeService;
 
+    @Autowired
+    private ConsultService consultService;
+
+    @Autowired
+    private QuestionDDService questionDDService;
+
 
 
 
@@ -164,6 +170,8 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.didBalanceDeductService = didBalanceDeductService;
         ComponentUtil.noticeService = noticeService;
         ComponentUtil.upgradeService = upgradeService;
+        ComponentUtil.consultService = consultService;
+        ComponentUtil.questionDDService = questionDDService;
 
         runThread = new RunThread();
         runThread.start();

@@ -19,7 +19,7 @@ public class ConsultModel extends BasePage implements Serializable {
     private Long id;
 
     /**
-     * 类别名称
+     * 咨询类别名称
      */
     private String categoryName;
 

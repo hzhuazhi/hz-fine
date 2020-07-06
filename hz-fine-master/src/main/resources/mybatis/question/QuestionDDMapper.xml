@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.QuestionDDMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.question_d_id,a.seat_d_d,a.title,a.sketch,a.page_ads,a.keyword,a.create_time,a.update_time,a.yn
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="questionDId != null and questionDId != '' " >
+                and a.question_d_id = #{questionDId}
+            </if>
+            <if test="searchKey != null and searchKey != '' " >
+                and (a.title like CONCAT('%',#{searchKey},'%') or a.sketch like CONCAT('%',#{searchKey},'%') or a.keyword like CONCAT('%',#{searchKey},'%'))
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.seat_d_d asc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.question.QuestionDDModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_question_d_d a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.question.QuestionDDModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_question_d_d a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.question.QuestionDDModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_question_d_d a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.question.QuestionDDModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_question_d_d a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_question_d_d a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.question.QuestionDDModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_question_d_d a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.question.QuestionDDModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_question_d_d
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="questionDId != null and questionDId != '' " >
+                question_d_id,
+            </if>
+            <if test="seatDD != null and seatDD != '' " >
+                seat_d_d,
+            </if>
+            <if test="title != null and title != '' " >
+                title,
+            </if>
+            <if test="sketch != null and sketch != '' " >
+                sketch,
+            </if>
+            <if test="pageAds != null and pageAds != '' " >
+                page_ads,
+            </if>
+            <if test="keyword != null and keyword != '' " >
+                keyword,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="questionDId != null and questionDId != '' " >
+                <![CDATA[  #{questionDId}, ]]>
+            </if>
+            <if test="seatDD != null and seatDD != '' " >
+                <![CDATA[  #{seatDD}, ]]>
+            </if>
+            <if test="title != null and title != '' " >
+                <![CDATA[  #{title}, ]]>
+            </if>
+            <if test="sketch != null and sketch != '' " >
+                <![CDATA[  #{sketch}, ]]>
+            </if>
+            <if test="pageAds != null and pageAds != '' " >
+                <![CDATA[  #{pageAds}, ]]>
+            </if>
+            <if test="keyword != null and keyword != '' " >
+                <![CDATA[  #{keyword}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.question.QuestionDDModel">
+        UPDATE tb_fn_question_d_d a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="questionDId != null and questionDId != '' " >
+                a.question_d_id = #{questionDId},
+            </if>
+            <if test="seatDD != null and seatDD != '' " >
+                a.seat_d_d = #{seatDD},
+            </if>
+            <if test="title != null and title != '' " >
+                a.title = #{title},
+            </if>
+            <if test="sketch != null and sketch != '' " >
+                a.sketch = #{sketch},
+            </if>
+            <if test="pageAds != null and pageAds != '' " >
+                a.page_ads = #{pageAds},
+            </if>
+            <if test="keyword != null and keyword != '' " >
+                a.keyword = #{keyword},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_question_d_d a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+</mapper>

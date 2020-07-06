@@ -41,6 +41,9 @@ public class ComponentUtil {
     public static DidBalanceDeductService didBalanceDeductService;
     public static NoticeService noticeService;
     public static UpgradeService upgradeService;
+    public static ConsultService consultService;
+    public static QuestionDDService questionDDService;
+
 
 
 

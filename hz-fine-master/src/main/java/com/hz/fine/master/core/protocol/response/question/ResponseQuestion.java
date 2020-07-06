@@ -17,6 +17,7 @@ public class ResponseQuestion extends BaseResponse implements Serializable {
 
     public List<QuestionM> qMList;
     public List<QuestionD> qDList;
+    public List<QuestionDD> qDdList;
     public QuestionD qD;
     public Integer rowCount;
 
@@ -56,5 +57,13 @@ public class ResponseQuestion extends BaseResponse implements Serializable {
     @Override
     public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public List<QuestionDD> getqDdList() {
+        return qDdList;
+    }
+
+    public void setqDdList(List<QuestionDD> qDdList) {
+        this.qDdList = qDdList;
     }
 }

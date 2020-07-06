@@ -19,6 +19,8 @@ public class RequestQuestion extends BaseRequest implements Serializable {
 
     public Long questionMId;
 
+    public Long questionDId;
+
     public String searchKey;
 
     public RequestQuestion(){
@@ -47,5 +49,13 @@ public class RequestQuestion extends BaseRequest implements Serializable {
 
     public void setSearchKey(String searchKey) {
         this.searchKey = searchKey;
+    }
+
+    public Long getQuestionDId() {
+        return questionDId;
+    }
+
+    public void setQuestionDId(Long questionDId) {
+        this.questionDId = questionDId;
     }
 }

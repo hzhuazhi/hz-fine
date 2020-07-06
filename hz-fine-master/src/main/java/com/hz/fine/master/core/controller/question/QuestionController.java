@@ -9,6 +9,7 @@ import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.question.QuestionDDModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
 import com.hz.fine.master.core.model.question.QuestionMModel;
 import com.hz.fine.master.core.model.region.RegionModel;
@@ -314,7 +315,69 @@ public class QuestionController {
             return JsonResult.successResult(resultDataModel, cgid, sgid);
         }catch (Exception e){
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
-            log.error(String.format("this QuestionController.getDataMList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            log.error(String.format("this QuestionController.getDataMDList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+    /**
+     * @Description: 百问百答问题-详情-步骤的-集合数据
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/qt/getDataDDList
+     * 请求的属性类:RequestQuestion
+     * 必填字段:{"questionDId":41,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
+     * 加密字段:{"jsonData":"eyJxdWVzdGlvbkRJZCI6NDEsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJwYWdlTnVtYmVyIjoxLCJwYWdlU2l6ZSI6MywidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJxRExpc3QiOlt7ImNhdGVnb3J5TmFtZSI6IuWvhueggeebuOWFsyIsImlkIjo0MSwicGFnZUFkcyI6Imh0dHA6Ly9xNTV2bmRiaWYuYmt0LmNsb3VkZG4uY29tL3VwbG9hZCUyRmltYWdlJTJGMjAyMF8wMl8wNCUyRjAyNGI4OWQ0NDU5OGE2MmQ1ZmI1N2M1MjliMjZjODI3MWJiYzAyZjEucG5nIiwic2VhdEQiOjEsInNrZXRjaCI6IuW/mOiusOeZu+mZhuWvhueggeS6huaAjuS5iOWKnu+8nyIsInRpdGxlIjoi5b+Y6K6w55m76ZmG5a+G56CB5LqG5oCO5LmI5Yqe77yfIn0seyJjYXRlZ29yeU5hbWUiOiLlr4bnoIHnm7jlhbMiLCJpZCI6NDIsInBhZ2VBZHMiOiJodHRwOi8vcTU1dm5kYmlmLmJrdC5jbG91ZGRuLmNvbS91cGxvYWQlMkZpbWFnZSUyRjIwMjBfMDJfMDQlMkY5OWJjMjNmNzNkOThkYWJmOTVmN2Y0MDY4NTJlMTFjYWE5MTI1NzA5LnBuZyIsInNlYXREIjoyLCJza2V0Y2giOiLmj5DnjrDlr4bnoIHlv5jorrDkuobmgI7kuYjlip7vvJ8iLCJ0aXRsZSI6IuaPkOeOsOWvhueggeW/mOiusOS6huaAjuS5iOWKnu+8nyJ9XSwicm93Q291bnQiOjIsInNpZ24iOiI1YzI4YzIyMDYxNTMxYzkyYmNjMDZjYTFjMmZjMjgwMCIsInN0aW1lIjoxNTkzODYzNjUyMzUzfQ=="
+     *     },
+     *     "sgid": "202007041954110000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getDataDDList", method = {RequestMethod.POST})
+    public JsonResult<Object> getDataDDList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestQuestion requestModel = new RequestQuestion();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestQuestion.class);
+
+
+            // 百问百答-详情-步骤集合数据
+            QuestionDDModel questionDDQuery = BeanUtils.copy(requestModel, QuestionDDModel.class);
+            List<QuestionDDModel> questionDDList = ComponentUtil.questionDDService.queryByList(questionDDQuery);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleQuestionDDResult(stime, sign, questionDDList, questionDDQuery.getRowCount());
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this QuestionController.getDataDList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
