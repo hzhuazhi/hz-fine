@@ -177,6 +177,11 @@ public class OrderModel extends BasePage implements Serializable {
      */
     private String invalidSecond;
 
+    /**
+     * 备注
+     */
+    private String remark;
+
 
     public Long getId() {
         return id;
@@ -449,5 +454,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setInvalidSecond(String invalidSecond) {
         this.invalidSecond = invalidSecond;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

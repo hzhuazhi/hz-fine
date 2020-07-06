@@ -4337,6 +4337,10 @@ public class HodgepodgeMethod {
         resBean.setDid(did);
         resBean.setOrderNo(requestModel.orderNo);
         resBean.setDidStatus(requestModel.status);
+        if (requestModel.status >= 3){
+            resBean.setOrderStatus(4);
+            resBean.setRemark("手动或者系统默认点击成功");
+        }
         return resBean;
     }
 

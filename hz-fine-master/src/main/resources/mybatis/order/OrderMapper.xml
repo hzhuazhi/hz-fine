@@ -398,6 +398,12 @@
             <if test="didStatus != null and didStatus != '' " >
                 a.did_status = #{didStatus},
             </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
+            </if>
             a.did_time = now(),
             a.update_time = NOW(),
         </trim>
