@@ -150,6 +150,7 @@ public class HodgepodgeMethod {
         return JSON.toJSONString(dataModel);
     }
 
+
     /**
      * @Description: 百问百答-详情集合的数据组装返回客户端的方法
      * @param stime - 服务器的时间
@@ -4937,6 +4938,19 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 组装查询百问百答详情的查询条件
+     * @param questionMId - 百问百答-类别的主键ID
+     * @return
+     * @author yoko
+     * @date 2020/7/6 12:25
+    */
+    public static QuestionDModel assembleQuestionDQuery(long questionMId){
+        QuestionDModel resBean = new QuestionDModel();
+        resBean.setQuestionMId(questionMId);
+        return resBean;
     }
 
 

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -244,4 +245,81 @@ public class QuestionController {
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
     }
+
+
+
+    /**
+     * @Description: 获取百问百答-类别数据、具体详情-集合
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/qt/getDataMDList
+     * 请求的属性类:RequestQuestion
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIiwiYW5kcm9pZFZlciI6IjcuMS4yIn0="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJxTUxpc3QiOlt7ImNhdGVnb3J5TmFtZSI6IuWvhueggeebuOWFsyIsImljb25BZHMiOiJodHRwOi8vaW1nLm1wLml0Yy5jbi91cGxvYWQvMjAxNjExMTEvOTI3MjhiMjViNTJiNGJlNzhjZGYyYTc4MjYyMWYwNmVfdGguanBnIiwiaWQiOjEsInFETGlzdCI6W3siY2F0ZWdvcnlOYW1lIjoi5a+G56CB55u45YWzIiwiY3JlYXRlVGltZSI6IjIwMjAtMDEtMjAgMTU6MTM6NDAiLCJpZCI6NDEsImtleXdvcmQiOiIiLCJwYWdlIjp7fSwicGFnZUFkcyI6Imh0dHA6Ly9pbWcubXAuaXRjLmNuL3VwbG9hZC8yMDE2MTExMS85MjcyOGIyNWI1MmI0YmU3OGNkZjJhNzgyNjIxZjA2ZV90aC5qcGciLCJxdWVzdGlvbk1JZCI6MSwic2VhdEQiOjEsInNrZXRjaCI6IuW/mOiusOeZu+mZhuWvhueggeS6huaAjuS5iOWKnu+8nyIsInRpdGxlIjoi5b+Y6K6w55m76ZmG5a+G56CB5LqG5oCO5LmI5Yqe77yfIiwieW4iOjB9LHsiY2F0ZWdvcnlOYW1lIjoi5a+G56CB55u45YWzIiwiY3JlYXRlVGltZSI6IjIwMjAtMDEtMjAgMTU6MTM6NDAiLCJpZCI6NDIsImtleXdvcmQiOiIiLCJwYWdlIjp7fSwicGFnZUFkcyI6Imh0dHA6Ly9pbWcubXAuaXRjLmNuL3VwbG9hZC8yMDE2MTExMS9jMjdkYmQ4YzNhMmE0ODc5OTgzYmUwMzg2ODYxMGNjY190aC5qcGciLCJxdWVzdGlvbk1JZCI6MSwic2VhdEQiOjIsInNrZXRjaCI6IuaPkOeOsOWvhueggeW/mOiusOS6huaAjuS5iOWKnu+8nyIsInRpdGxlIjoi5o+Q546w5a+G56CB5b+Y6K6w5LqG5oCO5LmI5Yqe77yfIiwieW4iOjB9XSwic2VhdE0iOjF9LHsiY2F0ZWdvcnlOYW1lIjoi55CG6LSi5pS755WlIiwiaWNvbkFkcyI6Imh0dHA6Ly9pbWcubXAuaXRjLmNuL3VwbG9hZC8yMDE2MTExMS9jMjdkYmQ4YzNhMmE0ODc5OTgzYmUwMzg2ODYxMGNjY190aC5qcGciLCJpZCI6MiwicURMaXN0IjpbeyJjYXRlZ29yeU5hbWUiOiLnkIbotKLmlLvnlaUiLCJjcmVhdGVUaW1lIjoiMjAyMC0wMS0yMCAxNToxMzo0MCIsImlkIjo0Mywia2V5d29yZCI6IiIsInBhZ2UiOnt9LCJwYWdlQWRzIjoiaHR0cDovL2ltZy5tcC5pdGMuY24vdXBsb2FkLzIwMTYxMTExL2I5N2UyNTQwZGE3ZDQ3YTU5NTVlYWI0ZWEyMjc0ZjExX3RoLmpwZyIsInF1ZXN0aW9uTUlkIjoyLCJzZWF0RCI6MSwic2tldGNoIjoi44CKNTAw55CG6LSi44CL5piv5LuA5LmI77yfIiwidGl0bGUiOiLjgIo1MDDnkIbotKLjgIvmmK/ku4DkuYjvvJ8iLCJ5biI6MH0seyJjYXRlZ29yeU5hbWUiOiLnkIbotKLmlLvnlaUiLCJjcmVhdGVUaW1lIjoiMjAyMC0wMS0yMCAxNToxMzo0MCIsImlkIjo0NCwia2V5d29yZCI6IiIsInBhZ2UiOnt9LCJwYWdlQWRzIjoiaHR0cDovL2luZXdzLmd0aW1nLmNvbS9uZXdzYXBwX2J0LzAvOTMwMDQzODQ4OC8xMDAwLzAiLCJxdWVzdGlvbk1JZCI6Miwic2VhdEQiOjIsInNrZXRjaCI6IuWmguS9leaIkOS4ulZJUO+8nyIsInRpdGxlIjoi5aaC5L2V5oiQ5Li6VklQ77yfIiwieW4iOjB9LHsiY2F0ZWdvcnlOYW1lIjoi55CG6LSi5pS755WlIiwiY3JlYXRlVGltZSI6IjIwMjAtMDEtMjAgMTU6MTM6NDAiLCJpZCI6NDUsImtleXdvcmQiOiIiLCJwYWdlIjp7fSwicGFnZUFkcyI6Imh0dHA6Ly9uLnNpbmFpbWcuY24vdHJhbnNsYXRlL3c3NjhoNTI3LzIwMTgwMTEyL3BJb3QtZnlxbmljbTIxOTQ5NjIuanBnIiwicXVlc3Rpb25NSWQiOjIsInNlYXREIjozLCJza2V0Y2giOiJWSVDmnInlk6rkupvmnYPnm4rvvJ8iLCJ0aXRsZSI6IlZJUOacieWTquS6m+adg+ebiu+8nyIsInluIjowfSx7ImNhdGVnb3J5TmFtZSI6IueQhui0ouaUu+eVpSIsImNyZWF0ZVRpbWUiOiIyMDIwLTAxLTIwIDE1OjEzOjQwIiwiaWQiOjQ2LCJrZXl3b3JkIjoiIiwicGFnZSI6e30sInBhZ2VBZHMiOiJodHRwOi8vNWIwOTg4ZTU5NTIyNS5jZG4uc29odWNzLmNvbS9pbWFnZXMvMjAxODAzMjQvMmZjNzg4Nzk5NDQ0NDA1NDg2ZTE1M2RjOWE3NmI5Y2EuanBlZyIsInF1ZXN0aW9uTUlkIjoyLCJzZWF0RCI6NCwic2tldGNoIjoi5pyq5a6M5oiQ5byV6I2Q5Lu75Yqh6K+l5aaC5L2V6Kej5Yaz77yfIiwidGl0bGUiOiLmnKrlrozmiJDlvJXojZDku7vliqHor6XlpoLkvZXop6PlhrPvvJ8iLCJ5biI6MH1dLCJzZWF0TSI6Mn0seyJjYXRlZ29yeU5hbWUiOiLlpb3lj4vluK7liqkiLCJpY29uQWRzIjoiaHR0cDovL2ltZy5tcC5pdGMuY24vdXBsb2FkLzIwMTYxMTExL2I5N2UyNTQwZGE3ZDQ3YTU5NTVlYWI0ZWEyMjc0ZjExX3RoLmpwZyIsImlkIjozLCJxRExpc3QiOlt7ImNhdGVnb3J5TmFtZSI6IuWlveWPi+W4ruWKqSIsImNyZWF0ZVRpbWUiOiIyMDIwLTAxLTIwIDE1OjEzOjQwIiwiaWQiOjQ3LCJrZXl3b3JkIjoiIiwicGFnZSI6e30sInBhZ2VBZHMiOiJodHRwOi8vbjEuaXRjLmNuL2ltZzgvd2IvcmVjb20vMjAxNi8wNS8xOS8xNDYzNjI0Mjg0MTYyNDkwMjYuSlBFRyIsInF1ZXN0aW9uTUlkIjozLCJzZWF0RCI6MSwic2tldGNoIjoi5aW95Y+L55u45YWz6K+m5oOF5biu5Yqp44CCIiwidGl0bGUiOiLlpb3lj4vnm7jlhbPor6bmg4XluK7liqnjgIIiLCJ5biI6MH1dLCJzZWF0TSI6M31dLCJyb3dDb3VudCI6NCwic2lnbiI6IjAyOWE5MWZiNjFhM2Q5NDRjYmIxY2ZlZDY0YjQ5NmNkIiwic3RpbWUiOjE1OTQwMTAxMjc2Mjh9"
+     *     },
+     *     "sgid": "202007061235270000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getDataMDList", method = {RequestMethod.POST})
+    public JsonResult<Object> getDataMDList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestQuestion requestModel = new RequestQuestion();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestQuestion.class);
+
+            // 百问百答类别数据
+            QuestionMModel questionMQuery = BeanUtils.copy(requestModel, QuestionMModel.class);
+            List<QuestionMModel> questionMList = ComponentUtil.questionMService.queryByList(questionMQuery);
+            List<QuestionMModel> mdList = new ArrayList<>();
+            if (questionMList != null && questionMList.size() > 0){
+                for (QuestionMModel dataMModel : questionMList){
+                    // 百问百答-详情集合数据
+                    QuestionDModel questionDQuery = HodgepodgeMethod.assembleQuestionDQuery(dataMModel.getId());
+                    List<QuestionDModel> questionDList = ComponentUtil.questionDService.findByCondition(questionDQuery);
+                    if (questionDList != null && questionDList.size() > 0){
+                        dataMModel.setqDList(questionDList);
+                    }
+                    mdList.add(dataMModel);
+                }
+            }
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleQuestionMResult(stime, sign, mdList, questionMQuery.getRowCount());
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this QuestionController.getDataMList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
 }

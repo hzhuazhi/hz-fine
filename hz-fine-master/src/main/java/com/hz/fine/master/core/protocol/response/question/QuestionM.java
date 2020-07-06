@@ -1,6 +1,7 @@
 package com.hz.fine.master.core.protocol.response.question;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description TODO
@@ -15,6 +16,7 @@ public class QuestionM implements Serializable {
     public String categoryName;
     public Integer seatM;
     public String iconAds;
+    public List<QuestionD> qDList;
 
     public QuestionM(){
 
@@ -50,5 +52,13 @@ public class QuestionM implements Serializable {
 
     public void setIconAds(String iconAds) {
         this.iconAds = iconAds;
+    }
+
+    public List<QuestionD> getqDList() {
+        return qDList;
+    }
+
+    public void setqDList(List<QuestionD> qDList) {
+        this.qDList = qDList;
     }
 }

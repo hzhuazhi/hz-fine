@@ -1,18 +1,16 @@
-package com.hz.fine.master.core.model.question;
-
+package com.hz.fine.master.core.model.consult;
 
 import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
- * @Description 百问百答问题类别的Entity层-对应数据库所有字段
+ * @Description 在线客服、咨询的实体属性Bean
  * @Author yoko
- * @Date 2020/1/7 13:44
+ * @Date 2020/7/6 11:23
  * @Version 1.0
  */
-public class QuestionMModel extends BasePage implements Serializable {
+public class ConsultModel extends BasePage implements Serializable {
     private static final long   serialVersionUID = 1233223301144L;
 
     /**
@@ -28,13 +26,7 @@ public class QuestionMModel extends BasePage implements Serializable {
     /**
      * 位置（顺序）
      */
-    private Integer seatM;
-
-    /**
-     * 图标地址
-     */
-    private String iconAds;
-
+    private Integer seat;
 
     /**
      * 创建时间
@@ -50,17 +42,6 @@ public class QuestionMModel extends BasePage implements Serializable {
      * 是否有效：0有效，1无效/删除
      */
     private Integer yn;
-
-    /**
-     * 百问百答详情集合
-     */
-    private List<QuestionDModel> questionDList;
-
-    /**
-     * 百问百答详情集合
-     */
-    private List<QuestionDModel> qDList;
-
 
     public Long getId() {
         return id;
@@ -78,20 +59,12 @@ public class QuestionMModel extends BasePage implements Serializable {
         this.categoryName = categoryName;
     }
 
-    public Integer getSeatM() {
-        return seatM;
+    public Integer getSeat() {
+        return seat;
     }
 
-    public void setSeatM(Integer seatM) {
-        this.seatM = seatM;
-    }
-
-    public String getIconAds() {
-        return iconAds;
-    }
-
-    public void setIconAds(String iconAds) {
-        this.iconAds = iconAds;
+    public void setSeat(Integer seat) {
+        this.seat = seat;
     }
 
     public String getCreateTime() {
@@ -116,21 +89,5 @@ public class QuestionMModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
-    }
-
-    public List<QuestionDModel> getQuestionDList() {
-        return questionDList;
-    }
-
-    public void setQuestionDList(List<QuestionDModel> questionDList) {
-        this.questionDList = questionDList;
-    }
-
-    public List<QuestionDModel> getqDList() {
-        return qDList;
-    }
-
-    public void setqDList(List<QuestionDModel> qDList) {
-        this.qDList = qDList;
     }
 }
