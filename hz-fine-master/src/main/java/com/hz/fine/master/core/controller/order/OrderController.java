@@ -467,87 +467,6 @@ public class OrderController {
     }
 
 
-//    /**
-//     * @Description: 获取派单的订单状态
-//     * @param request
-//     * @param response
-//     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
-//     * @author yoko
-//     * @date 2019/11/25 22:58
-//     * local:http://localhost:8086/fine/order/getOrderStatus
-//     * 请求的属性类:RequestOrder
-//     * 必填字段:{"orderNo":"order_no_3"}
-//     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoib3JkZXJfbm9fMyIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
-//     * 客户端加密字段:id+ctime+cctime+秘钥=sign
-//     * 服务端加密字段:stime+秘钥=sign
-//     * result={
-//     *     "resultCode": "0",
-//     *     "message": "success",
-//     *     "data": {
-//     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiYWNOYW1lIjoiYWNOYW1lMyIsImNvbGxlY3Rpb25UeXBlIjoxLCJjcmVhdGVUaW1lIjoiMjAyMC0wNS0yOSAxNDoyMjowNyIsIm9yZGVyTW9uZXkiOiIzMC4wMyIsIm9yZGVyTm8iOiJvcmRlcl9ub18zIiwib3JkZXJTdGF0dXMiOjR9LCJzaWduIjoiZTdiMzNlZTJiNWU5ZTVhNGVkOWQ4ZDU4NmEzZGM5YTUiLCJzdGltZSI6MTU5MDc0NTc5OTQzMX0="
-//     *     },
-//     *     "sgid": "202005291749570000001",
-//     *     "cgid": ""
-//     * }
-//     */
-//    @RequestMapping(value = "/getOrderStatus", method = {RequestMethod.POST})
-//    public JsonResult<Object> getOrderStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
-//        String sgid = ComponentUtil.redisIdService.getNewId();
-//        String cgid = "";
-//        String token;
-//        String ip = StringUtil.getIpAddress(request);
-//        String data = "";
-//        long did = 0;
-//
-//        RequestOrder requestModel = new RequestOrder();
-//        try{
-//            // 解密
-//            data = StringUtil.decoderBase64(requestData.jsonData);
-//            requestModel  = JSON.parseObject(data, RequestOrder.class);
-//
-//            // check校验请求的数据
-//            HodgepodgeMethod.checkOrderByQrCodeData(requestModel);
-//
-//            // 收款账号详情数据
-//            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo);
-//            int orderStatus = ComponentUtil.orderService.getOrderStatus(orderQuery);
-//            if (orderStatus != 0){
-//                orderStatus = 1;
-//            }
-//            // 组装返回客户端的数据
-//            long stime = System.currentTimeMillis();
-//            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-//            String strData = HodgepodgeMethod.assembleOrderStatusResult(stime, sign, orderStatus);
-//            // 数据加密
-//            String encryptionData = StringUtil.mergeCodeBase64(strData);
-//            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
-//            resultDataModel.jsonData = encryptionData;
-//
-//            response.setHeader("Accept" ,"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-//            response.setHeader("Accept-Encoding" ,"gzip, deflate, br");
-//            response.setHeader("Accept-Language" ,"zh-CN,zh;q=0.9");
-//            response.setHeader("Cache-Control" ,"keep-alive");
-//            response.setHeader("Cookie" ,"_qda_uuid=39269c72-b5b2-6618-3747-ef488c5495f8; _csrfToken=xf01V17JFygSY3dTqS1KkCxLY4PclRg3jKAMQqk7; newstatisticUUID=1572256635_620240973; pgv_pvi=6316058624; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1; showSectionCommentGuide=1; rcr=1049807%2C2226569%2C1003541158; lrbc=1049807%7C21108391%7C0%2C2226569%7C36854452%7C0%2C1003541158%7C309402995%7C0; e1=%7B%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22%22%7D; e2=%7B%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22%22%7D");
-//            response.setHeader("Host", "https://www.jd.com");
-//            response.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36");
-//            response.setHeader("Referer", "https://www.jd.com");
-//
-//            // 返回数据给客户端
-//            return JsonResult.successResult(resultDataModel, cgid, sgid);
-//        }catch (Exception e){
-//            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
-//            // 添加异常
-//            log.error(String.format("this OrderController.getOrderStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
-//            if (!StringUtils.isBlank(map.get("dbCode"))){
-//                log.error(String.format("this OrderController.getOrderStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
-//            }
-//            e.printStackTrace();
-//            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
-//        }
-//    }
-
-
-
     /**
      * @Description: 获取派单的订单状态
      * @param request
@@ -558,7 +477,7 @@ public class OrderController {
      * local:http://localhost:8086/fine/order/getOrderStatus
      * 请求的属性类:RequestOrder
      * 必填字段:{"orderNo":"order_no_3"}
-     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoib3JkZXJfbm9fMyIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoiMjAyMDA3MDcxMDM2MDUwMDAwMDAxIn0="}
      * 客户端加密字段:id+ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
@@ -572,7 +491,7 @@ public class OrderController {
      * }
      */
     @RequestMapping(value = "/getOrderStatus", method = {RequestMethod.POST})
-    public void getOrderStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+    public JsonResult<Object> getOrderStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
         String sgid = ComponentUtil.redisIdService.getNewId();
         String cgid = "";
         String token;
@@ -604,48 +523,8 @@ public class OrderController {
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
             resultDataModel.jsonData = encryptionData;
 
-//            response.setHeader("Accept" ,"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-//            response.setHeader("Accept-Encoding" ,"gzip, deflate, br");
-//            response.setHeader("Accept-Language" ,"zh-CN,zh;q=0.9");
-//            response.setHeader("Cache-Control" ,"keep-alive");
-////            response.setHeader("Cookie" ,"_qda_uuid=39269c72-b5b2-6618-3747-ef488c5495f8; _csrfToken=xf01V17JFygSY3dTqS1KkCxLY4PclRg3jKAMQqk7; newstatisticUUID=1572256635_620240973; pgv_pvi=6316058624; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1; showSectionCommentGuide=1; rcr=1049807%2C2226569%2C1003541158; lrbc=1049807%7C21108391%7C0%2C2226569%7C36854452%7C0%2C1003541158%7C309402995%7C0; e1=%7B%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22%22%7D; e2=%7B%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22%22%7D");
-//            response.setHeader("Host", "https://www.jd.com");
-////            response.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36");
-//            response.setHeader("Referer", "https://www.jd.com");
-            // 查询策略里面的来源地址集合
-            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.REFERER_LIST.getStgType());
-            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyByRefererList(strategyModel);
-
-            // 解析金额列表的值
-            List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
-            int random = new Random().nextInt(strategyDataList.size());
-
-            StrategyData dataModel = strategyDataList.get(random);
-            response.setHeader("Accept" ,request.getHeader("Accept"));
-            response.setHeader("Accept-Encoding" ,request.getHeader("Accept-Encoding"));
-            response.setHeader("Accept-Language" ,request.getHeader("Accept-Language"));
-            response.setHeader("Cache-Control" ,request.getHeader("Cache-Control"));
-//            String strCookie = "";
-//            if (request.getCookies() != null){
-//                Cookie[] cookies = request.getCookies();
-//                for (Cookie cookie : cookies){
-//                    strCookie += cookie;
-//                }
-//            }
-            if (!StringUtils.isBlank(requestModel.ck)){
-                log.info("------------------------------------------------strCookie:" + requestModel.ck);
-                response.setHeader("Cookie" , requestModel.ck);
-            }
-            response.setHeader("Host", dataModel.getStgValue());
-            response.setHeader("User-Agent", request.getHeader("User-Agent"));
-            response.setHeader("Referer", dataModel.getStgValue());
-
-            PrintWriter out = response.getWriter();
-            out.print(JsonResult.successResult(resultDataModel, cgid, sgid));
-            out.flush();
-            out.close();
             // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
         }catch (Exception e){
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
             // 添加异常
@@ -654,9 +533,121 @@ public class OrderController {
                 log.error(String.format("this OrderController.getOrderStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
-            return;
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
     }
+
+
+
+//    /**
+//     * @Description: 获取派单的订单状态
+//     * @param request
+//     * @param response
+//     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+//     * @author yoko
+//     * @date 2019/11/25 22:58
+//     * local:http://localhost:8086/fine/order/getOrderStatus
+//     * 请求的属性类:RequestOrder
+//     * 必填字段:{"orderNo":"order_no_3"}
+//     * 加密字段:{"jsonData":"eyJvcmRlck5vIjoib3JkZXJfbm9fMyIsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
+//     * 客户端加密字段:id+ctime+cctime+秘钥=sign
+//     * 服务端加密字段:stime+秘钥=sign
+//     * result={
+//     *     "resultCode": "0",
+//     *     "message": "success",
+//     *     "data": {
+//     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiYWNOYW1lIjoiYWNOYW1lMyIsImNvbGxlY3Rpb25UeXBlIjoxLCJjcmVhdGVUaW1lIjoiMjAyMC0wNS0yOSAxNDoyMjowNyIsIm9yZGVyTW9uZXkiOiIzMC4wMyIsIm9yZGVyTm8iOiJvcmRlcl9ub18zIiwib3JkZXJTdGF0dXMiOjR9LCJzaWduIjoiZTdiMzNlZTJiNWU5ZTVhNGVkOWQ4ZDU4NmEzZGM5YTUiLCJzdGltZSI6MTU5MDc0NTc5OTQzMX0="
+//     *     },
+//     *     "sgid": "202005291749570000001",
+//     *     "cgid": ""
+//     * }
+//     */
+//    @RequestMapping(value = "/getOrderStatus", method = {RequestMethod.POST})
+//    public void getOrderStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+//        String sgid = ComponentUtil.redisIdService.getNewId();
+//        String cgid = "";
+//        String token;
+//        String ip = StringUtil.getIpAddress(request);
+//        String data = "";
+//        long did = 0;
+//
+//        RequestOrder requestModel = new RequestOrder();
+//        try{
+//            // 解密
+//            data = StringUtil.decoderBase64(requestData.jsonData);
+//            requestModel  = JSON.parseObject(data, RequestOrder.class);
+//
+//            // check校验请求的数据
+//            HodgepodgeMethod.checkOrderByQrCodeData(requestModel);
+//
+//            // 收款账号详情数据
+//            OrderModel orderQuery = HodgepodgeMethod.assembleOrderOrderNo(requestModel.orderNo, 0);
+//            int orderStatus = ComponentUtil.orderService.getOrderStatus(orderQuery);
+//            if (orderStatus != 0){
+//                orderStatus = 1;
+//            }
+//            // 组装返回客户端的数据
+//            long stime = System.currentTimeMillis();
+//            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+//            String strData = HodgepodgeMethod.assembleOrderStatusResult(stime, sign, orderStatus);
+//            // 数据加密
+//            String encryptionData = StringUtil.mergeCodeBase64(strData);
+//            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+//            resultDataModel.jsonData = encryptionData;
+//
+////            response.setHeader("Accept" ,"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+////            response.setHeader("Accept-Encoding" ,"gzip, deflate, br");
+////            response.setHeader("Accept-Language" ,"zh-CN,zh;q=0.9");
+////            response.setHeader("Cache-Control" ,"keep-alive");
+//////            response.setHeader("Cookie" ,"_qda_uuid=39269c72-b5b2-6618-3747-ef488c5495f8; _csrfToken=xf01V17JFygSY3dTqS1KkCxLY4PclRg3jKAMQqk7; newstatisticUUID=1572256635_620240973; pgv_pvi=6316058624; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1; showSectionCommentGuide=1; rcr=1049807%2C2226569%2C1003541158; lrbc=1049807%7C21108391%7C0%2C2226569%7C36854452%7C0%2C1003541158%7C309402995%7C0; e1=%7B%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22%22%7D; e2=%7B%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22%22%7D");
+////            response.setHeader("Host", "https://www.jd.com");
+//////            response.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36");
+////            response.setHeader("Referer", "https://www.jd.com");
+//            // 查询策略里面的来源地址集合
+//            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.REFERER_LIST.getStgType());
+//            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+//            HodgepodgeMethod.checkStrategyByRefererList(strategyModel);
+//
+//            // 解析金额列表的值
+//            List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+//            int random = new Random().nextInt(strategyDataList.size());
+//
+//            StrategyData dataModel = strategyDataList.get(random);
+//            response.setHeader("Accept" ,request.getHeader("Accept"));
+//            response.setHeader("Accept-Encoding" ,request.getHeader("Accept-Encoding"));
+//            response.setHeader("Accept-Language" ,request.getHeader("Accept-Language"));
+//            response.setHeader("Cache-Control" ,request.getHeader("Cache-Control"));
+////            String strCookie = "";
+////            if (request.getCookies() != null){
+////                Cookie[] cookies = request.getCookies();
+////                for (Cookie cookie : cookies){
+////                    strCookie += cookie;
+////                }
+////            }
+//            if (!StringUtils.isBlank(requestModel.ck)){
+//                log.info("------------------------------------------------strCookie:" + requestModel.ck);
+//                response.setHeader("Cookie" , requestModel.ck);
+//            }
+//            response.setHeader("Host", dataModel.getStgValue());
+//            response.setHeader("User-Agent", request.getHeader("User-Agent"));
+//            response.setHeader("Referer", dataModel.getStgValue());
+//
+//            PrintWriter out = response.getWriter();
+//            out.print(JsonResult.successResult(resultDataModel, cgid, sgid));
+//            out.flush();
+//            out.close();
+//            // 返回数据给客户端
+//        }catch (Exception e){
+//            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+//            // 添加异常
+//            log.error(String.format("this OrderController.getOrderStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+//            if (!StringUtils.isBlank(map.get("dbCode"))){
+//                log.error(String.format("this OrderController.getOrderStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+//            }
+//            e.printStackTrace();
+//            return;
+//        }
+//    }
 
 
 

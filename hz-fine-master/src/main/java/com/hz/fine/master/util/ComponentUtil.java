@@ -43,6 +43,7 @@ public class ComponentUtil {
     public static UpgradeService upgradeService;
     public static ConsultService consultService;
     public static QuestionDDService questionDDService;
+    public static ClientCollectionDataService clientCollectionDataService;
 
 
 
