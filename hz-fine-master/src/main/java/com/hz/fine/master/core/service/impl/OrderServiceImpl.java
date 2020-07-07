@@ -407,7 +407,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 // redis存储
                 // 此收款账号给出过码，需要5分钟之后才自动失效
                 String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didModel.getCollectionAccountId());
-                ComponentUtil.redisService.set(strKeyCache_lock_did_collection_account, String.valueOf(didModel.getCollectionAccountId()) + "," + orderMoney, FIFTEEN_MIN);
+                ComponentUtil.redisService.set(strKeyCache_lock_did_collection_account, String.valueOf(didModel.getCollectionAccountId()) + "," + orderMoney, FIVE_MIN);
                 return didModel;
             }
             // 解锁
