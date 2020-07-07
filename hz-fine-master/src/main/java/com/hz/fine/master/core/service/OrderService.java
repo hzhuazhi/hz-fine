@@ -123,4 +123,13 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/7/2 15:03
     */
     public boolean handleOrder(OrderModel orderModel, DidBalanceDeductModel didBalanceDeductModel, DidModel didModel) throws Exception;
+
+    /**
+     * @Description: 查询是否符合给与消耗奖励的订单信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/7 18:28
+    */
+    public OrderModel getOrderByReward(OrderModel model);
 }

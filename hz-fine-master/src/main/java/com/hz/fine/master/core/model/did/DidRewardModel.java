@@ -35,7 +35,7 @@ public class DidRewardModel extends BasePage implements Serializable {
     private String money;
 
     /**
-     * 奖励类型：1充值奖励，2充值总金额档次奖励，3直推奖励，4裂变奖励
+     * 奖励类型：1充值奖励，2充值总金额档次奖励，3直推奖励，4裂变奖励，5团队奖励，6订单成功消耗奖励
      */
     private Integer rewardType;
 

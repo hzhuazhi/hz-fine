@@ -72,6 +72,9 @@ public class ClientCollectionDataModel extends BasePage implements Serializable 
     private Integer curdayStart;
     private Integer curdayEnd;
 
+    private String startTime;
+    private String endTime;
+
     public Long getId() {
         return id;
     }
@@ -174,5 +177,21 @@ public class ClientCollectionDataModel extends BasePage implements Serializable 
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

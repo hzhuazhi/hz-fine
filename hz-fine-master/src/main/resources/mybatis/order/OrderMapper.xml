@@ -416,4 +416,26 @@
     </update>
 
 
+
+    <!-- 查询是否符合给与消耗奖励的订单信息 -->
+    <select id="getOrderByReward" resultType="com.hz.fine.master.core.model.order.OrderModel">
+         select
+            a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
+            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+            a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
+            a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
+            a.create_time,a.update_time,a.yn,
+            time_to_sec(timediff(invalid_time,now())) as invalid_second
+        from tb_fn_order a
+        where 1=1
+        and a.did = #{did}
+        and a.order_no = #{orderNo}
+        and a.collection_type = 2
+        and a.did_status = 1
+        and a.order_status != 2
+        and a.yn = 0
+        limit 1
+    </select>
+
+
 </mapper>

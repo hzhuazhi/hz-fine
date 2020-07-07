@@ -2,15 +2,18 @@ package com.hz.fine.master.core.controller.order;
 
 import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ExceptionMethod;
+import com.hz.fine.master.core.common.utils.DateUtil;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.client.ClientCollectionDataModel;
 import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.did.DidRewardModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
@@ -782,6 +785,49 @@ public class OrderController {
 
             // check校验数据
             did = HodgepodgeMethod.checkUpdateOrderStatus(requestModel);
+
+
+            if (requestModel.status == 4){
+                // 根据订单号查询订单基本信息
+                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByRewardQuery(did, requestModel.orderNo);
+                OrderModel orderModel = ComponentUtil.orderService.getOrderByReward(orderQuery);
+                if (orderModel != null && orderModel.getId() > 0){
+                    boolean flag = false;// false 表示没有奖励，true表示有奖励
+                    // 查询客户端监听的收款信息-5分钟
+                    ClientCollectionDataModel clientCollectionDataQuery = HodgepodgeMethod.assembleClientCollectionDataQuery(did, orderModel.getUserId());
+                    ClientCollectionDataModel clientCollectionDataModel = ComponentUtil.clientCollectionDataService.getClientCollectionDataByCreateTime(clientCollectionDataQuery);
+                    if (clientCollectionDataModel == null || clientCollectionDataModel.getId() < 0){
+                        // 可以给与消耗带来的奖励:规定因为没有查询到任何信息，直接给与奖励
+                        flag = true;
+                    }else{
+                        // 查询到了监听信息，需要对监听信息的创建时间与当前系统时间做比较，是否有超过策略里面规定的时间内进行提交上报数据的
+
+                        // 策略数据：查询用户提交订单状态的最后读秒时间
+                        StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.LAST_TIME.getStgType());
+                        StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                        HodgepodgeMethod.checkStrategyByLastTime(strategyModel);
+                        // 计算两时间相差多少秒
+                        int differSecond = DateUtil.differSecond(DateUtil.getNowPlusTime(), clientCollectionDataModel.getCreateTime());
+                        if (differSecond <= strategyModel.getStgNumValue()){
+                            // 在规定时间内上报消息：给与消耗奖励
+                            flag = true;
+                        }
+                    }
+
+                    if (flag){
+                        // 校验此订单是否之前给过奖励
+                        DidRewardModel didRewardQuery = HodgepodgeMethod.assembleDidRewardQueryByOrderNo(orderModel.getOrderNo(), 6);
+                        DidRewardModel didRewardModel = ComponentUtil.didRewardService.getDidRewardByOrderNoAndType(didRewardQuery);
+                        if (didRewardModel == null || didRewardModel.getId() <= 0 ){
+                            // 正式给与奖励
+                            DidRewardModel didRewardAdd = HodgepodgeMethod.assembleDidRewardAdd(orderModel, 6);
+                            ComponentUtil.didRewardService.add(didRewardAdd);
+                        }
+                    }
+
+                }
+
+            }
 
             // 正式修改派单的用户的操作状态
             OrderModel orderModel = HodgepodgeMethod.assembleUpdateOrderStatusData(did, requestModel);

@@ -3184,4 +3184,23 @@ public class DateUtil {
 	}
 
 
+	/**
+	 * @Description: 计算两时间相差多少秒
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * @author yoko
+	 * @date 2020/7/2 15:29
+	 */
+	public static int differSecond(String startTime, String endTime) throws Exception{
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = format.parse(startTime);
+		Date endDate = format.parse(endTime);
+		long a = startDate.getTime();
+		long b = endDate.getTime();
+		int c = (int)((a - b) / 1000);
+		return c;
+	}
+
+
 }

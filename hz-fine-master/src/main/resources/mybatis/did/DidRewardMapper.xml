@@ -289,5 +289,16 @@
         </if>
     </select>
 
+    <!-- 根据订单号，奖励类型查询奖励数据-->
+    <select id="getDidRewardByOrderNoAndType" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidRewardModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_reward a
+        where 1=1
+        and a.order_no = #{orderNo}
+        and a.reward_type = #{rewardType}
+        and a.yn = 0
+    </select>
+
 
 </mapper>

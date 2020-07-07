@@ -34,6 +34,9 @@
             <if test="curdayStart != null and curdayStart != '' and curdayEnd != null and curdayEnd != '' " >
                 and a.curday >= #{curdayStart} and a.curday &lt;= #{curdayEnd}
             </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != '' " >
+                and a.create_time >= #{startTime} and a.create_time &lt;= #{endTime}
+            </if>
             and a.yn = 0
         </trim>
     </sql>
@@ -198,6 +201,17 @@
         </trim>
         <include refid="Example_Where_Clause_id"/>
     </update>
+
+
+    <!-- 获取当前系统时间前5分钟以为创建时间最大的那条数据-->
+    <select id="getClientCollectionDataByCreateTime" parameterType="Object" resultType="com.hz.fine.master.core.model.client.ClientCollectionDataModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_client_collection_data a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        limit 1
+    </select>
 
 
 </mapper>

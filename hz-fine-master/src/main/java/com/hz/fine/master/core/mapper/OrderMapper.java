@@ -74,4 +74,13 @@ public interface OrderMapper<T> extends BaseDao<T> {
      */
     public int updateDidStatus(OrderModel model);
 
+    /**
+     * @Description: 查询是否符合给与消耗奖励的订单信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/7 18:28
+     */
+    public OrderModel getOrderByReward(OrderModel model);
+
 }

@@ -46,4 +46,9 @@ public class DidRewardServiceImpl<T> extends BaseServiceImpl<T> implements DidRe
         model.setRowCount(rowCount);
         return didRewardMapper.getShareList(model);
     }
+
+    @Override
+    public DidRewardModel getDidRewardByOrderNoAndType(DidRewardModel model) {
+        return didRewardMapper.getDidRewardByOrderNoAndType(model);
+    }
 }

@@ -48,4 +48,13 @@ public interface DidRewardMapper<T> extends BaseDao<T> {
      * @date 2020/6/1 16:30 
      */
     public List<DidRewardModel> getShareList(DidRewardModel model);
+
+    /**
+     * @Description: 根据订单号，奖励类型查询奖励数据
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/7 20:15
+    */
+    public DidRewardModel getDidRewardByOrderNoAndType(DidRewardModel model);
 }

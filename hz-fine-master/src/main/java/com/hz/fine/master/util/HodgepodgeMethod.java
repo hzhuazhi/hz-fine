@@ -8,6 +8,7 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
+import com.hz.fine.master.core.model.client.ClientCollectionDataModel;
 import com.hz.fine.master.core.model.consult.ConsultModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
@@ -4682,7 +4683,7 @@ public class HodgepodgeMethod {
      * @Description: 点击我要买-展现可用金额信息数据组装返回客户端的方法-集合
      * @param stime - 服务器的时间
      * @param sign - 签名
-     * @param bankId - 银行卡主键ID
+     * @param order - 银行卡主键ID
      * @param moneyList - 金额列表集合
      * @param rowCount - 总行数
      * @return java.lang.String
@@ -5013,6 +5014,79 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 组装查询符合给与消耗奖励订单的查询方法
+     * @param did - 用户ID
+     * @param orderNo - 订单号
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/7/7 18:43
+     */
+    public static OrderModel assembleOrderByRewardQuery(long did, String orderNo){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询客户端监听的收款信息的方法
+     * @param did - 用户ID
+     * @param userId - 支付宝账号ID
+     * @return
+     * @author yoko
+     * @date 2020/7/7 19:50
+    */
+    public static ClientCollectionDataModel assembleClientCollectionDataQuery(long did, String userId) throws Exception{
+        ClientCollectionDataModel resBean = new ClientCollectionDataModel();
+        resBean.setDid(did);
+        resBean.setUserId(userId);
+        String startTime = DateUtil.addDateMinute(-5);
+        String endTime = DateUtil.getNowPlusTime();
+        resBean.setStartTime(startTime);
+        resBean.setEndTime(endTime);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装根据订单号，奖励状态查询奖励数据
+     * @param orderNo - 订单号
+     * @param rewardType - 奖励类型：1充值奖励，2充值总金额档次奖励，3直推奖励，4裂变奖励，5团队奖励，6订单成功消耗奖励
+     * @return com.hz.fine.master.core.model.did.DidRewardModel
+     * @author yoko
+     * @date 2020/7/7 20:12
+     */
+    public static DidRewardModel assembleDidRewardQueryByOrderNo(String orderNo, int rewardType){
+        DidRewardModel resBean = new DidRewardModel();
+        resBean.setOrderNo(orderNo);
+        resBean.setRewardType(rewardType);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装添加奖励数据的方法
+     * @param orderModel - 订单信息
+     * @param rewardType - 奖励类型：1充值奖励，2充值总金额档次奖励，3直推奖励，4裂变奖励，5团队奖励，6订单成功消耗奖励
+     * @return
+     * @author yoko
+     * @date 2020/7/7 20:25
+    */
+    public static DidRewardModel assembleDidRewardAdd(OrderModel orderModel, int rewardType){
+        DidRewardModel resBean = new DidRewardModel();
+        resBean.setDid(orderModel.getDid());
+        resBean.setOrderNo(orderModel.getOrderNo());
+        resBean.setMoney(orderModel.getProfit());
+        resBean.setRewardType(rewardType);
+        resBean.setProof(orderModel.getOrderMoney());
+        resBean.setOrigin(orderModel.getOrderMoney());
+        resBean.setOriginIid(orderModel.getDid());
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
     }
 
 

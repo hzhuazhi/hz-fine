@@ -3,6 +3,7 @@ package com.hz.fine.master.core.service.impl;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.mapper.ClientCollectionDataMapper;
+import com.hz.fine.master.core.model.client.ClientCollectionDataModel;
 import com.hz.fine.master.core.service.ClientCollectionDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class ClientCollectionDataServiceImpl<T> extends BaseServiceImpl<T> imple
 
     public BaseDao<T> getDao() {
         return clientCollectionDataMapper;
+    }
+
+    @Override
+    public ClientCollectionDataModel getClientCollectionDataByCreateTime(ClientCollectionDataModel model) {
+        return clientCollectionDataMapper.getClientCollectionDataByCreateTime(model);
     }
 }
