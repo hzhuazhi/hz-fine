@@ -21,6 +21,11 @@ public class StrategyShare implements Serializable {
      */
     public String icode;
 
+    /**
+     * 分享状态的开关：1表示打开，2表示关闭
+     */
+    public Integer shareSwitch;
+
 
     public StrategyShare(){
 
@@ -40,5 +45,13 @@ public class StrategyShare implements Serializable {
 
     public void setIcode(String icode) {
         this.icode = icode;
+    }
+
+    public Integer getShareSwitch() {
+        return shareSwitch;
+    }
+
+    public void setShareSwitch(Integer shareSwitch) {
+        this.shareSwitch = shareSwitch;
     }
 }

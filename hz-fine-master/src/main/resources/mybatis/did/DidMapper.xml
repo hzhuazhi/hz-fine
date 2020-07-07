@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
         a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
-        a.is_notify,a.notify_url,a.own_id,a.use_status,
+        a.is_notify,a.notify_url,a.is_team,a.own_id,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -41,6 +41,9 @@
             </if>
             <if test="ownId != null and ownId != '' " >
                 and a.own_id = #{ownId}
+            </if>
+            <if test="isTeam != null and isTeam != '' " >
+                and a.is_team = #{isTeam}
             </if>
             and a.use_status = 1
             and a.yn = 0

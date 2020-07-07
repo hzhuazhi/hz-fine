@@ -2739,6 +2739,18 @@ public class HodgepodgeMethod {
             throw new ServiceException(ErrorCode.ENUM_ERROR.S00013.geteCode(), ErrorCode.ENUM_ERROR.S00013.geteDesc());
         }
     }
+
+    /**
+     * @Description: 校验策略类型数据:分享状态的开关
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByShareSwitch(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00019.geteCode(), ErrorCode.ENUM_ERROR.S00019.geteDesc());
+        }
+    }
     
     /**
      * @Description: 组装根据DID查询用户信息的方法
@@ -2776,6 +2788,26 @@ public class HodgepodgeMethod {
         dataModel.share = share;
         dataModel.setStime(stime);
         dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 策略：分享状态的开关数据
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param shareSwitch - 分享状态的开关：1表示打开，2表示关闭
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleShareSwitchResult(long stime, String sign, int shareSwitch){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        StrategyShare share = new StrategyShare();
+        share.shareSwitch = shareSwitch;
+        dataModel.share = share;
+        dataModel.setSign(sign);
+        dataModel.setStime(stime);
         return JSON.toJSONString(dataModel);
     }
 

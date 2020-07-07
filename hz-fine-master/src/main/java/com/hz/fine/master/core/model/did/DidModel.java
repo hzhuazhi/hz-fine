@@ -136,6 +136,11 @@ public class DidModel extends BasePage implements Serializable {
     private String notifyUrl;
 
     /**
+     * 是否是团队长：1不是团队长，2是团队长
+     */
+    private Integer isTeam;
+
+    /**
      * 归属用户ID：上级的用户ID；对应本表的主键ID
      */
     private Long ownId;
@@ -472,5 +477,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setZfbAcNum(String zfbAcNum) {
         this.zfbAcNum = zfbAcNum;
+    }
+
+    public Integer getIsTeam() {
+        return isTeam;
+    }
+
+    public void setIsTeam(Integer isTeam) {
+        this.isTeam = isTeam;
     }
 }
