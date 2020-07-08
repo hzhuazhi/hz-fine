@@ -4,6 +4,7 @@ import com.hz.fine.master.core.protocol.base.BaseResponse;
 import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
+import com.hz.fine.master.core.protocol.response.strategy.money.StrategyTeamConsumeReward;
 import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
 import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
 
@@ -22,6 +23,7 @@ public class ResponseStrategy extends BaseResponse implements Serializable {
 
     public List<StrategyMoney> moneyList;// 充值金额列表
     public List<StrategyMoneyGrade> moneyGradeList;// 总金额充值档次奖励列表
+    public List<StrategyTeamConsumeReward> teamConsumeRewardList;// 团队日派单消耗成功累计总额奖励规则
     public QiNiu qiNiu;// 获取七牛的token
     public StrategyShare share;// 分享地址
 
@@ -75,5 +77,13 @@ public class ResponseStrategy extends BaseResponse implements Serializable {
 
     public void setShare(StrategyShare share) {
         this.share = share;
+    }
+
+    public List<StrategyTeamConsumeReward> getTeamConsumeRewardList() {
+        return teamConsumeRewardList;
+    }
+
+    public void setTeamConsumeRewardList(List<StrategyTeamConsumeReward> teamConsumeRewardList) {
+        this.teamConsumeRewardList = teamConsumeRewardList;
     }
 }

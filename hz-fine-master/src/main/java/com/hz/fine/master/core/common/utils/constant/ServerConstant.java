@@ -102,6 +102,7 @@ public class ServerConstant {
         ZFB_RULE(17,""),
         ZFB_MONEY_RULE(18,""),
         SHARE_SWITCH(19,""),
+        TEAM_CONSUME_REWARD_LIST(20,""),
 
 
         ;

@@ -72,6 +72,7 @@ import com.hz.fine.master.core.protocol.response.sell.Sell;
 import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
+import com.hz.fine.master.core.protocol.response.strategy.money.StrategyTeamConsumeReward;
 import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
 import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
 import com.hz.fine.master.core.protocol.response.upgrade.ResponseUpgrade;
@@ -1944,6 +1945,7 @@ public class HodgepodgeMethod {
     public static DidRechargeModel assembleDidRechargeListByDid(RequestDidRecharge requestModel, long did){
         DidRechargeModel resBean = BeanUtils.copy(requestModel, DidRechargeModel.class);
         resBean.setDid(did);
+        resBean.setWorkType(2);
         return resBean;
     }
 
@@ -2080,6 +2082,17 @@ public class HodgepodgeMethod {
     public static DidRewardModel assembleDidRewardListByDid(RequestReward requestModel, long did){
         DidRewardModel resBean = BeanUtils.copy(requestModel, DidRewardModel.class);
         resBean.setDid(did);
+        if (requestModel.rewardType == null || requestModel.rewardType == 0){
+            List<Integer> rewardTypeList = new ArrayList<>();
+            rewardTypeList.add(1);
+            rewardTypeList.add(2);
+            rewardTypeList.add(3);
+            rewardTypeList.add(4);
+            rewardTypeList.add(5);
+            rewardTypeList.add(6);
+            rewardTypeList.add(7);
+            resBean.setRewardTypeList(rewardTypeList);
+        }
         return resBean;
     }
 
@@ -2882,6 +2895,8 @@ public class HodgepodgeMethod {
         rewardTypeList.add(3);
         rewardTypeList.add(4);// 裂变
         rewardTypeList.add(5);// 团队奖励
+        rewardTypeList.add(6);
+        rewardTypeList.add(7);
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         return resBean;
     }
@@ -5119,6 +5134,51 @@ public class HodgepodgeMethod {
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
         return resBean;
+    }
+
+
+    /**
+     * @Description: 校验策略类型数据:团队日派单消耗成功累计总额奖励规则
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByTeamConsumeRewardList(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00020.geteCode(), ErrorCode.ENUM_ERROR.S00020.geteDesc());
+        }
+    }
+
+
+    /**
+     * @Description: 策略：团队日派单消耗成功累计总额奖励规则列表数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param strategyDataList - 团队日派单消耗成功累计总额奖励规则列表
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleStrategyTeamConsumeRewardListResult(long stime, String sign,  List<StrategyData> strategyDataList, Integer rowCount){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        if (strategyDataList != null && strategyDataList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<StrategyTeamConsumeReward> teamConsumeRewardList = new ArrayList<>();
+            for (StrategyData strategyData : strategyDataList){
+                StrategyTeamConsumeReward strategyMoney = new StrategyTeamConsumeReward();
+                strategyMoney.moneyGrade = strategyData.getStgValueFour();
+                strategyMoney.rewardRatio = StringUtil.getMultiply(strategyData.getStgValueOne(), "1000") + "‰";
+                strategyMoney.seat = strategyData.getStgValueTwo();
+                teamConsumeRewardList.add(strategyMoney);
+            }
+            dataModel.teamConsumeRewardList = teamConsumeRewardList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
     }
 
 
