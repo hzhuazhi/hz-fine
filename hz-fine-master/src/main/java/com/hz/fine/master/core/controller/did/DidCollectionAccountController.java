@@ -908,6 +908,9 @@ public class DidCollectionAccountController {
             // check校验数据
             did = HodgepodgeMethod.checkDidCollectionAccountUpdateZfbData(requestModel);
 
+            DidModel didQuery = HodgepodgeMethod.assembleDidByOperateWdQuery(did, requestModel.operateWd);
+            DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
+            HodgepodgeMethod.checkDidByOperateWd(didModel);
 
             // 组装要更新的数据进行更新-支付宝
             DidCollectionAccountModel didCollectionAccountUpdate = HodgepodgeMethod.assembleDidCollectionAccountUpdateZfb(did, requestModel);

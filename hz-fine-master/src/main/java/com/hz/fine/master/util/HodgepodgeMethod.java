@@ -5312,6 +5312,7 @@ public class HodgepodgeMethod {
 //        if (requestModel.acType == null || requestModel.acType <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
 //            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00033.geteCode(), ErrorCode.ENUM_ERROR.DC00033.geteDesc());
 //        }
+
         // 收款账号
         if (StringUtils.isBlank(requestModel.acNum)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00034.geteCode(), ErrorCode.ENUM_ERROR.DC00034.geteDesc());
@@ -5325,6 +5326,11 @@ public class HodgepodgeMethod {
         // check支付宝持卡人真实姓名
         if (StringUtils.isBlank(requestModel.payee)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.DC00036.geteCode(), ErrorCode.ENUM_ERROR.DC00036.geteDesc());
+        }
+
+        // 操作密码
+        if (StringUtils.isBlank(requestModel.operateWd)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00037.geteCode(), ErrorCode.ENUM_ERROR.DC00037.geteDesc());
         }
 
         // 校验token值
@@ -5352,6 +5358,34 @@ public class HodgepodgeMethod {
         DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
         resBean.setDid(did);
         return resBean;
+    }
+
+    /**
+     * @Description: 组装根据安全密码查询用户信息
+     * @param did - 用户ID
+     * @param operateWd - 操作/安全密码
+     * @return com.hz.fine.master.core.model.did.DidModel
+     * @author yoko
+     * @date 2020/7/8 19:13
+     */
+    public static DidModel assembleDidByOperateWdQuery(long did, String operateWd){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setOperateWd(operateWd);
+        return resBean;
+    }
+
+    /**
+     * @Description: check用户输入的操作密码
+     * @param didModel
+     * @return
+     * @author yoko
+     * @date 2020/7/8 19:20
+    */
+    public static void checkDidByOperateWd(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00033.geteCode(), ErrorCode.ENUM_ERROR.D00033.geteDesc());
+        }
     }
 
 

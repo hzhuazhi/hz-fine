@@ -73,6 +73,11 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
      */
     public Integer yn;
 
+    /**
+     * 操作密码
+     */
+    public String operateWd;
+
 
     public RequestDidCollectionAccount(){
 
@@ -173,5 +178,13 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getOperateWd() {
+        return operateWd;
+    }
+
+    public void setOperateWd(String operateWd) {
+        this.operateWd = operateWd;
     }
 }
