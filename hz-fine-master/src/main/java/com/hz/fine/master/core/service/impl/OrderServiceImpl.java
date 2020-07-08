@@ -391,6 +391,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         return orderMapper.getOrderByReward(model);
     }
 
+    @Override
+    public String directSumMoney(OrderModel model) {
+        return orderMapper.directSumMoney(model);
+    }
+
 
     /**
      * @Description: 筛选可使用的支付宝收款账号以及用户

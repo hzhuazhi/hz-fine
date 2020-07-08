@@ -438,4 +438,21 @@
     </select>
 
 
+    <!-- 获取直推用户某天派单消耗成功的总金额-->
+    <select id="directSumMoney" parameterType="com.hz.task.master.core.model.order.OrderModel" resultType="java.lang.String">
+        select ifnull(sum(convert(a.order_money,decimal(19,2))), '0.00') as money from tb_fn_order a
+        where 1=1
+        and a.order_status = #{orderStatus}
+        and a.curday = #{curday}
+        <if test="didList != null and didList.size()>0">
+            and a.did in
+            <foreach item="item" index="index" collection="didList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and a.collection_type = 2
+        and a.yn = 0
+    </select>
+
+
 </mapper>

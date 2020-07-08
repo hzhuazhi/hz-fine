@@ -3,6 +3,7 @@ package com.hz.fine.master.core.model.order;
 import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description 任务订单的实体属性Bean
@@ -181,6 +182,11 @@ public class OrderModel extends BasePage implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * did集合
+     */
+    private List<Long> didList;
 
 
     public Long getId() {
@@ -462,5 +468,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public List<Long> getDidList() {
+        return didList;
+    }
+
+    public void setDidList(List<Long> didList) {
+        this.didList = didList;
     }
 }

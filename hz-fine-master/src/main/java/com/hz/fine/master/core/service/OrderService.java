@@ -132,4 +132,13 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/7/7 18:28
     */
     public OrderModel getOrderByReward(OrderModel model);
+
+    /**
+     * @Description: 获取直推用户某天派单消耗成功的总金额
+     * @param model - 用户did集合，日期，订单成功
+     * @return
+     * @author yoko
+     * @date 2020/6/6 11:22
+     */
+    public String directSumMoney(OrderModel model);
 }

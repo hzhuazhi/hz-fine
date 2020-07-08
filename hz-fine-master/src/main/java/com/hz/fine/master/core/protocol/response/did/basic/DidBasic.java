@@ -44,6 +44,11 @@ public class DidBasic implements Serializable {
     public String todayExchange;
 
     /**
+     * 团队长今日旗下总消耗成功的金额
+     */
+    public String todayTeamConsume;
+
+    /**
      * 账号昵称
      */
     public String nickname;
@@ -223,5 +228,14 @@ public class DidBasic implements Serializable {
 
     public void setTotalTeamConsumeProfit(String totalTeamConsumeProfit) {
         this.totalTeamConsumeProfit = totalTeamConsumeProfit;
+    }
+
+
+    public String getTodayTeamConsume() {
+        return todayTeamConsume;
+    }
+
+    public void setTodayTeamConsume(String todayTeamConsume) {
+        this.todayTeamConsume = todayTeamConsume;
     }
 }

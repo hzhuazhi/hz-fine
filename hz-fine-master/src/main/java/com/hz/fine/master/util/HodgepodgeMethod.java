@@ -2928,7 +2928,7 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange){
+    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange, String todayTeamConsume){
         ResponseDid dataModel = new ResponseDid();
         if (didModel != null && didModel.getId() > 0){
 
@@ -2963,6 +2963,17 @@ public class HodgepodgeMethod {
             }
             if (StringUtils.isBlank(didModel.getTotalGradeProfit())){
                 didBasic.totalGradeProfit = "0.00";
+            }
+            if (StringUtils.isBlank(todayTeamConsume)){
+                didBasic.todayTeamConsume = "0.00";
+            }else {
+                didBasic.todayTeamConsume = todayTeamConsume;
+            }
+            if (StringUtils.isBlank(didModel.getTotalConsumeProfit())){
+                didBasic.totalConsumeProfit = "0.00";
+            }
+            if (StringUtils.isBlank(didModel.getTotalTeamConsumeProfit())){
+                didBasic.totalTeamConsumeProfit = "0.00";
             }
             didBasic.todayProfit = todayProfit;
             didBasic.todayExchange = todayExchange;
@@ -5179,6 +5190,38 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 根据用户ID查询这个用户旗下的直推用户或者裂变用户的查询条件
+     * @param levelDid - 层级关系的用户ID
+     * @param levelType - 层级关系类型：1直推关系，2裂变关系
+     * @return com.hz.task.master.core.model.did.DidLevelModel
+     * @author yoko
+     * @date 2020/6/5 19:14
+     */
+    public static DidLevelModel assembleDidLevelQuery(long levelDid, int levelType){
+        DidLevelModel resBean = new DidLevelModel();
+        resBean.setLevelDid(levelDid);
+        resBean.setLevelType(levelType);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询直推用户今日派单消耗成功的总金额的查询条件
+     * @param didList - 用户ID集合：直推用户集合
+     * @param curday - 日期
+     * @return
+     * @author yoko
+     * @date 2020/6/6 11:40
+     */
+    public static OrderModel assembleOrderQuery(List<Long> didList, int curday){
+        OrderModel resBean = new OrderModel();
+        resBean.setDidList(didList);
+        resBean.setOrderStatus(4);
+        resBean.setCurday(curday);
+        return resBean;
     }
 
 

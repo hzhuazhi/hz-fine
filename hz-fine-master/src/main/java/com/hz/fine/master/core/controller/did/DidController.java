@@ -2,6 +2,7 @@ package com.hz.fine.master.core.controller.did;
 
 import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ExceptionMethod;
+import com.hz.fine.master.core.common.utils.DateUtil;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
@@ -31,9 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @Description 用户的Controller层
@@ -520,10 +523,28 @@ public class DidController {
             OrderModel orderQuery =  HodgepodgeMethod.assembleOrderByTodayExchange(did);
             String todayExchange = ComponentUtil.orderService.getProfitByCurday(orderQuery);
 
+            // 获取团队长今日旗下总消耗成功的金额
+            String todayTeamConsume = "";
+            if (didData.getIsTeam() == 2){
+                // 此用户属于团队长
+                // 循环查询这些 用户的直推用户
+                DidLevelModel didLevelQuery = HodgepodgeMethod.assembleDidLevelQuery(didData.getId(), ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+                List<DidLevelModel> didLevelList = ComponentUtil.didLevelService.findByCondition(didLevelQuery);
+                if (didLevelList != null && didLevelList.size() > 0){
+                    // 直推的用户ID集合
+                    List<Long> didList = didLevelList.stream().map(DidLevelModel::getDid).collect(Collectors.toList());
+
+                    // 获取直推用户昨天派单消耗成功的总金额
+                    OrderModel orderBySucQuery = HodgepodgeMethod.assembleOrderQuery(didList, DateUtil.getDayNumber(new Date()));
+                    todayTeamConsume = ComponentUtil.orderService.directSumMoney(orderQuery);
+                }
+
+            }
+
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleDidBasicDataResult(stime, sign, didData, todayProfit, todayExchange);
+            String strData = HodgepodgeMethod.assembleDidBasicDataResult(stime, sign, didData, todayProfit, todayExchange, todayTeamConsume);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
