@@ -83,6 +83,16 @@ public class DidBasic implements Serializable {
      */
     public String totalGradeProfit;
 
+    /**
+     * 消耗总收益：派发订单成功之后消耗的奖励
+     */
+    public String totalConsumeProfit;
+
+    /**
+     * 团队消耗总收益：团队长旗下消耗总金额比例规则奖励
+     */
+    public String totalTeamConsumeProfit;
+
     public DidBasic(){
 
     }
@@ -197,5 +207,21 @@ public class DidBasic implements Serializable {
 
     public void setTotalTeamProfit(String totalTeamProfit) {
         this.totalTeamProfit = totalTeamProfit;
+    }
+
+    public String getTotalConsumeProfit() {
+        return totalConsumeProfit;
+    }
+
+    public void setTotalConsumeProfit(String totalConsumeProfit) {
+        this.totalConsumeProfit = totalConsumeProfit;
+    }
+
+    public String getTotalTeamConsumeProfit() {
+        return totalTeamConsumeProfit;
+    }
+
+    public void setTotalTeamConsumeProfit(String totalTeamConsumeProfit) {
+        this.totalTeamConsumeProfit = totalTeamConsumeProfit;
     }
 }
