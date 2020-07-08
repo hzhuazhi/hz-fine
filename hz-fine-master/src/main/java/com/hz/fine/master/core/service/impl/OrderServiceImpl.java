@@ -410,16 +410,21 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER, didModel.getId());
         boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
         if (flagLock_did){
-            // 判断收款账号是否在5分钟之内给出过码
-            String strKeyCache_check_lock_did_collection_account_fifteen = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didModel.getCollectionAccountId());
-            String strCache_check_lock_did_collection_account_fifteen = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_fifteen);
-            if (StringUtils.isBlank(strCache_check_lock_did_collection_account_fifteen)){
+
+            // 查看此用户是否有派发的订单正在执行中：只有缓存中没有数据才代表此用户名下没挂单
+            String redisKey_did = getRedisDataByKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
+            if (StringUtils.isBlank(redisKey_did)){
                 // redis存储
-                // 此收款账号给出过码，需要5分钟之后才自动失效
-                String strKeyCache_lock_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didModel.getCollectionAccountId());
-                ComponentUtil.redisService.set(strKeyCache_lock_did_collection_account, String.valueOf(didModel.getCollectionAccountId()) + "," + orderMoney, FIVE_MIN);
+                String strKeyCache_lock_did_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
+                ComponentUtil.redisService.set(strKeyCache_lock_did_order_ing, String.valueOf(didModel.getId()) + "," + orderMoney, FIVE_MIN);
                 return didModel;
             }
+//            // 判断收款账号是否在5分钟之内给出过码
+//            String strKeyCache_check_lock_did_collection_account_fifteen = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FIFTEEN, didModel.getCollectionAccountId());
+//            String strCache_check_lock_did_collection_account_fifteen = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_fifteen);
+//            if (StringUtils.isBlank(strCache_check_lock_did_collection_account_fifteen)){
+//
+//            }
             // 解锁
             ComponentUtil.redisIdService.delLock(lockKey_did);
         }
