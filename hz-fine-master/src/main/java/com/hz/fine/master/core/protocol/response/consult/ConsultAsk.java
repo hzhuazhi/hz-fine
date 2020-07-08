@@ -22,6 +22,11 @@ public class ConsultAsk implements Serializable {
     public String categoryName;
 
     /**
+     * 标题
+     */
+    public String title;
+
+    /**
      * 咨询描述_问_文字
      */
     public String ask;
@@ -91,5 +96,13 @@ public class ConsultAsk implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

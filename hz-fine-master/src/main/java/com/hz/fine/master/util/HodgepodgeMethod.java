@@ -5510,6 +5510,58 @@ public class HodgepodgeMethod {
     }
 
 
+
+    /**
+     * @Description: check校验数据新增用户在线客服、咨询的发问时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkAddAskData(RequestConsult requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00004.geteCode(), ErrorCode.ENUM_ERROR.C00004.geteDesc());
+        }
+
+        // 校验咨询类别ID
+        if (requestModel.consultId == null || requestModel.consultId <= 0 ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00005.geteCode(), ErrorCode.ENUM_ERROR.C00005.geteDesc());
+        }
+
+        // 校验咨询描述_问_文字、咨询描述_问_图片地址的值
+        if (StringUtils.isBlank(requestModel.ask) && StringUtils.isBlank(requestModel.askAds)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00006.geteCode(), ErrorCode.ENUM_ERROR.C00006.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+    
+    /**
+     * @Description: 组装新增在线客服、咨询的发问的数据
+     * @param did - 用户ID
+     * @param requestModel - 请求要新增的发问数据
+     * @return 
+     * @author yoko
+     * @date 2020/7/8 21:30 
+    */
+    public static ConsultAskModel assembleConsultAskAdd(long did, RequestConsult requestModel){
+        ConsultAskModel resBean = BeanUtils.copy(requestModel, ConsultAskModel.class);
+        resBean.setDid(did);
+        return resBean;
+    }
+
+
     public static void main(String [] args){
         String bankWorkTime = "09:00-14:10";
         int num = getOpenTypeByBankWork(bankWorkTime);

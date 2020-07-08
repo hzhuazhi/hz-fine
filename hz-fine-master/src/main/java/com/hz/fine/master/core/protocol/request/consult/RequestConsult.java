@@ -15,6 +15,26 @@ public class RequestConsult extends BaseRequest implements Serializable {
 
     public Long id;
 
+    /**
+     * 咨询类别的主键ID
+     */
+    public Long consultId;
+
+    /**
+     * 标题
+     */
+    public String title;
+
+    /**
+     * 咨询描述_问_文字
+     */
+    public String ask;
+
+    /**
+     * 咨询描述_问_图片地址
+     */
+    public String askAds;
+
     public RequestConsult(){
 
     }
@@ -25,5 +45,37 @@ public class RequestConsult extends BaseRequest implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getConsultId() {
+        return consultId;
+    }
+
+    public void setConsultId(Long consultId) {
+        this.consultId = consultId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAsk() {
+        return ask;
+    }
+
+    public void setAsk(String ask) {
+        this.ask = ask;
+    }
+
+    public String getAskAds() {
+        return askAds;
+    }
+
+    public void setAskAds(String askAds) {
+        this.askAds = askAds;
     }
 }

@@ -29,6 +29,11 @@ public class ConsultAskModel extends BasePage implements Serializable {
     private String categoryName;
 
     /**
+     * 标题
+     */
+    private String title;
+
+    /**
      * 归属用户ID：对应表tb_fn_did的主键ID
      */
     private Long did;
@@ -142,5 +147,13 @@ public class ConsultAskModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

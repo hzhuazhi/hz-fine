@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.consult_id,a.did,a.ask,a.ask_ads,a.reply_status,
+        a.id,a.consult_id,a.title,a.did,a.ask,a.ask_ads,a.reply_status,
         a.create_time,a.update_time,a.yn,
         b.category_name
     </sql>
@@ -118,6 +118,9 @@
             <if test="consultId != null and consultId != '' " >
                 consult_id,
             </if>
+            <if test="title != null and title != '' " >
+                title,
+            </if>
             <if test="did != null and did != '' " >
                 did,
             </if>
@@ -139,6 +142,9 @@
             </if>
             <if test="consultId != null and consultId != '' " >
                 <![CDATA[  #{consultId}, ]]>
+            </if>
+            <if test="title != null and title != '' " >
+                <![CDATA[  #{title}, ]]>
             </if>
             <if test="did != null and did != '' " >
                 <![CDATA[  #{did}, ]]>
@@ -162,6 +168,9 @@
         <trim prefix="set" suffixOverrides=",">
             <if test="consultId != null and consultId != '' " >
                 a.consult_id = #{consultId},
+            </if>
+            <if test="title != null and title != '' " >
+                a.title = #{title},
             </if>
             <if test="did != null and did != '' " >
                 a.did = #{did},
