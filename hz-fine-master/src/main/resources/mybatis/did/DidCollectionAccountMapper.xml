@@ -375,6 +375,31 @@
         and a.id = #{id}
     </update>
 
-
+    <!-- 更新用户支付宝收款账号信息 -->
+    <update id="updateDidCollectionAccountZfb" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        UPDATE tb_fn_did_collection_account a
+        <trim prefix="set" suffixOverrides=",">
+            <!--<if test="acType != null and acType != '' " >-->
+                <!--a.ac_type = #{acType},-->
+            <!--</if>-->
+            <if test="acName != null and acName != '' " >
+                a.ac_name = #{acName},
+            </if>
+            <if test="acNum != null and acNum != '' " >
+                a.ac_num = #{acNum},
+            </if>
+            <if test="payee != null and payee != '' " >
+                a.payee = #{payee},
+            </if>
+            <if test="userId != null and userId != '' " >
+                a.user_id = #{userId},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.did = #{did}
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
 
 </mapper>

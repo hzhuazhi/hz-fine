@@ -16,6 +16,7 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
 
     public List<DidCollectionAccount> dataList;
     public DidCollectionAccount dataModel;
+    public DidCollectionAccountZfb zfbModel;
     public Integer rowCount;
 
     public ResponseDidCollectionAccount(){
@@ -46,5 +47,13 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
     @Override
     public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public DidCollectionAccountZfb getZfbModel() {
+        return zfbModel;
+    }
+
+    public void setZfbModel(DidCollectionAccountZfb zfbModel) {
+        this.zfbModel = zfbModel;
     }
 }

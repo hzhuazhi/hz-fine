@@ -10,6 +10,8 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.did.DidOnoffModel;
 import com.hz.fine.master.core.model.did.DidRechargeModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
@@ -124,6 +126,18 @@ public class SellController {
 
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.DID_ONOFF, did);
                 ComponentUtil.redisService.set(strKeyCache, String.valueOf(did), 10L);
+
+                // 判断用户是否有余额可进行抢单
+                DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
+                DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
+                HodgepodgeMethod.checkDidData(didModel);
+                if (!StringUtils.isBlank(didModel.getBalance())){
+                    if (Double.parseDouble(didModel.getBalance()) > 0){
+                        // 上线（开始抢单）
+                        DidOnoffModel didOnoffUpdate = HodgepodgeMethod.assembleDidOnoffUpdate(did, 2);
+                        ComponentUtil.didOnoffService.updateDidOnoff(didOnoffUpdate);
+                    }
+                }
 
             }
 

@@ -29,4 +29,13 @@ public interface DidCollectionAccountService<T> extends BaseService<T> {
      * @date 2020/5/18 15:52
     */
     public void updateDidCollectionAccount(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 更新用户支付宝收款账号信息
+     * @param model - 用户支付宝收款账号信息
+     * @return
+     * @author yoko
+     * @date 2020/5/18 15:52
+     */
+    public void updateDidCollectionAccountZfb(DidCollectionAccountModel model);
 }

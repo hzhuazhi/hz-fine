@@ -170,7 +170,7 @@ public class DidCollectionAccountController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAc/getDataList
-     * 请求的属性类:RequestAppeal
+     * 请求的属性类:RequestDidCollectionAccount
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
      * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+秘钥=sign
@@ -267,7 +267,7 @@ public class DidCollectionAccountController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAc/getData
-     * 请求的属性类:RequestAppeal
+     * 请求的属性类:RequestDidCollectionAccount
      * 必填字段:{"id":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJpZCI6MSwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:id+ctime+cctime+秘钥=sign
@@ -636,7 +636,7 @@ public class DidCollectionAccountController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/collAc/getNoCheckDataList
-     * 请求的属性类:RequestAppeal
+     * 请求的属性类:RequestDidCollectionAccount
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
      * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
      * 客户端加密字段:ctime+秘钥=sign
@@ -775,6 +775,159 @@ public class DidCollectionAccountController {
             log.error(String.format("this DidCollectionAccountController.updateWxQrCode() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
                 log.error(String.format("this DidCollectionAccountController.updateWxQrCode() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+
+    }
+
+
+
+
+    /**
+     * @Description: 获取支付宝收款账号数据-详情
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/collAc/getZfbData
+     * 请求的属性类:RequestDidCollectionAccount
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:id+ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiN2Y1ODA4NTU1MTNlOGE0MTliNDFjMWQxMjIwNjkwMzYiLCJzdGltZSI6MTU5NDE5OTQ2NjY3NiwiemZiTW9kZWwiOnsiYWNOYW1lIjoiYWNOYW1lMyIsImFjTnVtIjoiemZiX2FjX251bSIsImFjVHlwZSI6MiwiaWQiOjIsInBheWVlIjoicGF5ZWUyIiwidXNlcklkIjoidXNlcl9pZF8xIn19"
+     *     },
+     *     "sgid": "202007081711050000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getZfbData", method = {RequestMethod.POST})
+    public JsonResult<Object> getZfbData(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验请求的数据
+            did = HodgepodgeMethod.checkDidCollectionAccountZfbData(requestModel);
+
+            // 收款账号详情数据
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountByDidAndAcType(did, 2);
+            DidCollectionAccountModel didCollectionAccountData = (DidCollectionAccountModel) ComponentUtil.didCollectionAccountService.findByObject(didCollectionAccountQuery);
+
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleDidCollectionAccountZfbDataResult(stime, sign, didCollectionAccountData);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // 添加异常
+            log.error(String.format("this DidCollectionAccountController.getZfbData() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidCollectionAccountController.getZfbData() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+    /**
+     * @Description: 用户修改支付宝收款账号的信息
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/collAc/updateZfb
+     * 请求的属性类:RequestDidCollectionAccount
+     * 必填字段:{"id":2,"acName":"acName1","acNum":"acNum11","payee":"payee11","userId":"userId_1","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJpZCI6MSwiYWNUeXBlIjoiMiIsImFjTnVtIjoiYWNOdW0xMSIsIm1tUXJDb2RlIjoibW1RckNvZGUxMSIsInBheWVlIjoicGF5ZWUxMSIsImJhbmtOYW1lIjoiYmFua05hbWUxMSIsImJ1c2luZXNzVHlwZSI6IjIiLCJ3eFFyQ29kZUFkcyI6Ind4UXJDb2RlQWRzMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiZDE0NzNhZTdjM2NiMWQyNGQ5OGNkYWU0ZWQyZGEwYzQiLCJzdGltZSI6MTU5NDIwMDg4NTY3N30="
+     *     },
+     *     "sgid": "202007081734450000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/updateZfb", method = {RequestMethod.POST})
+    public JsonResult<Object> updateZfb(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        try {
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验数据
+            did = HodgepodgeMethod.checkDidCollectionAccountUpdateZfbData(requestModel);
+
+
+            // 组装要更新的数据进行更新-支付宝
+            DidCollectionAccountModel didCollectionAccountUpdate = HodgepodgeMethod.assembleDidCollectionAccountUpdateZfb(did, requestModel);
+            ComponentUtil.didCollectionAccountService.updateDidCollectionAccountZfb(didCollectionAccountUpdate);
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleResult(stime, token, sign);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        } catch (Exception e) {
+            Map<String, String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidCollectionAccountController.updateZfb() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidCollectionAccountController.updateZfb() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);

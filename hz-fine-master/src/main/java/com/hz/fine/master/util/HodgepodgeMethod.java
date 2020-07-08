@@ -48,6 +48,7 @@ import com.hz.fine.master.core.protocol.response.consult.ResponseConsult;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
+import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccountZfb;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.ResponseDidCollectionAccount;
 import com.hz.fine.master.core.protocol.response.did.onoff.DidOnoff;
 import com.hz.fine.master.core.protocol.response.did.onoff.ResponseDidOnoff;
@@ -5221,6 +5222,135 @@ public class HodgepodgeMethod {
         resBean.setDidList(didList);
         resBean.setOrderStatus(4);
         resBean.setCurday(curday);
+        return resBean;
+    }
+
+
+
+    /**
+     * @Description: check校验数据获取支付宝收款账号数据-详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountZfbData(RequestDidCollectionAccount requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00030.geteCode(), ErrorCode.ENUM_ERROR.DC00030.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装根据用户以及用户收款账号的类型查询收款账号详情的查询条件
+     * @param did - 用户ID
+     * @param acType - 收款账户类型：1微信，2支付宝，3银行卡
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/18 11:41
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountByDidAndAcType(long did, int acType){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setAcType(acType);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户支付宝收款账号-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didCollectionAccountModel - 用户收款账号的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidCollectionAccountZfbDataResult(long stime, String sign, DidCollectionAccountModel didCollectionAccountModel){
+        ResponseDidCollectionAccount dataModel = new ResponseDidCollectionAccount();
+        if (didCollectionAccountModel != null){
+            DidCollectionAccountZfb data = BeanUtils.copy(didCollectionAccountModel, DidCollectionAccountZfb.class);
+            dataModel.zfbModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据当用户更新支付宝收款款账号时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountUpdateZfbData(RequestDidCollectionAccount requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00031.geteCode(), ErrorCode.ENUM_ERROR.DC00031.geteDesc());
+        }
+
+        if (requestModel.id == null || requestModel.id <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00032.geteCode(), ErrorCode.ENUM_ERROR.DC00032.geteDesc());
+        }
+
+//        if (requestModel.acType == null || requestModel.acType <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+//            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00033.geteCode(), ErrorCode.ENUM_ERROR.DC00033.geteDesc());
+//        }
+        // 收款账号
+        if (StringUtils.isBlank(requestModel.acNum)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00034.geteCode(), ErrorCode.ENUM_ERROR.DC00034.geteDesc());
+        }
+
+        // 支付宝userId
+        if (StringUtils.isBlank(requestModel.userId)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00035.geteCode(), ErrorCode.ENUM_ERROR.DC00035.geteDesc());
+        }
+
+        // check支付宝持卡人真实姓名
+        if (StringUtils.isBlank(requestModel.payee)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00036.geteCode(), ErrorCode.ENUM_ERROR.DC00036.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装用户更新收款账号的信息
+     * @param did - 用户的ID
+     * @param requestDidCollectionAccount - 要更新的基本信息
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:20
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountUpdateZfb(long did, RequestDidCollectionAccount requestDidCollectionAccount){
+        DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
+        resBean.setDid(did);
         return resBean;
     }
 
