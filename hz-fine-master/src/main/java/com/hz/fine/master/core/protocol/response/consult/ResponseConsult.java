@@ -15,6 +15,9 @@ public class ResponseConsult extends BaseResponse implements Serializable {
     private static final long   serialVersionUID = 2233023331141L;
     public Consult dataModel;
     public List<Consult> dataList;
+
+    public ConsultAsk askModel;
+    public List<ConsultAsk> askList;
     public Integer rowCount;
 
     public ResponseConsult(){
@@ -45,5 +48,21 @@ public class ResponseConsult extends BaseResponse implements Serializable {
     @Override
     public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public ConsultAsk getAskModel() {
+        return askModel;
+    }
+
+    public void setAskModel(ConsultAsk askModel) {
+        this.askModel = askModel;
+    }
+
+    public List<ConsultAsk> getAskList() {
+        return askList;
+    }
+
+    public void setAskList(List<ConsultAsk> askList) {
+        this.askList = askList;
     }
 }

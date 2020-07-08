@@ -9,6 +9,7 @@ import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.client.ClientCollectionDataModel;
+import com.hz.fine.master.core.model.consult.ConsultAskModel;
 import com.hz.fine.master.core.model.consult.ConsultModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
@@ -25,6 +26,7 @@ import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.model.wx.WxModel;
 import com.hz.fine.master.core.protocol.request.bank.RequestBank;
+import com.hz.fine.master.core.protocol.request.consult.RequestConsult;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.core.protocol.request.did.collection.QrCode;
@@ -44,6 +46,7 @@ import com.hz.fine.master.core.protocol.response.bank.BankMoney;
 import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 import com.hz.fine.master.core.protocol.response.bank.ResponseBank;
 import com.hz.fine.master.core.protocol.response.consult.Consult;
+import com.hz.fine.master.core.protocol.response.consult.ConsultAsk;
 import com.hz.fine.master.core.protocol.response.consult.ResponseConsult;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
@@ -5388,6 +5391,123 @@ public class HodgepodgeMethod {
         }
     }
 
+
+    /**
+     * @Description: check校验数据获取用户在线客服、咨询的发问数据时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkGetAskDataList(RequestConsult requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00001.geteCode(), ErrorCode.ENUM_ERROR.C00001.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装在线客服、咨询的发问的查询条件
+     * @param did
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/7/8 20:29
+    */
+    public static ConsultAskModel assembleConsultAskModel(long did, RequestConsult requestModel){
+        ConsultAskModel resBean = BeanUtils.copy(requestModel, ConsultAskModel.class);
+        resBean.setDid(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 在线客服、咨询的发问的集合数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param consultAskList - 在线客服、咨询的发问的集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleConsultAskDataListResult(long stime, String sign, List<ConsultAskModel> consultAskList, Integer rowCount){
+        ResponseConsult dataModel = new ResponseConsult();
+        if (consultAskList != null && consultAskList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<ConsultAsk> dataList = BeanUtils.copyList(consultAskList, ConsultAsk.class);
+            dataModel.askList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: check校验数据获取用户在线客服、咨询的发问数据详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkGetAskData(RequestConsult requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00002.geteCode(), ErrorCode.ENUM_ERROR.C00002.geteDesc());
+        }
+
+        // 校验ID
+        if (requestModel.id == null || requestModel.id <= 0 ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00003.geteCode(), ErrorCode.ENUM_ERROR.C00003.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 在线客服、咨询的发问的详情数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param consultAskModel - 在线客服、咨询的发问的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleConsultAskDataResult(long stime, String sign, ConsultAskModel consultAskModel){
+        ResponseConsult dataModel = new ResponseConsult();
+        if (consultAskModel != null && consultAskModel.getId() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            ConsultAsk askModel = BeanUtils.copy(consultAskModel, ConsultAsk.class);
+            dataModel.askModel = askModel;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
 
 
     public static void main(String [] args){

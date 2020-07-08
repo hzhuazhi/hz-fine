@@ -131,6 +131,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private ClientCollectionDataService clientCollectionDataService;
 
+    @Autowired
+    private ConsultAskService consultAskService;
+
 
 
 
@@ -176,6 +179,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.consultService = consultService;
         ComponentUtil.questionDDService = questionDDService;
         ComponentUtil.clientCollectionDataService = clientCollectionDataService;
+        ComponentUtil.consultAskService = consultAskService;
 
         runThread = new RunThread();
         runThread.start();
