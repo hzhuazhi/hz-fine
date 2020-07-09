@@ -438,7 +438,7 @@ public class ConsultController {
      * local:http://localhost:8086/fine/consult/getAskReplyDataList
      * 请求的属性类:RequestConsult
      * 必填字段:{"consultAskId":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
-     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
+     * 加密字段:{"jsonData":"eyJjb25zdWx0QXNrSWQiOjEsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJwYWdlTnVtYmVyIjoxLCJwYWdlU2l6ZSI6MywidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
