@@ -48,6 +48,7 @@ import com.hz.fine.master.core.protocol.response.bank.BuyBank;
 import com.hz.fine.master.core.protocol.response.bank.ResponseBank;
 import com.hz.fine.master.core.protocol.response.consult.Consult;
 import com.hz.fine.master.core.protocol.response.consult.ConsultAsk;
+import com.hz.fine.master.core.protocol.response.consult.ConsultAskReply;
 import com.hz.fine.master.core.protocol.response.consult.ResponseConsult;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
@@ -5643,6 +5644,30 @@ public class HodgepodgeMethod {
         ConsultAskReplyModel resBean = BeanUtils.copy(requestModel, ConsultAskReplyModel.class);
         resBean.setDid(did);
         return resBean;
+    }
+
+    /**
+     * @Description: 获取追加问答数据-集合数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param consultAskReplyList - 追加问答数据的集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleConsultAskReplyDataListResult(long stime, String sign, List<ConsultAskReplyModel> consultAskReplyList, Integer rowCount){
+        ResponseConsult dataModel = new ResponseConsult();
+        if (consultAskReplyList != null && consultAskReplyList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<ConsultAskReply> dataList = BeanUtils.copyList(consultAskReplyList, ConsultAskReply.class);
+            dataModel.askReplyList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
     }
 
 

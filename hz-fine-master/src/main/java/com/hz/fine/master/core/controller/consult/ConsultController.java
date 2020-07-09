@@ -445,9 +445,9 @@ public class ConsultController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJhc2tMaXN0IjpbeyJhc2siOiLmhJ/mg4Xpl67pophfNF80IiwiYXNrQWRzIjoiaHR0cDovL2ltZy5tcC5pdGMuY24vdXBsb2FkLzIwMTYxMTExLzkyNzI4YjI1YjUyYjRiZTc4Y2RmMmE3ODI2MjFmMDZlX3RoLmpwZyIsImNhdGVnb3J5TmFtZSI6IuaEn+aDhemXrumimCIsImNyZWF0ZVRpbWUiOiIyMDIwLTA3LTA4IDIwOjQ3OjEzIiwiaWQiOjEwLCJyZXBseVN0YXR1cyI6MX0seyJhc2siOiLmhJ/mg4Xpl67pophfNF8zIiwiYXNrQWRzIjoiaHR0cDovL2d0cHFuLnRpYW9jaGVuZy10ZWNoLmNvbS9lNGY1MjQ4ODA0MzM0ZTM4YWM3NGU1YTA2NWVjOWNmMS5wbmciLCJjYXRlZ29yeU5hbWUiOiLmhJ/mg4Xpl67popgiLCJjcmVhdGVUaW1lIjoiMjAyMC0wNy0wOCAyMDo0NzowOCIsImlkIjo5LCJyZXBseVN0YXR1cyI6MX0seyJhc2siOiLmhJ/mg4Xpl67pophfNF8yIiwiYXNrQWRzIjoiaHR0cDovL3Bob3RvY2RuLnNvaHUuY29tLzIwMTUxMTAxL0ltZzQyNDgzMzg4MC5qcGciLCJjYXRlZ29yeU5hbWUiOiLmhJ/mg4Xpl67popgiLCJjcmVhdGVUaW1lIjoiMjAyMC0wNy0wOCAyMDo0NzowMiIsImlkIjo4LCJyZXBseVN0YXR1cyI6MX1dLCJyb3dDb3VudCI6MTAsInNpZ24iOiI0NzI3MjczOTgxYzYyOGIwMmI4OWE3NjE1YmU5NGYwMCIsInN0aW1lIjoxNTk0MjEyNTI1NDAxfQ=="
+     *         "jsonData": "eyJhc2tSZXBseUxpc3QiOlt7ImFzayI6IuS6pOWPi+eWkemXriIsImFza1JlcGx5IjoiYXNrUmVwbHkxIiwiYXNrUmVwbHlBZHMiOiJhc2tSZXBseUFkczEiLCJjb25zdWx0QXNrSWQiOjEsImRhdGFUeXBlIjoxLCJpZCI6MSwidGl0bGUiOiLmoIfpophfMSJ9LHsiYXNrIjoi5Lqk5Y+L55aR6ZeuIiwiYXNrUmVwbHkiOiJhc2tSZXBseTIiLCJhc2tSZXBseUFkcyI6ImFza1JlcGx5QWRzMiIsImNvbnN1bHRBc2tJZCI6MSwiZGF0YVR5cGUiOjEsImlkIjoyLCJ0aXRsZSI6Iuagh+mimF8xIn0seyJhc2siOiLkuqTlj4vnlpHpl64iLCJhc2tSZXBseSI6ImFza1JlcGx5MyIsImFza1JlcGx5QWRzIjoiYXNrUmVwbHlBZHMzIiwiY29uc3VsdEFza0lkIjoxLCJkYXRhVHlwZSI6MSwiaWQiOjMsInRpdGxlIjoi5qCH6aKYXzEifV0sInJvd0NvdW50Ijo0LCJzaWduIjoiYmIyYzVjN2RiZjg5NDM3N2JmNzczODEzYzE5ZmM1MzkiLCJzdGltZSI6MTU5NDI3NTgyNDE3Mn0="
      *     },
-     *     "sgid": "202007082048450000001",
+     *     "sgid": "202007091423430000001",
      *     "cgid": ""
      * }
      */
@@ -474,15 +474,15 @@ public class ConsultController {
 //            }
 
             // check校验数据
-            did = HodgepodgeMethod.checkAddAskReplyData(requestModel);
+            did = HodgepodgeMethod.checkAskReplyDataList(requestModel);
 
             // 获取获取追加问答数据-集合的数据
-            ConsultAskReplyModel consultAskQuery = HodgepodgeMethod.assembleConsultAskReplyModel(did, requestModel);
-            List<ConsultAskModel> consultAskList = ComponentUtil.consultAskService.queryByList(consultAskQuery);
+            ConsultAskReplyModel consultAskReplyQuery = HodgepodgeMethod.assembleConsultAskReplyModel(did, requestModel);
+            List<ConsultAskReplyModel> consultAskReplyList = ComponentUtil.consultAskReplyService.queryByList(consultAskReplyQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleConsultAskDataListResult(stime, sign, consultAskList, consultAskQuery.getRowCount());
+            String strData = HodgepodgeMethod.assembleConsultAskReplyDataListResult(stime, sign, consultAskReplyList, consultAskReplyQuery.getRowCount());
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

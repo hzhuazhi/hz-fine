@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.consult_ask_id,a.ask_reply,a.ask_reply_ads,a.data_type,
         a.create_time,a.update_time,a.yn,
-        b.title
+        b.title,b.ask
     </sql>
 
 

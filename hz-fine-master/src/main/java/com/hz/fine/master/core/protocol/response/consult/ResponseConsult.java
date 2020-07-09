@@ -18,6 +18,7 @@ public class ResponseConsult extends BaseResponse implements Serializable {
 
     public ConsultAsk askModel;
     public List<ConsultAsk> askList;
+    public List<ConsultAskReply> askReplyList;
     public Integer rowCount;
 
     public ResponseConsult(){
@@ -64,5 +65,13 @@ public class ResponseConsult extends BaseResponse implements Serializable {
 
     public void setAskList(List<ConsultAsk> askList) {
         this.askList = askList;
+    }
+
+    public List<ConsultAskReply> getAskReplyList() {
+        return askReplyList;
+    }
+
+    public void setAskReplyList(List<ConsultAskReply> askReplyList) {
+        this.askReplyList = askReplyList;
     }
 }

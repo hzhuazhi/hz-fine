@@ -29,13 +29,19 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
     private Long consultAskId;
 
     /**
-     * 标题-归属对应表tb_fn_consult_ask的主键ID表的标题
+     * 标题-归属在线客服、咨询的发问里面的标题；
+     * 对应表tb_fn_consult_ask的表的标题
      */
     private String title;
 
+    /**
+     * 标题-归属在线客服、咨询的发问里面的咨询描述_问_文字；
+     */
+    private String ask;
+
 
     /**
-     * 咨询描述_问_文字
+     * 咨询描述_问答_文字
      */
     private String askReply;
 
@@ -143,5 +149,13 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
 
     public void setDid(Long did) {
         this.did = did;
+    }
+
+    public String getAsk() {
+        return ask;
+    }
+
+    public void setAsk(String ask) {
+        this.ask = ask;
     }
 }
