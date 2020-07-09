@@ -354,6 +354,77 @@ public class ConsultController {
     }
 
 
+    /**
+     * @Description: 用户在线客服、咨询的发问数据-详情-一对多
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/consult/getAskDataInfo
+     * 请求的属性类:RequestConsult
+     * 必填字段:{"id":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJpZCI6MSwiYWd0VmVyIjoxLCJjbGllbnRWZXIiOjEsImNsaWVudFR5cGUiOjEsImN0aW1lIjoyMDE5MTEwNzE4MDI5NTksImNjdGltZSI6MjAxOTExMDcxODAyOTU5LCJzaWduIjoiYWJjZGVmZyIsInRva2VuIjoiMTExMTExIn0="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJhc2tNb2RlbCI6eyJhc2siOiLkuqTlj4vnlpHpl65fMSIsImFza0FkcyI6Imh0dHA6Ly9pbWcubXAuaXRjLmNuL3VwbG9hZC8yMDE2MTExMS85MjcyOGIyNWI1MmI0YmU3OGNkZjJhNzgyNjIxZjA2ZV90aC5qcGciLCJhc2tSZXBseUxpc3QiOlt7ImFza1JlcGx5IjoiYXNrUmVwbHkxIiwiYXNrUmVwbHlBZHMiOiJhc2tSZXBseUFkczEiLCJjb25zdWx0QXNrUmVwbHlDcmVhdGVUaW1lIjoiMjAyMC0wNy0wOSAxMjowMjowNyIsImNvbnN1bHRBc2tSZXBseUlkIjoxLCJkYXRhVHlwZSI6MSwicGFnZSI6e319LHsiYXNrUmVwbHkiOiJhc2tSZXBseTIiLCJhc2tSZXBseUFkcyI6ImFza1JlcGx5QWRzMiIsImNvbnN1bHRBc2tSZXBseUNyZWF0ZVRpbWUiOiIyMDIwLTA3LTA5IDEyOjIwOjE2IiwiY29uc3VsdEFza1JlcGx5SWQiOjIsImRhdGFUeXBlIjoxLCJwYWdlIjp7fX0seyJhc2tSZXBseSI6ImFza1JlcGx5MyIsImFza1JlcGx5QWRzIjoiYXNrUmVwbHlBZHMzIiwiY29uc3VsdEFza1JlcGx5Q3JlYXRlVGltZSI6IjIwMjAtMDctMDkgMTI6MjA6NTAiLCJjb25zdWx0QXNrUmVwbHlJZCI6MywiZGF0YVR5cGUiOjEsInBhZ2UiOnt9fSx7ImFza1JlcGx5IjoiYXNrUmVwbHk0IiwiYXNrUmVwbHlBZHMiOiJhc2tSZXBseUFkczQiLCJjb25zdWx0QXNrUmVwbHlDcmVhdGVUaW1lIjoiMjAyMC0wNy0wOSAxMjoyMTowOCIsImNvbnN1bHRBc2tSZXBseUlkIjo0LCJkYXRhVHlwZSI6MSwicGFnZSI6e319XSwiY2F0ZWdvcnlOYW1lIjoi5Lqk5Y+L6Zeu6aKYIiwiY3JlYXRlVGltZSI6IjIwMjAtMDctMDggMjA6NDQ6MjAiLCJpZCI6MSwicmVwbHlTdGF0dXMiOjEsInRpdGxlIjoi5qCH6aKYXzEifSwic2lnbiI6IjUyYmNlMzY5MzcyZjEyN2Q1MjBmZjFiOTE0NTI1N2UyIiwic3RpbWUiOjE1OTQyODE1NTkwMjZ9"
+     *     },
+     *     "sgid": "202007091557490000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getAskDataInfo", method = {RequestMethod.POST})
+    public JsonResult<Object> getAskDataInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestConsult requestModel = new RequestConsult();
+        try {
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel = JSON.parseObject(data, RequestConsult.class);
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+
+            // check校验数据
+            did = HodgepodgeMethod.checkGetAskData(requestModel);
+            // 获取在线客服、咨询的发问的数据
+            ConsultAskModel consultAskQuery = HodgepodgeMethod.assembleConsultAskModel(did, requestModel);
+            ConsultAskModel consultAskModel = ComponentUtil.consultAskService.getConsultAskInfo(consultAskQuery);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleConsultAskDataResult(stime, sign, consultAskModel);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        } catch (Exception e) {
+            Map<String, String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this ConsultController.getAskDataInfo() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this ConsultController.getAskDataInfo() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
 
     /**
      * @Description: 新增追加问答

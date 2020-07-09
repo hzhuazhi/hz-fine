@@ -13,6 +13,49 @@
     </sql>
 
 
+    <!-- 一对多 -->
+    <resultMap type="com.hz.fine.master.core.model.consult.ConsultAskModel" id="dataMap">
+        <id property="id" column="id" />
+        <result property="consultId" column="consult_id" />
+        <result property="title" column="title" />
+        <result property="did" column="did" />
+        <result property="ask" column="ask" />
+        <result property="askAds" column="ask_ads" />
+        <result property="replyStatus" column="reply_status" />
+        <result property="createTime" column="create_time" />
+        <result property="categoryName" column="category_name" />
+        <collection property="askReplyList" ofType="com.hz.fine.master.core.model.consult.ConsultAskReplyModel"
+                    resultMap="dataInfoMap"/>
+    </resultMap>
+
+
+    <resultMap type="com.hz.fine.master.core.model.consult.ConsultAskReplyModel" id="dataInfoMap">
+        <id property="consultAskReplyId" column="consult_ask_reply_id" />
+        <result property="askReply" column="ask_reply" />
+        <result property="askReplyAds" column="ask_reply_ads" />
+        <result property="dataType" column="data_type" />
+        <result property="consultAskReplyCreateTime" column="consult_ask_reply_create_time" />
+    </resultMap>
+
+    <!-- 属性映射-一对多 -->
+    <!--<resultMap type="com.zq.tv.core.model.LandingPageModel" id="moreDataMap">-->
+        <!--<id property="id" column="id" />-->
+        <!--<result property="templateId" column="template_id" />-->
+        <!--<result property="pgName" column="pg_name" />-->
+        <!--<result property="dataType" column="data_type" />-->
+        <!--<result property="gpJspName" column="gp_jsp_name" />-->
+        <!--<result property="remark" column="remark" />-->
+        <!--<result property="isEnable" column="is_enable" />-->
+        <!--<result property="createUser" column="create_user" />-->
+        <!--<result property="updateUser" column="update_user" />-->
+        <!--<result property="createTime" column="create_time" />-->
+        <!--<result property="updateTime" column="update_time" />-->
+        <!--<result property="yn" column="yn" />-->
+        <!--<collection property="landingPageMaterialList" ofType="com.zq.tv.core.model.LandingPageMaterialModel"-->
+                    <!--resultMap="dataInfoMap"/>-->
+    <!--</resultMap>-->
+
+
     <!-- 查询条件 -->
     <sql id="Example_Where_Clause">
         where 1=1
@@ -201,7 +244,21 @@
     </update>
 
 
-
+    <!-- 查询提问的详情-一对多 -->
+    <select id="getConsultAskInfo" parameterType="Object" resultMap="dataMap">
+        select
+            a.id,a.consult_id,a.title,a.did,a.ask,a.ask_ads,a.reply_status,
+            a.create_time,a.update_time,a.yn,
+            b.category_name,
+            c.id as consult_ask_reply_id,c.ask_reply,c.ask_reply_ads,c.data_type,c.create_time as consult_ask_reply_create_time
+        from tb_fn_consult_ask a left join tb_fn_consult b on a.consult_id = b.id and b.yn = 0
+        left join tb_fn_consult_ask_reply c on a.id = c.consult_ask_id and c.yn = 0
+        where 1=1
+        and a.id = #{id}
+        and a.did = #{did}
+        and a.yn = 0
+        order by c.create_time asc
+    </select>
 
 
 </mapper>

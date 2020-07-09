@@ -1,6 +1,7 @@
 package com.hz.fine.master.core.protocol.response.consult;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description 协议：在线客服、咨询的发问的属性
@@ -45,6 +46,8 @@ public class ConsultAsk implements Serializable {
      * 创建时间
      */
     public String createTime;
+
+    public List<ConsultAskReply> askReplyList;
 
     public ConsultAsk(){
 
@@ -104,5 +107,13 @@ public class ConsultAsk implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<ConsultAskReply> getAskReplyList() {
+        return askReplyList;
+    }
+
+    public void setAskReplyList(List<ConsultAskReply> askReplyList) {
+        this.askReplyList = askReplyList;
     }
 }

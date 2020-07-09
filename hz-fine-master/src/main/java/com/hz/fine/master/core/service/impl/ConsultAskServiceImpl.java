@@ -3,6 +3,7 @@ package com.hz.fine.master.core.service.impl;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.mapper.ConsultAskMapper;
+import com.hz.fine.master.core.model.consult.ConsultAskModel;
 import com.hz.fine.master.core.service.ConsultAskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class ConsultAskServiceImpl<T> extends BaseServiceImpl<T> implements Cons
 
     public BaseDao<T> getDao() {
         return consultAskMapper;
+    }
+
+    @Override
+    public ConsultAskModel getConsultAskInfo(ConsultAskModel model) {
+        return consultAskMapper.getConsultAskInfo(model);
     }
 }

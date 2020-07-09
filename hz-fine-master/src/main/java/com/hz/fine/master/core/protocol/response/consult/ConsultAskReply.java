@@ -16,6 +16,8 @@ public class ConsultAskReply implements Serializable {
      */
     public Long id;
 
+    public Long consultAskReplyId;
+
     /**
      * 在线客服、咨询的发问表的主键ID：对应表tb_fn_consult_ask的主键ID
      */
@@ -106,5 +108,13 @@ public class ConsultAskReply implements Serializable {
 
     public void setDataType(Integer dataType) {
         this.dataType = dataType;
+    }
+
+    public Long getConsultAskReplyId() {
+        return consultAskReplyId;
+    }
+
+    public void setConsultAskReplyId(Long consultAskReplyId) {
+        this.consultAskReplyId = consultAskReplyId;
     }
 }

@@ -3,6 +3,7 @@ package com.hz.fine.master.core.model.consult;
 import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description 在线客服、咨询的发问的的实体属性Bean
@@ -67,6 +68,11 @@ public class ConsultAskModel extends BasePage implements Serializable {
      * 是否有效：0有效，1无效/删除
      */
     private Integer yn;
+
+    /**
+     * 追加问答的数据集合
+     */
+    private List<ConsultAskReplyModel> askReplyList;
 
 
     public Long getId() {
@@ -155,5 +161,13 @@ public class ConsultAskModel extends BasePage implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<ConsultAskReplyModel> getAskReplyList() {
+        return askReplyList;
+    }
+
+    public void setAskReplyList(List<ConsultAskReplyModel> askReplyList) {
+        this.askReplyList = askReplyList;
     }
 }

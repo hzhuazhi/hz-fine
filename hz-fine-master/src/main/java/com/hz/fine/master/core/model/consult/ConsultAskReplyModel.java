@@ -19,6 +19,11 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
     private Long id;
 
     /**
+     * 主键ID
+     */
+    private Long consultAskReplyId;
+
+    /**
      * 用户ID
      */
     private Long did;
@@ -69,6 +74,11 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
      * 是否有效：0有效，1无效/删除
      */
     private Integer yn;
+
+    /**
+     * 创建时间
+     */
+    private String consultAskReplyCreateTime;
 
 
     public Long getId() {
@@ -157,5 +167,21 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
 
     public void setAsk(String ask) {
         this.ask = ask;
+    }
+
+    public Long getConsultAskReplyId() {
+        return consultAskReplyId;
+    }
+
+    public void setConsultAskReplyId(Long consultAskReplyId) {
+        this.consultAskReplyId = consultAskReplyId;
+    }
+
+    public String getConsultAskReplyCreateTime() {
+        return consultAskReplyCreateTime;
+    }
+
+    public void setConsultAskReplyCreateTime(String consultAskReplyCreateTime) {
+        this.consultAskReplyCreateTime = consultAskReplyCreateTime;
     }
 }
