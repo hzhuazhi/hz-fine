@@ -39,6 +39,11 @@ public class DidBalanceDeductModel extends BasePage implements Serializable {
     private Integer orderStatus;
 
     /**
+     * 延迟运行时间
+     */
+    private String delayTime;
+
+    /**
      * 备注
      */
     private String remark;
@@ -212,5 +217,13 @@ public class DidBalanceDeductModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public String getDelayTime() {
+        return delayTime;
+    }
+
+    public void setDelayTime(String delayTime) {
+        this.delayTime = delayTime;
     }
 }

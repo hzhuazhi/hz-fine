@@ -4554,6 +4554,8 @@ public class HodgepodgeMethod {
         resBean.setDid(did);
         resBean.setOrderNo(orderNo);
         resBean.setMoney(money);
+        String delayTime = DateUtil.addDateMinute(30);
+        resBean.setDelayTime(delayTime);
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));

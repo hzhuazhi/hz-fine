@@ -37,23 +37,6 @@
         <result property="consultAskReplyCreateTime" column="consult_ask_reply_create_time" />
     </resultMap>
 
-    <!-- 属性映射-一对多 -->
-    <!--<resultMap type="com.zq.tv.core.model.LandingPageModel" id="moreDataMap">-->
-        <!--<id property="id" column="id" />-->
-        <!--<result property="templateId" column="template_id" />-->
-        <!--<result property="pgName" column="pg_name" />-->
-        <!--<result property="dataType" column="data_type" />-->
-        <!--<result property="gpJspName" column="gp_jsp_name" />-->
-        <!--<result property="remark" column="remark" />-->
-        <!--<result property="isEnable" column="is_enable" />-->
-        <!--<result property="createUser" column="create_user" />-->
-        <!--<result property="updateUser" column="update_user" />-->
-        <!--<result property="createTime" column="create_time" />-->
-        <!--<result property="updateTime" column="update_time" />-->
-        <!--<result property="yn" column="yn" />-->
-        <!--<collection property="landingPageMaterialList" ofType="com.zq.tv.core.model.LandingPageMaterialModel"-->
-                    <!--resultMap="dataInfoMap"/>-->
-    <!--</resultMap>-->
 
 
     <!-- 查询条件 -->
