@@ -10,6 +10,7 @@ import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
 import com.hz.fine.master.core.model.client.ClientCollectionDataModel;
 import com.hz.fine.master.core.model.consult.ConsultAskModel;
+import com.hz.fine.master.core.model.consult.ConsultAskReplyModel;
 import com.hz.fine.master.core.model.consult.ConsultModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
@@ -5557,6 +5558,89 @@ public class HodgepodgeMethod {
     */
     public static ConsultAskModel assembleConsultAskAdd(long did, RequestConsult requestModel){
         ConsultAskModel resBean = BeanUtils.copy(requestModel, ConsultAskModel.class);
+        resBean.setDid(did);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验数据新增追加问答时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkAddAskReplyData(RequestConsult requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00007.geteCode(), ErrorCode.ENUM_ERROR.C00007.geteDesc());
+        }
+
+        // 校验咨询类别ID
+        if (requestModel.consultAskId == null || requestModel.consultAskId <= 0 ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00008.geteCode(), ErrorCode.ENUM_ERROR.C00008.geteDesc());
+        }
+
+        // 校验问答_文字、问答_图片地址的值
+        if (StringUtils.isBlank(requestModel.askReply) && StringUtils.isBlank(requestModel.askReplyAds)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00009.geteCode(), ErrorCode.ENUM_ERROR.C00009.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: check校验数据获取追加问答数据-集合时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkAskReplyDataList(RequestConsult requestModel) throws Exception{
+        long did = 0;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00010.geteCode(), ErrorCode.ENUM_ERROR.C00010.geteDesc());
+        }
+
+        // 校验咨询类别ID
+        if (requestModel.consultAskId == null || requestModel.consultAskId <= 0 ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.C00011.geteCode(), ErrorCode.ENUM_ERROR.C00011.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装在获取追加问答数据-集合的查询条件
+     * @param did
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/7/8 20:29
+     */
+    public static ConsultAskReplyModel assembleConsultAskReplyModel(long did, RequestConsult requestModel){
+        ConsultAskReplyModel resBean = BeanUtils.copy(requestModel, ConsultAskReplyModel.class);
         resBean.setDid(did);
         return resBean;
     }

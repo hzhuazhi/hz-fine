@@ -19,6 +19,11 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
     private Long id;
 
     /**
+     * 用户ID
+     */
+    private Long did;
+
+    /**
      * 在线客服、咨询的发问表的主键ID：对应表tb_fn_consult_ask的主键ID
      */
     private Long consultAskId;
@@ -130,5 +135,13 @@ public class ConsultAskReplyModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public Long getDid() {
+        return did;
+    }
+
+    public void setDid(Long did) {
+        this.did = did;
     }
 }
