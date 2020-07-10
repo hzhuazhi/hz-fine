@@ -116,6 +116,26 @@ public class DidModel extends BasePage implements Serializable {
     private String totalTeamConsumeProfit;
 
     /**
+     * 触发奖励的等级：团队消耗总和除以10万得到的整数就是等级
+     */
+    private Integer triggerQuotaGrade;
+
+    /**
+     * 触发额度奖励总收益
+     */
+    private String totalTriggerQuotaProfit;
+
+    /**
+     * 团队总额等级：总和到达多少级
+     */
+    private Integer teamConsumeCumulativeGrade;
+
+    /**
+     * 团队总额等级奖励总收益
+     */
+    private String totalTeamConsumeCumulativeProfit;
+
+    /**
      * 直推总人数
      */
     private Integer totalDirectNum;
@@ -511,5 +531,37 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setTotalTeamConsumeProfit(String totalTeamConsumeProfit) {
         this.totalTeamConsumeProfit = totalTeamConsumeProfit;
+    }
+
+    public Integer getTriggerQuotaGrade() {
+        return triggerQuotaGrade;
+    }
+
+    public void setTriggerQuotaGrade(Integer triggerQuotaGrade) {
+        this.triggerQuotaGrade = triggerQuotaGrade;
+    }
+
+    public String getTotalTriggerQuotaProfit() {
+        return totalTriggerQuotaProfit;
+    }
+
+    public void setTotalTriggerQuotaProfit(String totalTriggerQuotaProfit) {
+        this.totalTriggerQuotaProfit = totalTriggerQuotaProfit;
+    }
+
+    public Integer getTeamConsumeCumulativeGrade() {
+        return teamConsumeCumulativeGrade;
+    }
+
+    public void setTeamConsumeCumulativeGrade(Integer teamConsumeCumulativeGrade) {
+        this.teamConsumeCumulativeGrade = teamConsumeCumulativeGrade;
+    }
+
+    public String getTotalTeamConsumeCumulativeProfit() {
+        return totalTeamConsumeCumulativeProfit;
+    }
+
+    public void setTotalTeamConsumeCumulativeProfit(String totalTeamConsumeCumulativeProfit) {
+        this.totalTeamConsumeCumulativeProfit = totalTeamConsumeCumulativeProfit;
     }
 }

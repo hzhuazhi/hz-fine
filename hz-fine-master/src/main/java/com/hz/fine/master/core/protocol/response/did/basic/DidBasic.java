@@ -49,6 +49,16 @@ public class DidBasic implements Serializable {
     public String todayTeamConsume;
 
     /**
+     * 触发额度奖励总收益
+     */
+    public String totalTriggerQuotaProfit;
+
+    /**
+     * 团队总额等级奖励总收益
+     */
+    public String totalTeamConsumeCumulativeProfit;
+
+    /**
      * 账号昵称
      */
     public String nickname;
@@ -237,5 +247,21 @@ public class DidBasic implements Serializable {
 
     public void setTodayTeamConsume(String todayTeamConsume) {
         this.todayTeamConsume = todayTeamConsume;
+    }
+
+    public String getTotalTriggerQuotaProfit() {
+        return totalTriggerQuotaProfit;
+    }
+
+    public void setTotalTriggerQuotaProfit(String totalTriggerQuotaProfit) {
+        this.totalTriggerQuotaProfit = totalTriggerQuotaProfit;
+    }
+
+    public String getTotalTeamConsumeCumulativeProfit() {
+        return totalTeamConsumeCumulativeProfit;
+    }
+
+    public void setTotalTeamConsumeCumulativeProfit(String totalTeamConsumeCumulativeProfit) {
+        this.totalTeamConsumeCumulativeProfit = totalTeamConsumeCumulativeProfit;
     }
 }

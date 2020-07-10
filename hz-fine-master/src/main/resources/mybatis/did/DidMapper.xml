@@ -9,6 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
         a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_consume_profit,a.total_team_consume_profit,
+        a.trigger_quota_grade,a.total_trigger_quota_profit,a.team_consume_cumulative_grade,a.total_team_consume_cumulative_profit,
         a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
         a.is_notify,a.notify_url,a.is_team,a.own_id,a.use_status,
         a.create_time,a.update_time,a.yn

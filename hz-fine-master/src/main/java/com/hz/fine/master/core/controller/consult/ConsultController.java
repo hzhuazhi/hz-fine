@@ -475,6 +475,11 @@ public class ConsultController {
             // check校验数据
             did = HodgepodgeMethod.checkAddAskReplyData(requestModel);
 
+            // 修改提问的状态信息
+            ConsultAskModel consultAskUpdate = HodgepodgeMethod.assembleConsultAskByIdUpdate(requestModel.consultAskId);
+            ComponentUtil.consultAskService.update(consultAskUpdate);
+
+            // 正式添加追问数据
             ConsultAskReplyModel consultAskReplyAdd = BeanUtils.copy(requestModel, ConsultAskReplyModel.class);
             ComponentUtil.consultAskReplyService.add(consultAskReplyAdd);
             // 组装返回客户端的数据

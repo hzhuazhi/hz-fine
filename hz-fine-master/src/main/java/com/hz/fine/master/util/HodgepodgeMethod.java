@@ -2981,6 +2981,13 @@ public class HodgepodgeMethod {
             if (StringUtils.isBlank(didModel.getTotalTeamConsumeProfit())){
                 didBasic.totalTeamConsumeProfit = "0.00";
             }
+
+            if (StringUtils.isBlank(didModel.getTotalTriggerQuotaProfit())){
+                didBasic.totalTriggerQuotaProfit = "0.00";
+            }
+            if (StringUtils.isBlank(didModel.getTotalTeamConsumeCumulativeProfit())){
+                didBasic.totalTeamConsumeCumulativeProfit = "0.00";
+            }
             didBasic.todayProfit = todayProfit;
             didBasic.todayExchange = todayExchange;
 
@@ -5436,6 +5443,19 @@ public class HodgepodgeMethod {
         return resBean;
     }
 
+    /**
+     * @Description: 组装在线客服、咨询的发问的查询条件
+     * @param id - 主键ID
+     * @return
+     * @author yoko
+     * @date 2020/7/8 20:29
+     */
+    public static ConsultAskModel assembleConsultAskByIdUpdate(long id){
+        ConsultAskModel resBean = new ConsultAskModel();
+        resBean.setId(id);
+        resBean.setReplyStatus(1);
+        return resBean;
+    }
 
     /**
      * @Description: 在线客服、咨询的发问的集合数据组装返回客户端的方法
