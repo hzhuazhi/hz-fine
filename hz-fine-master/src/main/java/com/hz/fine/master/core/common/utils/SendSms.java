@@ -30,7 +30,8 @@ public class SendSms {
     */
     public static boolean aliSendSms(String phoneNum, String code){
 //        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI8UsQKfgMqzse", "BSc6JnPo8efgW78MQWzqg1HQ9Dhdhm");
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4FoLtbXepN66yL6kB9ns", "66crjO6kEtjOnw5cAsJKXdxEF824k2");
+//        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4FoLtbXepN66yL6kB9ns", "66crjO6kEtjOnw5cAsJKXdxEF824k2");
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4GBhpufFHev3nK9gCDdp", "zKgpyn1WFeCzCnYpW4sHkxE45WCDyo");
         IAcsClient client = new DefaultAcsClient(profile);
         CommonRequest request = new CommonRequest();
         request.setMethod(MethodType.POST);
@@ -41,8 +42,10 @@ public class SendSms {
         request.putQueryParameter("PhoneNumbers", phoneNum);
 //        request.putQueryParameter("SignName", "趣红人");
 //        request.putQueryParameter("TemplateCode", "SMS_180051427");
-        request.putQueryParameter("SignName", "五百分享缤纷");
-        request.putQueryParameter("TemplateCode", "SMS_182677934");
+//        request.putQueryParameter("SignName", "五百分享缤纷");
+//        request.putQueryParameter("TemplateCode", "SMS_182677934");
+        request.putQueryParameter("SignName", "闪电LET");
+        request.putQueryParameter("TemplateCode", "SMS_195861224");
         request.putQueryParameter("TemplateParam", "{\"code\":"+ code +"}");
         try {
             CommonResponse response = client.getCommonResponse(request);
@@ -70,7 +73,7 @@ public class SendSms {
 
     public static void main(String[] args) {
 //        String phoneNum = "15221696790";
-        String phoneNum = "15221696790";
+        String phoneNum = "15122876720";
         String code = "1298";
         boolean flag = aliSendSms(phoneNum, code);
         System.out.println(flag);
