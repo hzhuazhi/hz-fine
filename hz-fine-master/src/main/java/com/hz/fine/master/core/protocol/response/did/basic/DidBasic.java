@@ -108,6 +108,11 @@ public class DidBasic implements Serializable {
      */
     public String totalTeamConsumeProfit;
 
+    /**
+     * 是否是团队长：1不是团队长，2是团队长
+     */
+    public Integer isTeam;
+
     public DidBasic(){
 
     }
@@ -263,5 +268,13 @@ public class DidBasic implements Serializable {
 
     public void setTotalTeamConsumeCumulativeProfit(String totalTeamConsumeCumulativeProfit) {
         this.totalTeamConsumeCumulativeProfit = totalTeamConsumeCumulativeProfit;
+    }
+
+    public Integer getIsTeam() {
+        return isTeam;
+    }
+
+    public void setIsTeam(Integer isTeam) {
+        this.isTeam = isTeam;
     }
 }
