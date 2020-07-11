@@ -2746,6 +2746,32 @@ public class HodgepodgeMethod {
 
     }
 
+    /**
+     * @Description: check校验数据获取分享状态的开关
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkStrategyShareSwitchTokenData(RequestStrategy requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00021.geteCode(), ErrorCode.ENUM_ERROR.S00021.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
 
     /**
      * @Description: 校验策略类型数据

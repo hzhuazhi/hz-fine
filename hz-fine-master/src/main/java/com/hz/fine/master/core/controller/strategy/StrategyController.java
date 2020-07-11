@@ -718,22 +718,40 @@ public class StrategyController {
             requestModel  = JSON.parseObject(data, RequestStrategy.class);
 
             //#临时数据
-//            if (!StringUtils.isBlank(requestModel.token)){
-//                if (requestModel.token.equals("111111")){
-//                    ComponentUtil.redisService.set(requestModel.token, "1");
-//                }
-//            }
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
+
+            // check校验数据
+            did = HodgepodgeMethod.checkStrategyShareSwitchTokenData(requestModel);
 
 
-
+            int shareSwitch = 0;
             // 查询策略里面的分享状态的开关
             StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.SHARE_SWITCH.getStgType());
             StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
             HodgepodgeMethod.checkStrategyByShareSwitch(strategyModel);
+            if (strategyModel.getStgNumValue() == 2){
+                DidModel didQuery = HodgepodgeMethod.assembleDidQuery(did);
+                DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
+                if (didModel.getIsTeam() == 2){
+                    shareSwitch = 1;
+                }else {
+                    shareSwitch = 2;
+                }
+            }else if (strategyModel.getStgNumValue() == 3){
+                shareSwitch = 2;
+            }else{
+                shareSwitch = strategyModel.getStgNumValue();
+            }
+
+
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleShareSwitchResult(stime, sign, strategyModel.getStgNumValue());
+            String strData = HodgepodgeMethod.assembleShareSwitchResult(stime, sign, shareSwitch);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

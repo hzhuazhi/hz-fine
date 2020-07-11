@@ -1453,7 +1453,13 @@ public class StringUtil {
 		BigDecimal resDoble;
 		BigDecimal xx = new BigDecimal(x);
 		BigDecimal yy = new BigDecimal(y);
-		resDoble = xx.divide(yy);
+		try{
+//			resDoble = xx.divide(yy,4, BigDecimal.ROUND_HALF_DOWN);
+			resDoble = xx.divide(yy);
+		}catch (ArithmeticException e){
+			resDoble = xx.divide(yy,4, BigDecimal.ROUND_HALF_DOWN);
+		}
+
 		DecimalFormat sb = new DecimalFormat("###.##");
 		String str = sb.format(resDoble);
 		return str;
@@ -1594,6 +1600,8 @@ public class StringUtil {
 
 		String strAdd = getBigDecimalAdd("5000.000", "1");// 相加
 		System.out.println("strAdd:" + strAdd);
+		String sb2 = getBigDecimalDivide("10002.00", "89900.00");
+		System.out.println("sb2:" + sb2);
 	}
 
 }
