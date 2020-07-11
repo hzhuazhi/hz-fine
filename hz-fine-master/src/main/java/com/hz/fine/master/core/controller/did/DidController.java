@@ -476,9 +476,9 @@ public class DidController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiYWNOdW0iOiJ6aF8xIiwiYmFsYW5jZSI6IjEwMDAiLCJpY29kZSI6IjEiLCJsb2NrTW9uZXkiOiIiLCJuaWNrbmFtZSI6IuaYteensF8xIiwidG9kYXlFeGNoYW5nZSI6IjAuMDAiLCJ0b2RheVByb2ZpdCI6IjAuMDAiLCJ0b3RhbERpcmVjdE51bSI6MTAwLCJ0b3RhbERpcmVjdFByb2ZpdCI6IjMwMDAiLCJ0b3RhbEdyYWRlUHJvZml0IjoiMjAwMCIsInRvdGFsTW9uZXkiOiIxMDAwMCIsInRvdGFsUHJvZml0IjoiMTAwMDAiLCJ0b3RhbFJlY2hhcmdlUHJvZml0IjoiMTAwMCJ9LCJzaWduIjoiYTBmYzk3NjM4ZGZjNGMwMWZhMDJiMjUzYzk2NzlhNmMiLCJzdGltZSI6MTU5MTAwNjMzMjUxNn0="
+     *         "jsonData": "eyJkYXRhTW9kZWwiOnsiYWNOdW0iOiJ6aF8xIiwiYmFsYW5jZSI6IjI1NTQ1LjQ5IiwiaWNvZGUiOiIxIiwiaXNUZWFtIjoyLCJsb2NrTW9uZXkiOiIxMTAiLCJuaWNrbmFtZSI6IuaYteensF8xIiwidG9kYXlFeGNoYW5nZSI6IjAuMDAiLCJ0b2RheVByb2ZpdCI6IjkwMTIuOTkiLCJ0b2RheVRlYW1Db25zdW1lIjoiMC4wMCIsInRvZGF5VGVhbURpcmVjdENvbnN1bWVQcm9maXQiOiIxMi45OSIsInRvdGFsQ29uc3VtZVByb2ZpdCI6IjEwMCIsInRvdGFsRGlyZWN0TnVtIjoxMDAsInRvdGFsRGlyZWN0UHJvZml0IjoiMzAzMiIsInRvdGFsR3JhZGVQcm9maXQiOiIyMDIwIiwidG90YWxNb25leSI6IjE2MDAuMDMiLCJ0b3RhbFByb2ZpdCI6IjI2ODY1LjAxIiwidG90YWxSZWNoYXJnZVByb2ZpdCI6IjEwMTAiLCJ0b3RhbFRlYW1Db25zdW1lQ3VtdWxhdGl2ZVByb2ZpdCI6IjM1MDAiLCJ0b3RhbFRlYW1Db25zdW1lUHJvZml0IjoiMTA1MC4wMSIsInRvdGFsVGVhbURpcmVjdENvbnN1bWVQcm9maXQiOiIxMi45OSIsInRvdGFsVGVhbVByb2ZpdCI6IjUwIiwidG90YWxUcmlnZ2VyUXVvdGFQcm9maXQiOiIxMDgwMCJ9LCJzaWduIjoiZTE3ZGVmZTEwMTI0MGNhODQ5MWNmMTAyMDljM2RiYmQiLCJzdGltZSI6MTU5NDQ4MTQxNzQzNn0="
      *     },
-     *     "sgid": "202006011812120000001",
+     *     "sgid": "202007112329500000001",
      *     "cgid": ""
      * }
      */
@@ -523,28 +523,31 @@ public class DidController {
             OrderModel orderQuery =  HodgepodgeMethod.assembleOrderByTodayExchange(did);
             String todayExchange = ComponentUtil.orderService.getProfitByCurday(orderQuery);
 
-            // 获取团队长今日旗下总消耗成功的金额
-            String todayTeamConsume = "";
-            if (didData.getIsTeam() == 2){
-                // 此用户属于团队长
-                // 循环查询这些 用户的直推用户
-                DidLevelModel didLevelQuery = HodgepodgeMethod.assembleDidLevelQuery(didData.getId(), ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
-                List<DidLevelModel> didLevelList = ComponentUtil.didLevelService.findByCondition(didLevelQuery);
-                if (didLevelList != null && didLevelList.size() > 0){
-                    // 直推的用户ID集合
-                    List<Long> didList = didLevelList.stream().map(DidLevelModel::getDid).collect(Collectors.toList());
-
-                    // 获取直推用户昨天派单消耗成功的总金额
-                    OrderModel orderBySucQuery = HodgepodgeMethod.assembleOrderQuery(didList, DateUtil.getDayNumber(new Date()));
-                    todayTeamConsume = ComponentUtil.orderService.directSumMoney(orderQuery);
-                }
-
-            }
+            // 获取今日团队长直推的用户消耗成功奖励
+            DidRewardModel didRewardBytodayTeamDirectConsumeProfitQuery = HodgepodgeMethod.assembleDidRewardByTodayTeamDirectConsumeProfit(did, 10);
+            String todayTeamDirectConsumeProfit = ComponentUtil.didRewardService.getProfitByRewardType(didRewardBytodayTeamDirectConsumeProfitQuery);
+//            // 获取团队长今日旗下总消耗成功的金额
+//            String todayTeamConsume = "";
+//            if (didData.getIsTeam() == 2){
+//                // 此用户属于团队长
+//                // 循环查询这些 用户的直推用户
+//                DidLevelModel didLevelQuery = HodgepodgeMethod.assembleDidLevelQuery(didData.getId(), ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+//                List<DidLevelModel> didLevelList = ComponentUtil.didLevelService.findByCondition(didLevelQuery);
+//                if (didLevelList != null && didLevelList.size() > 0){
+//                    // 直推的用户ID集合
+//                    List<Long> didList = didLevelList.stream().map(DidLevelModel::getDid).collect(Collectors.toList());
+//
+//                    // 获取直推用户昨天派单消耗成功的总金额
+//                    OrderModel orderBySucQuery = HodgepodgeMethod.assembleOrderQuery(didList, DateUtil.getDayNumber(new Date()));
+//                    todayTeamConsume = ComponentUtil.orderService.directSumMoney(orderQuery);
+//                }
+//
+//            }
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleDidBasicDataResult(stime, sign, didData, todayProfit, todayExchange, todayTeamConsume);
+            String strData = HodgepodgeMethod.assembleDidBasicDataResult(stime, sign, didData, todayProfit, todayExchange, null, todayTeamDirectConsumeProfit);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

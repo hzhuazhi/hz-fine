@@ -136,6 +136,11 @@ public class DidModel extends BasePage implements Serializable {
     private String totalTeamConsumeCumulativeProfit;
 
     /**
+     * 团队长直推的用户消耗成功奖励
+     */
+    private String totalTeamDirectConsumeProfit;
+
+    /**
      * 直推总人数
      */
     private Integer totalDirectNum;
@@ -563,5 +568,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setTotalTeamConsumeCumulativeProfit(String totalTeamConsumeCumulativeProfit) {
         this.totalTeamConsumeCumulativeProfit = totalTeamConsumeCumulativeProfit;
+    }
+
+    public String getTotalTeamDirectConsumeProfit() {
+        return totalTeamDirectConsumeProfit;
+    }
+
+    public void setTotalTeamDirectConsumeProfit(String totalTeamDirectConsumeProfit) {
+        this.totalTeamDirectConsumeProfit = totalTeamDirectConsumeProfit;
     }
 }

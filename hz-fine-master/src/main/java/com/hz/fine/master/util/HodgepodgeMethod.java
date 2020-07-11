@@ -2932,6 +2932,22 @@ public class HodgepodgeMethod {
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         return resBean;
     }
+
+
+    /**
+     * @Description: 组装查询团队长直推的用户消耗成功奖励的查询条件
+     * @param did - 用户ID
+     * @return
+     * @author yoko
+     * @date 2020/5/29 11:44
+     */
+    public static DidRewardModel assembleDidRewardByTodayTeamDirectConsumeProfit(long did, int rewardType){
+        DidRewardModel resBean = new DidRewardModel();
+        resBean.setRewardType(rewardType);
+        resBean.setDid(did);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        return resBean;
+    }
     
     /**
      * @Description: 组装查询今天日兑换：今日派发订单成功的查询条件
@@ -2956,11 +2972,12 @@ public class HodgepodgeMethod {
      * @param didModel - 用户基本信息
      * @param todayProfit - 今日收益
      * @param todayExchange - 今日兑换
+     * @param todayTeamDirectConsumeProfit - 今日团队长直推的用户消耗成功奖励
      * @return java.lang.String
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange, String todayTeamConsume){
+    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange, String todayTeamConsume, String todayTeamDirectConsumeProfit){
         ResponseDid dataModel = new ResponseDid();
         if (didModel != null && didModel.getId() > 0){
 
@@ -3014,6 +3031,17 @@ public class HodgepodgeMethod {
             if (StringUtils.isBlank(didModel.getTotalTeamConsumeCumulativeProfit())){
                 didBasic.totalTeamConsumeCumulativeProfit = "0.00";
             }
+            if (StringUtils.isBlank(didModel.getTotalTeamDirectConsumeProfit())){
+                didBasic.totalTeamDirectConsumeProfit = "0.00";
+            }
+            if (StringUtils.isBlank(todayTeamDirectConsumeProfit)){
+                didBasic.todayTeamDirectConsumeProfit = "0.00";
+            }else{
+                didBasic.todayTeamDirectConsumeProfit = todayTeamDirectConsumeProfit;
+            }
+
+
+
             didBasic.todayProfit = todayProfit;
             didBasic.todayExchange = todayExchange;
 

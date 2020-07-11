@@ -109,6 +109,16 @@ public class DidBasic implements Serializable {
     public String totalTeamConsumeProfit;
 
     /**
+     * 团队长直推的用户消耗成功奖励
+     */
+    public String totalTeamDirectConsumeProfit;
+
+    /**
+     * 今日团队长直推的用户消耗成功奖励
+     */
+    public String todayTeamDirectConsumeProfit;
+
+    /**
      * 是否是团队长：1不是团队长，2是团队长
      */
     public Integer isTeam;
@@ -276,5 +286,21 @@ public class DidBasic implements Serializable {
 
     public void setIsTeam(Integer isTeam) {
         this.isTeam = isTeam;
+    }
+
+    public String getTotalTeamDirectConsumeProfit() {
+        return totalTeamDirectConsumeProfit;
+    }
+
+    public void setTotalTeamDirectConsumeProfit(String totalTeamDirectConsumeProfit) {
+        this.totalTeamDirectConsumeProfit = totalTeamDirectConsumeProfit;
+    }
+
+    public String getTodayTeamDirectConsumeProfit() {
+        return todayTeamDirectConsumeProfit;
+    }
+
+    public void setTodayTeamDirectConsumeProfit(String todayTeamDirectConsumeProfit) {
+        this.todayTeamDirectConsumeProfit = todayTeamDirectConsumeProfit;
     }
 }
