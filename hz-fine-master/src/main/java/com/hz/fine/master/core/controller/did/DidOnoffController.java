@@ -134,7 +134,7 @@ public class DidOnoffController {
                     DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
                     DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
                     HodgepodgeMethod.checkDidData(didModel);
-                    HodgepodgeMethod.checkDidbalance(didModel.getBalance());
+                    HodgepodgeMethod.checkDidbalance(didModel.getBalance(), lockKey_did);
 
                     // 判断是否属于监听期间
 

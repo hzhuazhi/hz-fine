@@ -4279,11 +4279,15 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2020/6/30 20:38
     */
-    public static void checkDidbalance(String balance) throws Exception{
+    public static void checkDidbalance(String balance, String lockKey_did) throws Exception{
         if (StringUtils.isBlank(balance)){
+            // 解锁
+            ComponentUtil.redisIdService.delLock(lockKey_did);
             throw new ServiceException(ErrorCode.ENUM_ERROR.OF00004.geteCode(), ErrorCode.ENUM_ERROR.OF00004.geteDesc());
         }
         if (Double.parseDouble(balance) <= 0){
+            // 解锁
+            ComponentUtil.redisIdService.delLock(lockKey_did);
             throw new ServiceException(ErrorCode.ENUM_ERROR.OF00004.geteCode(), ErrorCode.ENUM_ERROR.OF00004.geteDesc());
         }
     }
