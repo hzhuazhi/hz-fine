@@ -3093,6 +3093,10 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderListByDid(RequestOrder requestModel, long did){
         OrderModel resBean = BeanUtils.copy(requestModel, OrderModel.class);
         resBean.setDid(did);
+        if (resBean.getOrderStatus() == 4){
+            resBean.setOrderStatus(null);
+            resBean.setOrderStatusStr("1");
+        }
         return resBean;
     }
 
@@ -4467,9 +4471,12 @@ public class HodgepodgeMethod {
         resBean.setDid(did);
         resBean.setOrderNo(requestModel.orderNo);
         resBean.setDidStatus(requestModel.status);
-        if (requestModel.status >= 3){
+        if (requestModel.status == 4){
             resBean.setOrderStatus(4);
-            resBean.setRemark("手动或者系统默认点击成功");
+            resBean.setRemark("手动点击成功");
+        }else if (requestModel.status == 3){
+            resBean.setOrderStatus(3);
+            resBean.setRemark("系统默认点击成功");
         }
         return resBean;
     }

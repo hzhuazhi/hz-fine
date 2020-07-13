@@ -46,6 +46,9 @@
             <if test="orderStatus != null and orderStatus != '' " >
                 and a.order_status = #{orderStatus}
             </if>
+            <if test="orderStatusStr != null and orderStatusStr != '' " >
+                and a.order_status >= 3
+            </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
             </if>

@@ -188,6 +188,11 @@ public class OrderModel extends BasePage implements Serializable {
      */
     private List<Long> didList;
 
+    /**
+     * 订单状态
+     */
+    private String orderStatusStr;
+
 
     public Long getId() {
         return id;
@@ -476,5 +481,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setDidList(List<Long> didList) {
         this.didList = didList;
+    }
+
+    public String getOrderStatusStr() {
+        return orderStatusStr;
+    }
+
+    public void setOrderStatusStr(String orderStatusStr) {
+        this.orderStatusStr = orderStatusStr;
     }
 }
