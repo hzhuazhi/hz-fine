@@ -931,11 +931,19 @@ public class OrderController {
             // 解析奖励规则的值
             List<StrategyData> consumeMoneyList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
 
+            // 查询策略里面的派单的超时时间
+            StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.DELIVERY_ORDER_INVALID_TIME.getStgType());
+            StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
+            // 查询策略里面的用户无操作状态锁定金额时间
+            StrategyModel strategyLockTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.LOCK_MONEY_TIME.getStgType());
+            StrategyModel strategyLockTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyLockTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
             // 组装派发订单的数据
-            OrderModel orderModel = HodgepodgeMethod.assembleOrderByZfbAdd(did, sgid, requestModel.money, requestModel.notifyUrl, requestModel.outTradeNo, didModel, requestModel.payType, consumeMoneyList);
+            OrderModel orderModel = HodgepodgeMethod.assembleOrderByZfbAdd(did, sgid, requestModel.money, requestModel.notifyUrl, requestModel.outTradeNo, didModel, requestModel.payType, consumeMoneyList, strategyInvalidTimeModel.getStgNumValue());
 
             // 组装用户扣除余额流水的数据
-            DidBalanceDeductModel didBalanceDeductModel = HodgepodgeMethod.assembleDidBalanceDeductAdd(did, sgid, requestModel.money);
+            DidBalanceDeductModel didBalanceDeductModel = HodgepodgeMethod.assembleDidBalanceDeductAdd(did, sgid, requestModel.money, strategyLockTimeModel.getStgNumValue());
 
             // 组装扣除用户余额
             DidModel updateBalance = HodgepodgeMethod.assembleUpdateDidBalance(did, requestModel.money);

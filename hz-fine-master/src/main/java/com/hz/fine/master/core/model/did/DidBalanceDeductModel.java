@@ -44,6 +44,11 @@ public class DidBalanceDeductModel extends BasePage implements Serializable {
     private String delayTime;
 
     /**
+     * 锁定时间
+     */
+    private String lockTime;
+
+    /**
      * 备注
      */
     private String remark;
@@ -225,5 +230,13 @@ public class DidBalanceDeductModel extends BasePage implements Serializable {
 
     public void setDelayTime(String delayTime) {
         this.delayTime = delayTime;
+    }
+
+    public String getLockTime() {
+        return lockTime;
+    }
+
+    public void setLockTime(String lockTime) {
+        this.lockTime = lockTime;
     }
 }

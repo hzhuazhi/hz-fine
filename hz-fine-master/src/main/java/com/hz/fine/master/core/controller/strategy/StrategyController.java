@@ -842,5 +842,73 @@ public class StrategyController {
     }
 
 
+    /**
+     * @Description: 策略：获取备用域名地址-集合
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/stg/spareAdsList
+     * 请求的属性类:RequestStrategy
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJtb25leUdyYWRlTGlzdCI6W3sibW9uZXlHcmFkZSI6IjEwMDAuMDAiLCJyZXdhcmRSYXRpbyI6IjAuMDEifSx7Im1vbmV5R3JhZGUiOiIyMDAwLjAwIiwicmV3YXJkUmF0aW8iOiIwLjAyIn0seyJtb25leUdyYWRlIjoiMzAwMC4wMCIsInJld2FyZFJhdGlvIjoiMC4wMyJ9LHsibW9uZXlHcmFkZSI6IjQwMDAuMDAiLCJyZXdhcmRSYXRpbyI6IjAuMDQifSx7Im1vbmV5R3JhZGUiOiI1MDAwLjAwIiwicmV3YXJkUmF0aW8iOiIwLjA1In1dLCJyb3dDb3VudCI6NSwic2lnbiI6ImYwZGQzZjBlMDlhNjllNjQ1MmIzZjZmY2QwMzY4MWI1Iiwic3RpbWUiOjE1OTA1NzkzNjQxOTd9"
+     *     },
+     *     "sgid": "202005271935550000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/spareAdsList", method = {RequestMethod.POST})
+    public JsonResult<Object> spareAdsList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestStrategy requestModel = new RequestStrategy();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestStrategy.class);
+
+            // 查询策略里面的备用域名地址列表
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.SPARE_ADDRESS_LIST.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyBySpareAddress(strategyModel);
+
+            // 解析金额列表的值
+            List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+//            段峰
+            String strData = HodgepodgeMethod.assembleStrategyMoneyGradeListResult(stime, sign, strategyDataList, strategyDataList.size());
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this StrategyController.spareAdsList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this StrategyController.spareAdsList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
 
 }

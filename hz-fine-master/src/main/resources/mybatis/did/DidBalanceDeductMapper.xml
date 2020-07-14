@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.order_no,a.money,a.order_status,a.delay_time,a.remark,
+        a.id,a.did,a.order_no,a.money,a.order_status,a.delay_time,a.lock_time,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -132,6 +132,9 @@
             <if test="delayTime != null and delayTime != '' " >
                 delay_time,
             </if>
+            <if test="lockTime != null and lockTime != '' " >
+                lock_time,
+            </if>
             <if test="remark != null and remark != '' " >
                 remark,
             </if>
@@ -162,6 +165,9 @@
             </if>
             <if test="delayTime != null and delayTime != '' " >
                 <![CDATA[  #{delayTime}, ]]>
+            </if>
+            <if test="lockTime != null and lockTime != '' " >
+                <![CDATA[  #{lockTime}, ]]>
             </if>
             <if test="remark != null and remark != '' " >
                 <![CDATA[  #{remark}, ]]>
@@ -197,6 +203,9 @@
             </if>
             <if test="delayTime != null and delayTime != '' " >
                 a.delay_time = #{delayTime},
+            </if>
+            <if test="lockTime != null and lockTime != '' " >
+                a.lock_time = #{lockTime},
             </if>
             <if test="remark != null and remark != '' " >
                 a.remark = #{remark},

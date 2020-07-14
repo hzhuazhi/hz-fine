@@ -2619,6 +2619,18 @@ public class HodgepodgeMethod {
         }
     }
 
+    /**
+     * @Description: 校验策略类型数据
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyBySpareAddress(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00022.geteCode(), ErrorCode.ENUM_ERROR.S00022.geteDesc());
+        }
+    }
+
 
     /**
      * @Description: 策略：总金额充值档次奖励列表数据组装返回客户端的方法-集合
@@ -4585,7 +4597,7 @@ public class HodgepodgeMethod {
      * @date 2020/6/2 14:53
      */
     public static OrderModel assembleOrderByZfbAdd(long did, String orderNo, String orderMoney, String notifyUlr, String outTradeNo,
-                                                DidModel didModel, int collectionType, List<StrategyData> consumeMoneyList){
+                                                DidModel didModel, int collectionType, List<StrategyData> consumeMoneyList, int invalidTimeNum){
         OrderModel resBean = new OrderModel();
         resBean.setDid(did);
         resBean.setOrderNo(orderNo);
@@ -4599,7 +4611,7 @@ public class HodgepodgeMethod {
             resBean.setNotifyUrl(notifyUlr);
         }
         // 订单失效时间
-        String invalidTime = DateUtil.addDateMinute(5);// 目前默认5分钟：后续可以从策略取数据
+        String invalidTime = DateUtil.addDateMinute(invalidTimeNum);// 目前默认5分钟：后续可以从策略取数据
         resBean.setInvalidTime(invalidTime);
         resBean.setUserId(didModel.getUserId());
         resBean.setZfbAcNum(didModel.getZfbAcNum());
@@ -4617,17 +4629,19 @@ public class HodgepodgeMethod {
      * @param did - 用户ID
      * @param orderNo - 订单号
      * @param money - 订单金额
+     * @param lockTime - 锁定时间
      * @return com.hz.fine.master.core.model.did.DidBalanceDeductModel
      * @author yoko
      * @date 2020/7/2 14:52
      */
-    public static DidBalanceDeductModel assembleDidBalanceDeductAdd(long did, String orderNo, String money){
+    public static DidBalanceDeductModel assembleDidBalanceDeductAdd(long did, String orderNo, String money, int lockTime){
         DidBalanceDeductModel resBean = new DidBalanceDeductModel();
         resBean.setDid(did);
         resBean.setOrderNo(orderNo);
         resBean.setMoney(money);
         String delayTime = DateUtil.addDateMinute(30);
         resBean.setDelayTime(delayTime);
+        resBean.setLockTime(DateUtil.addDateMinute(lockTime));
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
