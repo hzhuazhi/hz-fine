@@ -41,7 +41,7 @@
     <select id="findAll" resultMap="dataMap">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_base_gateway a
+        from tb_fn_base_gateway a
         <!-- <include refid="Example_Where_Clause"/>-->
     </select>
 
@@ -50,7 +50,7 @@
     <select id="findByCondition" parameterType="Map" resultMap="dataMap">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_base_gateway a
+        from tb_fn_base_gateway a
         <include refid="Example_Where_Clause"/>
     </select>
 
@@ -59,7 +59,7 @@
             resultMap="dataMap">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_base_gateway a
+        from tb_fn_base_gateway a
         <include refid="Example_Where_Clause"/>
         limit 1
     </select>
@@ -69,7 +69,7 @@
             resultMap="dataMap">
         select
         <include refid="Base_Column_List" />
-        from tb_ga_base_gateway a
+        from tb_fn_base_gateway a
         where 1=1
         and a.id = #{id}
         and a.yn = 0
