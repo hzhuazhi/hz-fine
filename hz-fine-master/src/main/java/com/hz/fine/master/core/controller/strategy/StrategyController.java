@@ -859,9 +859,9 @@ public class StrategyController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJtb25leUdyYWRlTGlzdCI6W3sibW9uZXlHcmFkZSI6IjEwMDAuMDAiLCJyZXdhcmRSYXRpbyI6IjAuMDEifSx7Im1vbmV5R3JhZGUiOiIyMDAwLjAwIiwicmV3YXJkUmF0aW8iOiIwLjAyIn0seyJtb25leUdyYWRlIjoiMzAwMC4wMCIsInJld2FyZFJhdGlvIjoiMC4wMyJ9LHsibW9uZXlHcmFkZSI6IjQwMDAuMDAiLCJyZXdhcmRSYXRpbyI6IjAuMDQifSx7Im1vbmV5R3JhZGUiOiI1MDAwLjAwIiwicmV3YXJkUmF0aW8iOiIwLjA1In1dLCJyb3dDb3VudCI6NSwic2lnbiI6ImYwZGQzZjBlMDlhNjllNjQ1MmIzZjZmY2QwMzY4MWI1Iiwic3RpbWUiOjE1OTA1NzkzNjQxOTd9"
+     *         "jsonData": "eyJyb3dDb3VudCI6Mywic2lnbiI6ImRkNWFkY2I4MjQ5ZTljYzQ3YzhkOTYwMTFjMzNjYmIyIiwic3BhcmVMaXN0IjpbeyJzcGFyZUFkcyI6Imh0dHA6Ly80Ny4xMTYuOTguMTYyOjgwODYiLCJzcGFyZUludGVyZmFjZSI6Imh0dHA6Ly80Ny4xMTYuOTguMTYyOjgwODYvZmluZS9zdGcvY2hlY2tJbnRlcmZhY2UifSx7InNwYXJlQWRzIjoiaHR0cDovLzEyMS4xOTYuMTcuMjAxOjgwODYiLCJzcGFyZUludGVyZmFjZSI6Imh0dHA6Ly8xMjEuMTk2LjE3LjIwMTo4MDg2L2ZpbmUvc3RnL2NoZWNrSW50ZXJmYWNlIn0seyJzcGFyZUFkcyI6Imh0dHA6Ly93d3cudGFvYmFvLmNvbSIsInNwYXJlSW50ZXJmYWNlIjoiaHR0cDovL3d3dy5qZC5jb20ifV0sInN0aW1lIjoxNTk0NzI2MDU3MzcxfQ=="
      *     },
-     *     "sgid": "202005271935550000001",
+     *     "sgid": "202007141927360000001",
      *     "cgid": ""
      * }
      */
@@ -876,8 +876,8 @@ public class StrategyController {
         RequestStrategy requestModel = new RequestStrategy();
         try{
             // 解密
-            data = StringUtil.decoderBase64(requestData.jsonData);
-            requestModel  = JSON.parseObject(data, RequestStrategy.class);
+//            data = StringUtil.decoderBase64(requestData.jsonData);
+//            requestModel  = JSON.parseObject(data, RequestStrategy.class);
 
             // 查询策略里面的备用域名地址列表
             StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.SPARE_ADDRESS_LIST.getStgType());
@@ -889,8 +889,7 @@ public class StrategyController {
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-//            段峰
-            String strData = HodgepodgeMethod.assembleStrategyMoneyGradeListResult(stime, sign, strategyDataList, strategyDataList.size());
+            String strData = HodgepodgeMethod.assembleStrategySpareAdsListResult(stime, sign, strategyDataList, strategyDataList.size());
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
@@ -908,6 +907,102 @@ public class StrategyController {
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
     }
+
+
+    /**
+     * @Description: 校验备用域名地址是否正常
+     * <p>
+     *     返回小写的ok则表示通过，表示此域名可以使用
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/stg/checkInterface
+     */
+    @RequestMapping(value = "/checkInterface", method = {RequestMethod.GET})
+    public void checkInterface(HttpServletRequest request, HttpServletResponse response){
+        try {
+            PrintWriter out = response.getWriter();
+            out.print("ok");
+            out.flush();
+            out.close();
+        }catch (Exception e){
+            log.error(String.format("this StrategyController.checkInterface() is error!"));
+            e.printStackTrace();
+        }
+    }
+
+
+
+    /**
+     * @Description: 策略：获取手机上报手机短信接口
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/stg/getReportPhone
+     * 请求的属性类:RequestStrategy
+     * 必填字段:{"dataId":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJyb3dDb3VudCI6Mywic2lnbiI6ImRkNWFkY2I4MjQ5ZTljYzQ3YzhkOTYwMTFjMzNjYmIyIiwic3BhcmVMaXN0IjpbeyJzcGFyZUFkcyI6Imh0dHA6Ly80Ny4xMTYuOTguMTYyOjgwODYiLCJzcGFyZUludGVyZmFjZSI6Imh0dHA6Ly80Ny4xMTYuOTguMTYyOjgwODYvZmluZS9zdGcvY2hlY2tJbnRlcmZhY2UifSx7InNwYXJlQWRzIjoiaHR0cDovLzEyMS4xOTYuMTcuMjAxOjgwODYiLCJzcGFyZUludGVyZmFjZSI6Imh0dHA6Ly8xMjEuMTk2LjE3LjIwMTo4MDg2L2ZpbmUvc3RnL2NoZWNrSW50ZXJmYWNlIn0seyJzcGFyZUFkcyI6Imh0dHA6Ly93d3cudGFvYmFvLmNvbSIsInNwYXJlSW50ZXJmYWNlIjoiaHR0cDovL3d3dy5qZC5jb20ifV0sInN0aW1lIjoxNTk0NzI2MDU3MzcxfQ=="
+     *     },
+     *     "sgid": "202007141927360000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getReportPhone", method = {RequestMethod.POST})
+    public JsonResult<Object> getReportPhone(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestStrategy requestModel = new RequestStrategy();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestStrategy.class);
+            // 段峰
+            // 查询策略里面的备用域名地址列表
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.REPORT_PHONE.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyBySpareAddress(strategyModel);
+
+            // 解析金额列表的值
+            List<StrategyData> strategyDataList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleStrategySpareAdsListResult(stime, sign, strategyDataList, strategyDataList.size());
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this StrategyController.getReportPhone() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this StrategyController.getReportPhone() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
 
 
 

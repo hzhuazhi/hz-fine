@@ -78,6 +78,7 @@ import com.hz.fine.master.core.protocol.response.sell.Sell;
 import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
+import com.hz.fine.master.core.protocol.response.strategy.money.StrategySpare;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyTeamConsumeReward;
 import com.hz.fine.master.core.protocol.response.strategy.qiniu.QiNiu;
 import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
@@ -5762,6 +5763,37 @@ public class HodgepodgeMethod {
         if (consultAskReplyList != null && consultAskReplyList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
             List<ConsultAskReply> dataList = BeanUtils.copyList(consultAskReplyList, ConsultAskReply.class);
             dataModel.askReplyList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
+    /**
+     * @Description: 策略：获取备用域名地址数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param strategyDataList - 获取备用域名地址
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleStrategySpareAdsListResult(long stime, String sign,  List<StrategyData> strategyDataList, Integer rowCount){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        if (strategyDataList != null && strategyDataList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<StrategySpare> spareList = new ArrayList<>();
+            for (StrategyData strategyData : strategyDataList){
+                StrategySpare strategySpare = new StrategySpare();
+                strategySpare.spareAds = strategyData.getStgValue();
+                strategySpare.spareInterface = strategyData.getStgValueOne();
+                spareList.add(strategySpare);
+            }
+            dataModel.spareList = spareList;
         }
         if (rowCount != null){
             dataModel.rowCount = rowCount;

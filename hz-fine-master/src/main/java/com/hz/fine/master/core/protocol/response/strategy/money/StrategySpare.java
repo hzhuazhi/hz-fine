@@ -11,12 +11,33 @@ import java.io.Serializable;
 public class StrategySpare implements Serializable {
     private static final long   serialVersionUID = 1233023331070L;
 
-    private String spareAds;
+    /**
+     * 域名加端口号
+     */
+    public String spareAds;
 
-    private String spareInterface;
+    /**
+     * check校验接口
+     */
+    public String spareInterface;
 
     public StrategySpare(){
 
     }
 
+    public String getSpareAds() {
+        return spareAds;
+    }
+
+    public void setSpareAds(String spareAds) {
+        this.spareAds = spareAds;
+    }
+
+    public String getSpareInterface() {
+        return spareInterface;
+    }
+
+    public void setSpareInterface(String spareInterface) {
+        this.spareInterface = spareInterface;
+    }
 }

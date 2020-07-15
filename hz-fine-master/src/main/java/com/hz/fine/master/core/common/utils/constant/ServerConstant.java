@@ -110,6 +110,7 @@ public class ServerConstant {
         SPARE_ADDRESS_LIST(25,""),
         DELIVERY_ORDER_INVALID_TIME(26,""),
         LOCK_MONEY_TIME(27,""),
+        REPORT_PHONE(28,""),
 
 
         ;
