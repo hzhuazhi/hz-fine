@@ -1243,6 +1243,23 @@ public class DateUtil {
 		return calo.getTime();
 	}
 
+
+	/**
+	 * 得到将date增加指定天数后的date
+	 *
+	 * @param date
+	 *            日期
+	 * @param addDay
+	 *            增加的天数
+	 * @return date 加上intBetween天数后的日期
+	 */
+	public static String increaseDayStr(Date date, int addDay) {
+		Calendar calo = Calendar.getInstance();
+		calo.setTime(date);
+		calo.add(Calendar.DATE, addDay);
+		return sdfLongTimePlus.format(calo.getTime());
+	}
+
 	/**
 	 * 得到将date增加指定年数后的date
 	 *
@@ -3105,6 +3122,8 @@ public class DateUtil {
 		String date = "2020-07-05 11:43:06";
 		String sb3 = addAndSubtractDateSecond(date, 55);
 		System.out.println("sb3:" + sb3);
+		String sb4 = increaseDayStr(new Date(), 5);
+		System.out.println("sb4:" + sb4);
 	}
 
 	/**

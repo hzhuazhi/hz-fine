@@ -1062,10 +1062,14 @@ public class HodgepodgeMethod {
                 throw new ServiceException(ErrorCode.ENUM_ERROR.DC00005.geteCode(), ErrorCode.ENUM_ERROR.DC00005.geteDesc());
             }
         }else if (requestModel.acType == 3){
-            // check银行名称/银行卡开户行
-            if (StringUtils.isBlank(requestModel.bankName)){
-                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00006.geteCode(), ErrorCode.ENUM_ERROR.DC00006.geteDesc());
+//            // check银行名称/银行卡开户行
+//            if (StringUtils.isBlank(requestModel.bankName)){
+//                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00006.geteCode(), ErrorCode.ENUM_ERROR.DC00006.geteDesc());
+//            }
+            if (StringUtils.isBlank(requestModel.mmQrCode)){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.DC00038.geteCode(), ErrorCode.ENUM_ERROR.DC00038.geteDesc());
             }
+
         }
 
         // 校验token值
@@ -1114,6 +1118,21 @@ public class HodgepodgeMethod {
     }
 
     /**
+     * @Description: 组装根据用户收款账号类型查询的查询条件
+     * @param did - 用户ID
+     * @param acType - 收款账户类型：1微信，2支付宝，3微信群
+     * @return
+     * @author yoko
+     * @date 2020/5/15 16:10
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountByAcType(long did, int acType){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setAcType(acType);
+        return resBean;
+    }
+
+    /**
      * @Description: 组装根据收款具体账号查询的查询条件
      * @param acNum - 收款账号
      * @return
@@ -1142,6 +1161,22 @@ public class HodgepodgeMethod {
         }
     }
 
+
+    /**
+     * @Description: check校验根据收款具体账号查询的数据是否为空
+     * <p>不为空，则代表之前已录入过，不能进行再次录入添加</p>
+     * @param didCollectionAccountModel - 用户具体收款账号信息
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:25
+     */
+    public static void checkDidCollectionAccountAddByAcType(DidCollectionAccountModel didCollectionAccountModel) throws Exception{
+        if (didCollectionAccountModel == null || didCollectionAccountModel.getId() <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+        }else{
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00039.geteCode(), ErrorCode.ENUM_ERROR.DC00039.geteDesc());
+        }
+    }
+
     /**
      * @Description: 组装要添加的用户收款账号信息
      * @param requestDidCollectionAccount - 用户收款账号信息
@@ -1153,6 +1188,10 @@ public class HodgepodgeMethod {
     public static DidCollectionAccountModel assembleDidCollectionAccount(RequestDidCollectionAccount requestDidCollectionAccount, long did){
         DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
         resBean.setDid(did);
+        if (requestDidCollectionAccount.acType == 3){
+            String invalidTime = DateUtil.increaseDayStr(new Date(), 5);
+            resBean.setInvalidTime(invalidTime);
+        }
         return resBean;
     }
 

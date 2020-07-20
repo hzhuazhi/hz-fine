@@ -8,7 +8,8 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.did,a.ac_name,a.ac_type,a.ac_num,a.user_id,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
-        a.wx_qr_code_ads,a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
+        a.wx_qr_code_ads,a.invalid_time,a.is_invalid,
+        a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -43,6 +44,9 @@
             </if>
             <if test="businessType != null and businessType != '' " >
                 and a.business_type = #{businessType}
+            </if>
+            <if test="isInvalid != null and isInvalid != '' " >
+                and a.is_invalid = #{isInvalid}
             </if>
             <if test="daySwitch != null and daySwitch != '' " >
                 and a.day_switch = #{daySwitch}
@@ -181,6 +185,9 @@
             <if test="wxQrCodeAds != null and wxQrCodeAds != '' " >
                 wx_qr_code_ads,
             </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                invalid_time,
+            </if>
             <if test="daySwitch != null and daySwitch != '' " >
                 day_switch,
             </if>
@@ -235,6 +242,9 @@
             </if>
             <if test="wxQrCodeAds != null and wxQrCodeAds != '' " >
                 <![CDATA[  #{wxQrCodeAds}, ]]>
+            </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                <![CDATA[  #{invalidTime}, ]]>
             </if>
             <if test="daySwitch != null and daySwitch != '' " >
                 <![CDATA[  #{daySwitch}, ]]>
