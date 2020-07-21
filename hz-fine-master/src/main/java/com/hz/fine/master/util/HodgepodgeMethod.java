@@ -78,6 +78,7 @@ import com.hz.fine.master.core.protocol.response.question.ResponseQuestion;
 import com.hz.fine.master.core.protocol.response.sell.ResponseSell;
 import com.hz.fine.master.core.protocol.response.sell.Sell;
 import com.hz.fine.master.core.protocol.response.strategy.ResponseStrategy;
+import com.hz.fine.master.core.protocol.response.strategy.instruct.StrategyInstruct;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategySpare;
@@ -2892,6 +2893,18 @@ public class HodgepodgeMethod {
     }
 
     /**
+     * @Description: 校验策略类型数据
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByInstruct(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00027.geteCode(), ErrorCode.ENUM_ERROR.S00027.geteDesc());
+        }
+    }
+
+    /**
      * @Description: 校验策略类型数据:分享状态的开关
      * @return void
      * @author yoko
@@ -2937,6 +2950,29 @@ public class HodgepodgeMethod {
             share.shareAddress = shareAddres;
         }
         dataModel.share = share;
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 策略：获取微信群回复指令数据
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param stgValue - 微信群回复指令
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleInstructResult(long stime, String sign, String stgValue){
+        ResponseStrategy dataModel = new ResponseStrategy();
+        StrategyInstruct instruct = new StrategyInstruct();
+        if (!StringUtils.isBlank(stgValue)){
+            String [] fg_stgValue = stgValue.split("-");
+            instruct.successInstruct = fg_stgValue[0];
+            instruct.failInstruct = fg_stgValue[1];
+        }
+        dataModel.instruct = instruct;
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);

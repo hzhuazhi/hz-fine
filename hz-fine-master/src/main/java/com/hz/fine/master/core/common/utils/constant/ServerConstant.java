@@ -113,6 +113,9 @@ public class ServerConstant {
         REPORT_PHONE(28,""),
         QR_CODE_SWITCH(29,""),
         WX_GROUP_CONSUME_MONEY_LIST(30,""),
+        TEAM_CONSUME_REWARD_WX_GROUP(31,""),
+        WX_GROUP_REPLY_INSTRUCT(32,""),
+
 
 
         ;

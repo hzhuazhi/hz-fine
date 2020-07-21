@@ -2,6 +2,7 @@ package com.hz.fine.master.core.protocol.response.strategy;
 
 import com.hz.fine.master.core.protocol.base.BaseResponse;
 import com.hz.fine.master.core.protocol.response.did.reward.DidReward;
+import com.hz.fine.master.core.protocol.response.strategy.instruct.StrategyInstruct;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoney;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategyMoneyGrade;
 import com.hz.fine.master.core.protocol.response.strategy.money.StrategySpare;
@@ -28,6 +29,7 @@ public class ResponseStrategy extends BaseResponse implements Serializable {
     public List<StrategySpare> spareList;//  备用域名地址列表
     public QiNiu qiNiu;// 获取七牛的token
     public StrategyShare share;// 分享地址
+    public StrategyInstruct instruct;// 微信群回复指令
 
 
     public Integer rowCount;
@@ -95,5 +97,13 @@ public class ResponseStrategy extends BaseResponse implements Serializable {
 
     public void setSpareList(List<StrategySpare> spareList) {
         this.spareList = spareList;
+    }
+
+    public StrategyInstruct getInstruct() {
+        return instruct;
+    }
+
+    public void setInstruct(StrategyInstruct instruct) {
+        this.instruct = instruct;
     }
 }

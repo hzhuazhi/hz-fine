@@ -489,11 +489,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 }
 
                 // 判断这个收款账号是否超过今日收款金额上限
-                String strKeyCache_check_lock_did_collection_account_day_suc_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_MONEY, orderModel.getCollectionAccountId());
+                String strKeyCache_check_lock_did_collection_account_day_suc_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_MONEY, didModel.getCollectionAccountId());
                 String strCache_check_lock_did_collection_account_day_suc_money = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_money);
                 if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_money)){
                     // 判断收款账号今日成功收款次数是否超过上限
-                    String strKeyCache_check_lock_did_collection_account_day_suc_limit_num = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_LIMIT_NUM, orderModel.getCollectionAccountId());
+                    String strKeyCache_check_lock_did_collection_account_day_suc_limit_num = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_LIMIT_NUM, didModel.getCollectionAccountId());
                     String strCache_check_lock_did_collection_account_day_suc_limit_num = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_limit_num);
                     if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_limit_num)){
                         // redis存储
