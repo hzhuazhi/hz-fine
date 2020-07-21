@@ -18,6 +18,7 @@ public class ResponseOrder extends BaseResponse implements Serializable {
     public List<Order> dataList;
     public Order dataModel;
     public OrderDistribution order;// 正式派单成功的数据
+    public OrderNewest orderNewest;// 挂单的数据
     public Integer rowCount;
 
 
@@ -58,5 +59,13 @@ public class ResponseOrder extends BaseResponse implements Serializable {
 
     public void setOrder(OrderDistribution order) {
         this.order = order;
+    }
+
+    public OrderNewest getOrderNewest() {
+        return orderNewest;
+    }
+
+    public void setOrderNewest(OrderNewest orderNewest) {
+        this.orderNewest = orderNewest;
     }
 }

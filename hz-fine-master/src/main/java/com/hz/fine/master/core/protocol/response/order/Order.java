@@ -81,6 +81,11 @@ public class Order implements Serializable {
      */
     public Integer lastTime;
 
+    /**
+     * 微信群名称
+     */
+    public String wxNickname;
+
     public Order(){
 
     }
@@ -195,5 +200,13 @@ public class Order implements Serializable {
 
     public void setLastTime(Integer lastTime) {
         this.lastTime = lastTime;
+    }
+
+    public String getWxNickname() {
+        return wxNickname;
+    }
+
+    public void setWxNickname(String wxNickname) {
+        this.wxNickname = wxNickname;
     }
 }

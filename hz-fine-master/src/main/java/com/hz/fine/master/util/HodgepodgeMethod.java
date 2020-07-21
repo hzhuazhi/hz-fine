@@ -70,6 +70,7 @@ import com.hz.fine.master.core.protocol.response.notice.Notice;
 import com.hz.fine.master.core.protocol.response.notice.ResponseNotice;
 import com.hz.fine.master.core.protocol.response.order.Order;
 import com.hz.fine.master.core.protocol.response.order.OrderDistribution;
+import com.hz.fine.master.core.protocol.response.order.OrderNewest;
 import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionDD;
@@ -2971,6 +2972,7 @@ public class HodgepodgeMethod {
             String [] fg_stgValue = stgValue.split("-");
             instruct.successInstruct = fg_stgValue[0];
             instruct.failInstruct = fg_stgValue[1];
+            instruct.endInstruct = fg_stgValue[2];
         }
         dataModel.instruct = instruct;
         dataModel.setStime(stime);
@@ -3235,10 +3237,13 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderListByDid(RequestOrder requestModel, long did){
         OrderModel resBean = BeanUtils.copy(requestModel, OrderModel.class);
         resBean.setDid(did);
-        if (resBean.getOrderStatus() == 4){
-            resBean.setOrderStatus(null);
-            resBean.setOrderStatusStr("1");
+        if (resBean.getOrderStatus() != null && resBean.getOrderStatus() > 0){
+            if (resBean.getOrderStatus() == 4){
+                resBean.setOrderStatus(null);
+                resBean.setOrderStatusStr("1");
+            }
         }
+
         return resBean;
     }
 
@@ -3330,6 +3335,47 @@ public class HodgepodgeMethod {
             Order data = BeanUtils.copy(orderModel, Order.class);
             dataModel.dataModel = data;
         }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 获取最近的一条派单数据-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleNewestOrderDataResult(long stime, String sign, OrderModel orderModel){
+        ResponseOrder dataModel = new ResponseOrder();
+        OrderNewest orderNewest = new OrderNewest();
+        if (orderModel == null || orderModel.getId() <= 0){
+            orderNewest.isHave = 1;
+        }else{
+            if (orderModel.getEndStatus() == 2){
+                orderNewest.isHave = 1;
+            }else{
+                orderNewest.isHave = 2;
+                if (orderModel.getDidStatus() == 1){
+                    orderNewest.purpose = "请等待支付用户进群";
+                    orderNewest.origin = "请耐心等待";
+                }else if (orderModel.getDidStatus() == 2){
+                    orderNewest.purpose = "请等待支付用户发送红包";
+                    orderNewest.origin = "请进群查看是否发送红包：支付用户进群2分钟后未发红包则直接剔除用户，并且回复2";
+                }else if (orderModel.getDidStatus() == 3){
+                    orderNewest.purpose = "待回复收款指令";
+                    orderNewest.origin = "实际收款回复1#金额，或未到款回复2";
+                }else if (orderModel.getDidStatus() == 4){
+                    orderNewest.purpose = "待回复正常结束指令";
+                    orderNewest.origin = "需删除支付用户，并且回复指令3";
+                }
+            }
+        }
+        dataModel.orderNewest = orderNewest;
+
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
@@ -6085,8 +6131,37 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderByNewest(long did, int collectionType){
         OrderModel resBean = new OrderModel();
         resBean.setDid(did);
-        resBean.setCollectionType(collectionType);
+        if(collectionType > 0){
+            resBean.setCollectionType(collectionType);
+        }
         return resBean;
+    }
+
+
+    /**
+     * @Description: check校验数据获取最近的一条派单数据详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkNewestOrderData(RequestOrder requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00023.geteCode(), ErrorCode.ENUM_ERROR.OR00023.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
     }
 
 

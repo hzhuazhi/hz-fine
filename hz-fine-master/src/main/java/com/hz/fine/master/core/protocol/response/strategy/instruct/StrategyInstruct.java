@@ -21,6 +21,11 @@ public class StrategyInstruct implements Serializable {
      */
     public String failInstruct;
 
+    /**
+     * 结束指令回复
+     */
+    public String endInstruct;
+
     public StrategyInstruct(){
 
     }
@@ -42,5 +47,11 @@ public class StrategyInstruct implements Serializable {
         this.failInstruct = failInstruct;
     }
 
+    public String getEndInstruct() {
+        return endInstruct;
+    }
 
+    public void setEndInstruct(String endInstruct) {
+        this.endInstruct = endInstruct;
+    }
 }

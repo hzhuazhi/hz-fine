@@ -1165,4 +1165,78 @@ public class OrderController {
 
 
 
+    /**
+     * @Description: 获取最近的一条派单数据-详情
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/order/getNewestOrderData
+     * 请求的属性类:RequestOrder
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:id+ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJvcmRlck5ld2VzdCI6eyJpc0hhdmUiOjIsIm9yaWdpbiI6Iuivt+iAkOW/g+etieW+hSIsInB1cnBvc2UiOiLor7fnrYnlvoXmlK/ku5jnlKjmiLfov5vnvqQifSwic2lnbiI6IjFlNmU1NDg4MmI1ZDgxMDc4M2M2MGUzOTcwNzk4ZjNhIiwic3RpbWUiOjE1OTUzMjQwMDc1NTZ9"
+     *     },
+     *     "sgid": "202007211733270000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getNewestOrderData", method = {RequestMethod.POST})
+    public JsonResult<Object> getNewestOrderData(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token;
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestOrder requestModel = new RequestOrder();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestOrder.class);
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验请求的数据
+            did = HodgepodgeMethod.checkNewestOrderData(requestModel);
+
+            // 收款账号详情数据
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 0);
+            OrderModel orderData = (OrderModel) ComponentUtil.orderService.getNewestOrder(orderQuery);
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleNewestOrderDataResult(stime, sign, orderData);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // 添加异常
+            log.error(String.format("this OrderController.getNewestOrderData() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this OrderController.getNewestOrderData() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+
+
 }
