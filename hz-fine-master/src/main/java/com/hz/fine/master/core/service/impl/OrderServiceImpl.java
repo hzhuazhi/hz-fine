@@ -6,6 +6,7 @@ import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
+import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.mapper.DidBalanceDeductMapper;
 import com.hz.fine.master.core.mapper.DidMapper;
 import com.hz.fine.master.core.mapper.OrderMapper;
@@ -396,6 +397,35 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         return orderMapper.directSumMoney(model);
     }
 
+    @Override
+    public DidModel screenCollectionAccountByWxGroup(List<DidModel> didList, String orderMoney) {
+        DidModel didModel = new DidModel();
+        int count = 0;// 加一把防止死循环的锁
+        while (1==1){
+            if (count <= 50){
+                // 随机选一个用户
+                int random = new Random().nextInt(didList.size());
+                DidModel randomDidModel = didList.get(random);
+
+                // 筛选收款账号
+                didModel = getDidCollectionAccountByWxGroup(randomDidModel, orderMoney);
+                if (didModel != null && didModel.getId() > 0){
+                    break;
+                }
+                count ++;
+            }else {
+                break;
+            }
+        }
+
+        return didModel;
+    }
+
+    @Override
+    public OrderModel getNewestOrder(OrderModel model) {
+        return orderMapper.getNewestOrder(model);
+    }
+
 
     /**
      * @Description: 筛选可使用的支付宝收款账号以及用户
@@ -431,6 +461,54 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         return null;
     }
 
+
+    /**
+     * @Description: 筛选可使用的微信群收款账号以及用户
+     * @param didModel - 用户信息
+     * @param orderMoney - 派单金额
+     * @return
+     * @author yoko
+     * @date 2020/6/1 19:51
+     */
+    public DidModel getDidCollectionAccountByWxGroup(DidModel didModel, String orderMoney){
+        // 判断此用户是否被锁住
+        String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER, didModel.getId());
+        boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
+        if (flagLock_did){
+
+            // 查看此用户是否有派发的订单正在执行中：只有缓存中没有数据才代表此用户名下没挂单
+            String redisKey_did = getRedisDataByKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
+            if (StringUtils.isBlank(redisKey_did)){
+                // 查询此用户上一个订单的订单状态是否属于完结状态
+                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3);
+                OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
+                if (orderModel != null && orderModel.getId() > 0){
+                    if (orderModel.getEndStatus() == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE){
+                        return null;
+                    }
+                }
+
+                // 判断这个收款账号是否超过今日收款金额上限
+                String strKeyCache_check_lock_did_collection_account_day_suc_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_MONEY, orderModel.getCollectionAccountId());
+                String strCache_check_lock_did_collection_account_day_suc_money = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_money);
+                if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_money)){
+                    // 判断收款账号今日成功收款次数是否超过上限
+                    String strKeyCache_check_lock_did_collection_account_day_suc_limit_num = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_LIMIT_NUM, orderModel.getCollectionAccountId());
+                    String strCache_check_lock_did_collection_account_day_suc_limit_num = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_day_suc_limit_num);
+                    if (StringUtils.isBlank(strCache_check_lock_did_collection_account_day_suc_limit_num)){
+                        // redis存储
+                        String strKeyCache_lock_did_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
+                        ComponentUtil.redisService.set(strKeyCache_lock_did_order_ing, String.valueOf(didModel.getId()) + "," + orderMoney, FIVE_MIN);
+                        return didModel;
+                    }
+                }
+
+            }
+            // 解锁
+            ComponentUtil.redisIdService.delLock(lockKey_did);
+        }
+        return null;
+    }
 
     /**
      * @Description: 组装缓存key查询缓存中存在的数据

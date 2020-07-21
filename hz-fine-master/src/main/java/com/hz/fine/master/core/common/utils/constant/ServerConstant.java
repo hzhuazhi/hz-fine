@@ -111,6 +111,8 @@ public class ServerConstant {
         DELIVERY_ORDER_INVALID_TIME(26,""),
         LOCK_MONEY_TIME(27,""),
         REPORT_PHONE(28,""),
+        QR_CODE_SWITCH(29,""),
+        WX_GROUP_CONSUME_MONEY_LIST(30,""),
 
 
         ;

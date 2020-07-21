@@ -233,6 +233,16 @@ public class DidModel extends BasePage implements Serializable {
      */
     private String zfbAcNum;
 
+    /**
+     * 微信群名称
+     */
+    private String payee;
+
+    /**
+     * 收款账号/地址（转码）：二维码
+     */
+    private String ddQrCode;
+
     public Long getId() {
         return id;
     }
@@ -576,5 +586,21 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setTotalTeamDirectConsumeProfit(String totalTeamDirectConsumeProfit) {
         this.totalTeamDirectConsumeProfit = totalTeamDirectConsumeProfit;
+    }
+
+    public String getPayee() {
+        return payee;
+    }
+
+    public void setPayee(String payee) {
+        this.payee = payee;
+    }
+
+    public String getDdQrCode() {
+        return ddQrCode;
+    }
+
+    public void setDdQrCode(String ddQrCode) {
+        this.ddQrCode = ddQrCode;
     }
 }

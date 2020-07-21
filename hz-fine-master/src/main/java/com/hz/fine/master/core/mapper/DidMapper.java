@@ -57,4 +57,18 @@ public interface DidMapper<T> extends BaseDao<T> {
      * @date 2020/7/2 14:56
      */
     public int updateDidBalance(DidModel model);
+
+    /**
+     * @Description: 获取有效的用户-微信群
+     * <p>
+     *     获取有余额，并且配置了已审核通过、没有超过有效期的微信群的用户
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/2 10:56
+     */
+    public List<DidModel> getEffectiveDidByWxGroupList(DidModel model);
+
+
 }

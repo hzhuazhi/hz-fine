@@ -49,5 +49,11 @@ public class LoadConstant {
     @Value("${zfb.qrCode.url}")
     public String zfbQrCodeUrl;
 
+    /**
+     * 微信群支付地址
+     */
+    @Value("${wx.group.qrCode.url}")
+    public String wxGroupQrCodeUrl;
+
 
 }

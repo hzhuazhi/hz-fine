@@ -92,4 +92,13 @@ public interface OrderMapper<T> extends BaseDao<T> {
      */
     public String directSumMoney(OrderModel model);
 
+    /**
+     * @Description: 根据用户查询最新的一个派单的订单信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/20 20:24
+     */
+    public OrderModel getNewestOrder(OrderModel model);
+
 }

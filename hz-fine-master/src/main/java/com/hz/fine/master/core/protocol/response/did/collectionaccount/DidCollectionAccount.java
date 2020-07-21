@@ -37,9 +37,19 @@ public class DidCollectionAccount implements Serializable {
     public String mmQrCode;
 
     /**
+     * 收款账号/地址（转码）：二维码
+     */
+    public String ddQrCode;
+
+    /**
      * 收款人：微信昵称、支付宝昵称、银行卡持有人名称
      */
     public String payee;
+
+    /**
+     * 支付宝账号ID
+     */
+    public String userId;
 
     /**
      * 银行名称/银行卡开户行
@@ -55,6 +65,16 @@ public class DidCollectionAccount implements Serializable {
      * 小微商户二维码图片地址
      */
     public String wxQrCodeAds;
+
+    /**
+     * 失效时间：微信群二维码的失效时间
+     */
+    public String invalidTime;
+
+    /**
+     * 是否失效：1未失效，2已失效
+     */
+    public Integer isInvalid;
 
     /**
      * 日开关是否启用（等于1正常使用，其它是暂停）:：1正常使用，2暂停使用
@@ -235,5 +255,37 @@ public class DidCollectionAccount implements Serializable {
 
     public void setDataType(Integer dataType) {
         this.dataType = dataType;
+    }
+
+    public String getDdQrCode() {
+        return ddQrCode;
+    }
+
+    public void setDdQrCode(String ddQrCode) {
+        this.ddQrCode = ddQrCode;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getInvalidTime() {
+        return invalidTime;
+    }
+
+    public void setInvalidTime(String invalidTime) {
+        this.invalidTime = invalidTime;
+    }
+
+    public Integer getIsInvalid() {
+        return isInvalid;
+    }
+
+    public void setIsInvalid(Integer isInvalid) {
+        this.isInvalid = isInvalid;
     }
 }

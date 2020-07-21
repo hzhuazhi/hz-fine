@@ -169,6 +169,11 @@ public class OrderModel extends BasePage implements Serializable {
     private String profit;
 
     /**
+     * 订单是否处于完结状态：1未完结，2完结
+     */
+    private Integer endStatus;
+
+    /**
      * 收益比例
      */
     private String ratio;
@@ -489,5 +494,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setOrderStatusStr(String orderStatusStr) {
         this.orderStatusStr = orderStatusStr;
+    }
+
+    public Integer getEndStatus() {
+        return endStatus;
+    }
+
+    public void setEndStatus(Integer endStatus) {
+        this.endStatus = endStatus;
     }
 }

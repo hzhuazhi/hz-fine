@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
         a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
-        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
+        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,a.end_status,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn,
         b.ac_name,b.ac_num
@@ -48,6 +48,9 @@
             </if>
             <if test="orderStatusStr != null and orderStatusStr != '' " >
                 and a.order_status >= 3
+            </if>
+            <if test="endStatus != null and endStatus != '' " >
+                and a.end_status = #{endStatus}
             </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
@@ -456,6 +459,18 @@
         and a.collection_type = 2
         and a.yn = 0
     </select>
+
+
+    <!-- 根据用户查询最新的一个派单的订单信息-->
+    <select id="getNewestOrder" parameterType="Object" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a left join tb_fn_did_collection_account b on a.collection_account_id = b.id
+        <include refid="Example_Where_Clause"/>
+        order by id desc
+        limit 1
+    </select>
+
 
 
 </mapper>

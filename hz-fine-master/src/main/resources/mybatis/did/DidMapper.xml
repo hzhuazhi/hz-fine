@@ -449,6 +449,24 @@
         and a.id = #{id}
     </update>
 
+    <!-- 获取有效的用户-微信群 -->
+    <select id="getEffectiveDidByWxGroupList" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select a1.*,
+        b.id as collection_account_id,b.mm_qr_code,b.dd_qr_code,b.payee,b.user_id from (
+        select a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
+        a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
+        a.is_notify,a.notify_url,a.own_id,a.use_status,
+        a.create_time,a.update_time,a.yn
+        from tb_fn_did a
+        where 1=1
+        and a.balance >= #{money} and a.balance > 0 and a.use_status =1 and a.yn = 0
+        )a1
+        left join tb_fn_did_collection_account b on a1.id = b.did
+        and b.ac_type = 3 and b.check_status = 3 and b.is_invalid = 1 and b.day_switch = 1 and b.month_switch = 1 and b.total_switch = 1 and b.use_status=1 and b.yn =0
+        where 1=1
+        and b.id is not null
+    </select>
+
 
 
 

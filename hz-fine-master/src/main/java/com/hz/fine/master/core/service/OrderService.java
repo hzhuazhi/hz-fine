@@ -141,4 +141,23 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/6/6 11:22
      */
     public String directSumMoney(OrderModel model);
+
+    /**
+     * @Description: 筛选出要派单的微信群收款账号以及用户
+     * @param didList - 可以正常使用的did账号集合
+     * @param orderMoney - 订单金额
+     * @return
+     * @author yoko
+     * @date 2020/5/26 15:58
+     */
+    public DidModel screenCollectionAccountByWxGroup(List<DidModel> didList, String orderMoney);
+
+    /**
+     * @Description: 根据用户查询最新的一个派单的订单信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/20 20:24
+    */
+    public OrderModel getNewestOrder(OrderModel model);
 }

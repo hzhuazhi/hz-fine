@@ -1715,6 +1715,33 @@ public class HodgepodgeMethod {
         }
     }
 
+    /**
+     * @Description: 校验策略类型数据:出码开关-判断此时是否属于正常出码
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByQrCodeSwitch(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00023.geteCode(), ErrorCode.ENUM_ERROR.S00023.geteDesc());
+        }
+        if (strategyModel.getStgNumValue() == 1){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00024.geteCode(), ErrorCode.ENUM_ERROR.S00024.geteDesc());
+        }
+        if (strategyModel.getStgNumValue() == 2){
+            if (StringUtils.isBlank(strategyModel.getStgValue())){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.S00025.geteCode(), ErrorCode.ENUM_ERROR.S00025.geteDesc());
+            }else{
+                String[] str = strategyModel.getStgValue().split("-");
+                boolean flag = DateUtil.isBelong(str[0], str[1]);
+                if (!flag){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.S00026.geteCode(), ErrorCode.ENUM_ERROR.S00026.geteDesc());
+                }
+            }
+        }
+
+    }
+
     public static BankModel assembleBankQuery(List<MobileCardModel> mobileCardList, String bankWorkTime){
         BankModel resBean = new BankModel();
         List<Long> mobileCardIdList = new ArrayList<>();
@@ -4650,6 +4677,18 @@ public class HodgepodgeMethod {
         }
     }
 
+    /**
+     * @Description: check校验是否筛选出收款账号-微信群
+     * @param didModel - 用户收款账号以及用户
+     * @return
+     * @author yoko
+     * @date 2020/6/2 14:13
+     */
+    public static void checkDidAndByAddWxGroupCollectionAccountOrder(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00022.geteCode(), ErrorCode.ENUM_ERROR.OR00022.geteDesc());
+        }
+    }
 
     /**
      * @Description: 组装添加派单数据的方法-支付宝
@@ -4682,6 +4721,47 @@ public class HodgepodgeMethod {
         resBean.setInvalidTime(invalidTime);
         resBean.setUserId(didModel.getUserId());
         resBean.setZfbAcNum(didModel.getZfbAcNum());
+        String profit = getConsumeProfit(consumeMoneyList, orderMoney);
+        resBean.setProfit(profit);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装添加派单数据的方法-微信群
+     * @param did -  用户ID
+     * @param orderNo - 订单号
+     * @param orderMoney - 订单金额
+     * @param outTradeNo - 商家订单号
+     * @param notifyUlr - 同步地址
+     * @param didModel - 用户收款账号信息
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/6/2 14:53
+     */
+    public static OrderModel assembleOrderByWxGroupAdd(long did, String orderNo, String orderMoney, String notifyUlr, String outTradeNo,
+                                                   DidModel didModel, int collectionType, List<StrategyData> consumeMoneyList, int invalidTimeNum){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setOrderNo(orderNo);
+        resBean.setOrderMoney(orderMoney);
+        resBean.setCollectionAccountId(didModel.getCollectionAccountId());
+        resBean.setCollectionType(collectionType);
+        if (!StringUtils.isBlank(outTradeNo)){
+            resBean.setOutTradeNo(outTradeNo);
+        }
+        if (!StringUtils.isBlank(notifyUlr)){
+            resBean.setNotifyUrl(notifyUlr);
+        }
+        // 订单失效时间
+        String invalidTime = DateUtil.addDateMinute(invalidTimeNum);// 目前默认5分钟：后续可以从策略取数据
+        resBean.setInvalidTime(invalidTime);
+        resBean.setUserId(didModel.getUserId());
+        resBean.setWxNickname(didModel.getPayee());
+        resBean.setQrCode(didModel.getDdQrCode());
         String profit = getConsumeProfit(consumeMoneyList, orderMoney);
         resBean.setProfit(profit);
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
@@ -4766,6 +4846,42 @@ public class HodgepodgeMethod {
         return JSON.toJSONString(dataModel);
     }
 
+
+    /**
+     * @Description: 用户派单成功的数据组装返回客户端的方法-微信群
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param orderModel - 用户派单的详情
+     * @param returnUrl - 支付完成之后自动跳转的地址
+     * @param wxGroupQrCodeUrl - 生成的HTML页面的地址
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleOrderGroupQrCodeDataResult(long stime, String sign, OrderModel orderModel, String returnUrl, String wxGroupQrCodeUrl) throws Exception{
+        ResponseOrder dataModel = new ResponseOrder();
+        if (orderModel != null){
+            OrderDistribution order = new OrderDistribution();
+            order.orderNo = orderModel.getOrderNo();
+            order.qrCode = orderModel.getQrCode();
+            order.orderMoney = orderModel.getOrderMoney();
+            order.invalidTime = orderModel.getInvalidTime();
+            int invalidSecond = DateUtil.calLastedTime(orderModel.getInvalidTime());
+            order.invalidSecond = String.valueOf(invalidSecond);
+            order.qrCode = orderModel.getQrCode();
+            String resQrCodeUrl = "";
+            if (!StringUtils.isBlank(returnUrl)){
+                resQrCodeUrl = wxGroupQrCodeUrl + "?" + "orderNo=" +  orderModel.getOrderNo() + "&" + "returnUrl=" + returnUrl;
+            }else {
+                resQrCodeUrl = wxGroupQrCodeUrl + "?" + "orderNo=" +  orderModel.getOrderNo() + "&" + "returnUrl=";
+            }
+            order.qrCodeUrl = URLEncoder.encode(resQrCodeUrl,"UTF-8");
+            dataModel.order = order;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
 
     /**
      * @Description: check校验数据获取支付宝派单数据-详情-返回码的接口时
@@ -5919,6 +6035,21 @@ public class HodgepodgeMethod {
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询订单信息的查询条件
+     * @param did - 用户ID
+     * @param collectionType - 收款账号类型：1微信，2支付宝，3微信群
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/7/20 20:48
+     */
+    public static OrderModel assembleOrderByNewest(long did, int collectionType){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        resBean.setCollectionType(collectionType);
         return resBean;
     }
 
