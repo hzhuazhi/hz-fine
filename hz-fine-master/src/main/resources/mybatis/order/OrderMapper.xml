@@ -58,7 +58,9 @@
             <if test="curdayStart != null and curdayStart != '' and curdayEnd != null and curdayEnd != '' " >
                 and a.curday >= #{curdayStart} and a.curday &lt;= #{curdayEnd}
             </if>
-            and a.run_status = 3
+            <if test="runStatus != null and runStatus != '' " >
+                and a.run_status = 3
+            </if>
             and a.yn = 0
         </trim>
     </sql>
