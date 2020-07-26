@@ -484,7 +484,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3);
                 OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
                 if (orderModel != null && orderModel.getId() > 0){
-                    if (orderModel.getEliminateType() == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
+                    if (orderModel.getEliminateType() == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
                         return null;
                     }
                 }
