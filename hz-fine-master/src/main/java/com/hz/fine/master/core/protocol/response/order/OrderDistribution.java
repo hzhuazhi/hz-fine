@@ -32,6 +32,11 @@ public class OrderDistribution implements Serializable {
     public String invalidTime;
 
     /**
+     * 失效时间戳
+     */
+    public String invalidTimeStamp;
+
+    /**
      * 失效时间-秒
      */
     public String invalidSecond;
@@ -143,5 +148,13 @@ public class OrderDistribution implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getInvalidTimeStamp() {
+        return invalidTimeStamp;
+    }
+
+    public void setInvalidTimeStamp(String invalidTimeStamp) {
+        this.invalidTimeStamp = invalidTimeStamp;
     }
 }

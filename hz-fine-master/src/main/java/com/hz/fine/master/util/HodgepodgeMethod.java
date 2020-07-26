@@ -2535,7 +2535,7 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleOrderAddDataResult(long stime, String sign, OrderModel orderModel){
+    public static String assembleOrderAddDataResult(long stime, String sign, OrderModel orderModel) throws Exception{
         ResponseOrder dataModel = new ResponseOrder();
         if (orderModel != null){
             OrderDistribution order = new OrderDistribution();
@@ -2543,6 +2543,7 @@ public class HodgepodgeMethod {
             order.qrCode = orderModel.getQrCode();
             order.orderMoney = orderModel.getOrderMoney();
             order.invalidTime = orderModel.getInvalidTime();
+            order.invalidTimeStamp = DateUtil.dateToStamp(orderModel.getInvalidTime());
             dataModel.order = order;
         }
         dataModel.setStime(stime);

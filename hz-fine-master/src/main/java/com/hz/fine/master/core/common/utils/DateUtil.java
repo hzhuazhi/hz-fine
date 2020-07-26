@@ -3090,6 +3090,23 @@ public class DateUtil {
 	}
 
 
+	/**
+	 * @Description: 将时间转换为时间戳
+	 * @param s
+	 * @return
+	 * @author yoko
+	 * @date 2020/7/26 21:15
+	*/
+	public static String dateToStamp(String s) throws Exception {
+		String res;//设置时间格式，将该时间格式的时间转换为时间戳
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = simpleDateFormat.parse(s);
+		long time = date.getTime();
+		res = String.valueOf(time);
+		return res;
+	}
+
+
 
 	public static void main(String[] args) throws Exception{
 //		try{
@@ -3124,6 +3141,9 @@ public class DateUtil {
 		System.out.println("sb3:" + sb3);
 		String sb4 = increaseDayStr(new Date(), 5);
 		System.out.println("sb4:" + sb4);
+		String sb5 = "2020-07-26 21:16:59";
+		String sb6 = dateToStamp(sb5);
+		System.out.println("sb6:" + sb6);
 	}
 
 	/**
