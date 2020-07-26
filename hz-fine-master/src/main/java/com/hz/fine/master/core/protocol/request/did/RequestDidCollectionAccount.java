@@ -44,6 +44,11 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
     public String mmQrCode;
 
     /**
+     * 收款账号/地址（转码）：二维码
+     */
+    public String ddQrCode;
+
+    /**
      * 收款人：微信昵称、支付宝昵称、银行卡持有人名称
      */
     public String payee;
@@ -186,5 +191,13 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
 
     public void setOperateWd(String operateWd) {
         this.operateWd = operateWd;
+    }
+
+    public String getDdQrCode() {
+        return ddQrCode;
+    }
+
+    public void setDdQrCode(String ddQrCode) {
+        this.ddQrCode = ddQrCode;
     }
 }

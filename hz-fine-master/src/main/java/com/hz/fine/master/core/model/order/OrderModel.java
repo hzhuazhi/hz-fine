@@ -110,6 +110,11 @@ public class OrderModel extends BasePage implements Serializable {
     private String didTime;
 
     /**
+     * 剔除成员类型：1初始化，2需要剔除成员，3已剔除支付用户成员
+     */
+    private Integer eliminateType;
+
+    /**
      * 创建日期：存的日期格式20160530
      */
     private Integer curday;
@@ -502,5 +507,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setEndStatus(Integer endStatus) {
         this.endStatus = endStatus;
+    }
+
+    public Integer getEliminateType() {
+        return eliminateType;
+    }
+
+    public void setEliminateType(Integer eliminateType) {
+        this.eliminateType = eliminateType;
     }
 }

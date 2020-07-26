@@ -15,6 +15,7 @@ import com.hz.fine.master.core.model.consult.ConsultModel;
 import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
 import com.hz.fine.master.core.model.notice.NoticeModel;
+import com.hz.fine.master.core.model.operate.OperateModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.question.QuestionDDModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
@@ -6164,6 +6165,23 @@ public class HodgepodgeMethod {
 
     }
 
+    /**
+     * @Description: 组装查询运营数据的查询方法
+     * @param did - 用户ID
+     * @param notOk - 数据处理状态：1初始化，2处理中，3处理失败，4处理成功
+     * @param endType - 是否需要操作完毕才能派单类型：1需要处理完毕，2不需要处理完毕；此数据需要处理成功，才能给此用户进行派单
+     * @return com.hz.fine.master.core.model.operate.OperateModel
+     * @author yoko
+     * @date 2020/7/26 17:45
+     */
+    public static OperateModel assembleOperateQuery(long did, int notOk, int endType){
+        OperateModel resBean = new OperateModel();
+        resBean.setDid(did);
+        resBean.setNotOk(notOk);
+        resBean.setEndType(endType);
+        return resBean;
+    }
+
 
     public static void main(String [] args){
         String bankWorkTime = "09:00-14:10";
@@ -6225,6 +6243,11 @@ public class HodgepodgeMethod {
         String sb3 = "1000";
         int sb4 = Integer.parseInt(sb3);
         System.out.println("sb4:" + sb4);
+        String msg = "1#1.445";
+        String [] fg_msg = msg.split("#");
+        System.out.println("fg_msg[0]:" + fg_msg[0]);
+        System.out.println("fg_msg[1]:" + fg_msg[1]);
+        System.out.println("fg_msg.length:" + fg_msg.length);
 
     }
 

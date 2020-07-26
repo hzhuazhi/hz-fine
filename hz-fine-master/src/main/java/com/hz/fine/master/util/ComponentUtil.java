@@ -47,6 +47,7 @@ public class ComponentUtil {
     public static ConsultAskService consultAskService;
     public static ConsultAskReplyService consultAskReplyService;
     public static StatisticsClickPayService statisticsClickPayService;
+    public static OperateService operateService;
 
 
 

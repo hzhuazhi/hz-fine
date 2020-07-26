@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.fine.master.core.mapper.OperateMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.analysis_id,a.did,a.wx_id,a.collection_account_id,a.group_wxid,a.group_name,a.user_id,
+        a.order_no,a.order_money,a.order_status,a.money,a.punish_type,a.punish_money,
+        a.data_type,a.data_explain,a.is_ok,a.end_type,a.remark,
+        a.run_num,a.run_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="analysisId != null and analysisId != '' " >
+                and a.analysis_id = #{analysisId}
+            </if>
+            <if test="did != null and did != '' " >
+                and a.did = #{did}
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                and a.wx_id = #{wxId}
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                and a.collection_account_id = #{collectionAccountId}
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                and a.order_no = #{orderNo}
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                and a.order_money = #{orderMoney}
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                and a.order_status = #{orderStatus}
+            </if>
+            <if test="punishType != null and punishType != '' " >
+                and a.punish_type = #{punishType}
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                and a.data_type = #{dataType}
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                and a.is_ok = #{isOk}
+            </if>
+            <if test="endType != null and endType != '' " >
+                and a.end_type = #{endType}
+            </if>
+            <if test="notOk != null and notOk != '' " >
+                and a.is_ok != #{notOk}
+            </if>
+
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.hz.fine.master.core.model.operate.OperateModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_operate a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.hz.fine.master.core.model.operate.OperateModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_operate a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.hz.fine.master.core.model.operate.OperateModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_operate a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.hz.fine.master.core.model.operate.OperateModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_operate a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fn_operate a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.hz.fine.master.core.model.operate.OperateModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_operate a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.hz.fine.master.core.model.operate.OperateModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fn_operate
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="analysisId != null and analysisId != '' " >
+                analysis_id,
+            </if>
+            <if test="did != null and did != '' " >
+                did,
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                wx_id,
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                collection_account_id,
+            </if>
+            <if test="groupWxid != null and groupWxid != '' " >
+                group_wxid,
+            </if>
+            <if test="groupName != null and groupName != '' " >
+                group_name,
+            </if>
+            <if test="userId != null and userId != '' " >
+                user_id,
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                order_no,
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                order_money,
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                order_status,
+            </if>
+            <if test="money != null and money != '' " >
+                money,
+            </if>
+            <if test="punishType != null and punishType != '' " >
+                punish_type,
+            </if>
+            <if test="punishMoney != null and punishMoney != '' " >
+                punish_money,
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                data_type,
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                data_explain,
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                is_ok,
+            </if>
+            <if test="endType != null and endType != '' " >
+                end_type,
+            </if>
+            <if test="remark != null and remark != '' " >
+                remark,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="analysisId != null and analysisId != '' " >
+                <![CDATA[  #{analysisId}, ]]>
+            </if>
+            <if test="did != null and did != '' " >
+                <![CDATA[  #{did}, ]]>
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                <![CDATA[  #{wxId}, ]]>
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                <![CDATA[  #{collectionAccountId}, ]]>
+            </if>
+            <if test="groupWxid != null and groupWxid != '' " >
+                <![CDATA[  #{groupWxid}, ]]>
+            </if>
+            <if test="groupName != null and groupName != '' " >
+                <![CDATA[  #{groupName}, ]]>
+            </if>
+            <if test="userId != null and userId != '' " >
+                <![CDATA[  #{userId}, ]]>
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                <![CDATA[  #{orderNo}, ]]>
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                <![CDATA[  #{orderMoney}, ]]>
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                <![CDATA[  #{orderStatus}, ]]>
+            </if>
+            <if test="money != null and money != '' " >
+                <![CDATA[  #{money}, ]]>
+            </if>
+            <if test="punishType != null and punishType != '' " >
+                <![CDATA[  #{punishType}, ]]>
+            </if>
+            <if test="punishMoney != null and punishMoney != '' " >
+                <![CDATA[  #{punishMoney}, ]]>
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                <![CDATA[  #{dataType}, ]]>
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                <![CDATA[  #{dataExplain}, ]]>
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                <![CDATA[  #{isOk}, ]]>
+            </if>
+            <if test="endType != null and endType != '' " >
+                <![CDATA[  #{endType}, ]]>
+            </if>
+            <if test="remark != null and remark != '' " >
+                <![CDATA[  #{remark}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.hz.fine.master.core.model.operate.OperateModel">
+        UPDATE tb_fn_operate a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="analysisId != null and analysisId != '' " >
+                a.analysis_id = #{analysisId},
+            </if>
+            <if test="did != null and did != '' " >
+                a.did = #{did},
+            </if>
+            <if test="wxId != null and wxId != '' " >
+                a.wx_id = #{wxId},
+            </if>
+            <if test="collectionAccountId != null and collectionAccountId != '' " >
+                a.collection_account_id = #{collectionAccountId},
+            </if>
+            <if test="groupWxid != null and groupWxid != '' " >
+                a.group_wxid = #{groupWxid},
+            </if>
+            <if test="groupName != null and groupName != '' " >
+                a.group_name = #{groupName},
+            </if>
+            <if test="userId != null and userId != '' " >
+                a.user_id = #{userId},
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                a.order_no = #{orderNo},
+            </if>
+            <if test="orderMoney != null and orderMoney != '' " >
+                a.order_money = #{orderMoney},
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus}
+            </if>
+            <if test="money != null and money != '' " >
+                a.money = #{money}
+            </if>
+            <if test="punishType != null and punishType != '' " >
+                a.punish_type = #{punishType},
+            </if>
+            <if test="punishMoney != null and punishMoney != '' " >
+                a.punish_money = #{punishMoney},
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                a.data_type = #{dataType},
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                a.data_explain = #{dataExplain},
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                a.is_ok = #{isOk},
+            </if>
+            <if test="endType != null and endType != '' " >
+                a.end_type = #{endType},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fn_operate a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+
+</mapper>

@@ -140,6 +140,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private StatisticsClickPayService statisticsClickPayService;
 
+    @Autowired
+    private OperateService operateService;
+
 
 
 
@@ -188,6 +191,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.consultAskService = consultAskService;
         ComponentUtil.consultAskReplyService = consultAskReplyService;
         ComponentUtil.statisticsClickPayService = statisticsClickPayService;
+        ComponentUtil.operateService = operateService;
 
         runThread = new RunThread();
         runThread.start();

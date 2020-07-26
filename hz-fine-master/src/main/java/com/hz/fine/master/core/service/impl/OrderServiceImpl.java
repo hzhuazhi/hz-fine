@@ -15,6 +15,7 @@ import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
 import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.operate.OperateModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
@@ -479,14 +480,23 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             // 查看此用户是否有派发的订单正在执行中：只有缓存中没有数据才代表此用户名下没挂单
             String redisKey_did = getRedisDataByKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
             if (StringUtils.isBlank(redisKey_did)){
-                // 查询此用户上一个订单的订单状态是否属于完结状态
+                // 查询此用户上一个订单的订单状态是否有未删除的人
                 OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3);
                 OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
                 if (orderModel != null && orderModel.getId() > 0){
-                    if (orderModel.getEndStatus() == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE){
+                    if (orderModel.getEliminateType() == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
                         return null;
                     }
                 }
+
+                // 运营数据是否有未处理的
+                OperateModel operateQuery = HodgepodgeMethod.assembleOperateQuery(didModel.getId(), 4, 1);
+                OperateModel operateModel = (OperateModel) ComponentUtil.operateService.findByObject(operateQuery);
+                if (operateModel != null && operateModel.getId() > 0){
+                    return null;
+                }
+
+
 
                 // 判断这个收款账号是否超过今日收款金额上限
                 String strKeyCache_check_lock_did_collection_account_day_suc_money = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_DAY_SUC_MONEY, didModel.getCollectionAccountId());
