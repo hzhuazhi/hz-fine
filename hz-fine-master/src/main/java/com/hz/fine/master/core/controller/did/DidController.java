@@ -514,6 +514,9 @@ public class DidController {
             DidModel didData = (DidModel) ComponentUtil.didService.findByObject(didQuery);
             // check校验用户信息是否为空
             HodgepodgeMethod.checkDidData(didData);
+            if(!StringUtils.isBlank(didData.getLockMoney())){
+                didData.setBalance(StringUtil.getBigDecimalAdd(didData.getBalance(), didData.getLockMoney()));
+            }
 
             // 获取今日收益：充多少送多少的收益，充值档次的赠送，昨天直推的奖励
             DidRewardModel didRewardQuery = HodgepodgeMethod.assembleDidRewardTodayProfit(did);

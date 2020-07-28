@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
+        a.id,a.did,a.order_no,case a.actual_money when '' then a.order_money else a.actual_money end as order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
         a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
         a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
         a.is_red_pack,a.red_pack_time,
