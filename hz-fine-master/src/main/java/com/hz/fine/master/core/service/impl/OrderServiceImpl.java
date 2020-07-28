@@ -480,21 +480,31 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             // 查看此用户是否有派发的订单正在执行中：只有缓存中没有数据才代表此用户名下没挂单
             String redisKey_did = getRedisDataByKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
             if (StringUtils.isBlank(redisKey_did)){
-                // 查询此用户上一个订单的订单状态是否有未删除的人
-                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3);
+                // 查询此用户上一个订单的订单状态是否是否已回复
+                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3, 1);
                 OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
                 if (orderModel != null && orderModel.getId() > 0){
-                    if (orderModel.getEliminateType() == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
-                        return null;
+                    if (orderModel.getIsRedPack() == 1){
+                        // 未发过红包
+                        if (orderModel.getOrderStatus() == 1){
+                            // 未发过红包，并且订单未超时
+                            return null;
+                        }
+                    }else {
+                        // 发过红包
+                        if (orderModel.getIsReply() < ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
+                            // 发过红包，并且未回复结果
+                            return null;
+                        }
                     }
                 }
 
-                // 运营数据是否有未处理的
-                OperateModel operateQuery = HodgepodgeMethod.assembleOperateQuery(didModel.getId(), 4, 1);
-                OperateModel operateModel = (OperateModel) ComponentUtil.operateService.findByObject(operateQuery);
-                if (operateModel != null && operateModel.getId() > 0){
-                    return null;
-                }
+//                // 运营数据是否有未处理的
+//                OperateModel operateQuery = HodgepodgeMethod.assembleOperateQuery(didModel.getId(), 4, 1);
+//                OperateModel operateModel = (OperateModel) ComponentUtil.operateService.findByObject(operateQuery);
+//                if (operateModel != null && operateModel.getId() > 0){
+//                    return null;
+//                }
 
 
 

@@ -1212,7 +1212,7 @@ public class OrderController {
             did = HodgepodgeMethod.checkNewestOrderData(requestModel);
 
             // 收款账号详情数据
-            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 0);
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 0, 1);
             OrderModel orderData = (OrderModel) ComponentUtil.orderService.getNewestOrder(orderQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();

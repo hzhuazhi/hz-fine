@@ -3357,22 +3357,23 @@ public class HodgepodgeMethod {
         if (orderModel == null || orderModel.getId() <= 0){
             orderNewest.isHave = 1;
         }else{
-            if (orderModel.getEndStatus() == 2){
-                orderNewest.isHave = 1;
-            }else{
-                orderNewest.isHave = 2;
-                if (orderModel.getDidStatus() == 1){
-                    orderNewest.purpose = "请等待支付用户进群";
+            if (orderModel.getIsRedPack() == 1){
+                // 未发过红包
+                if (orderModel.getOrderStatus() == 1){
+                    // 未发过红包，并且订单未超时
+                    orderNewest.isHave = 2;
+                    orderNewest.purpose = "请等待支付用户进群发红包";
                     orderNewest.origin = "请耐心等待";
-                }else if (orderModel.getDidStatus() == 2){
-                    orderNewest.purpose = "请等待支付用户发送红包";
-                    orderNewest.origin = "请进群查看是否发送红包：支付用户进群2分钟后未发红包则直接剔除用户，并且回复2";
-                }else if (orderModel.getDidStatus() == 3){
-                    orderNewest.purpose = "待回复收款指令";
-                    orderNewest.origin = "实际收款回复1#金额，或未到款回复2";
-                }else if (orderModel.getDidStatus() == 4){
-                    orderNewest.purpose = "待回复正常结束指令";
-                    orderNewest.origin = "需删除支付用户，并且回复指令3";
+                }else {
+                    orderNewest.isHave = 1;
+                }
+            }else {
+                // 发过红包
+                if (orderModel.getIsReply() < ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
+                    // 发过红包，并且未回复结果
+                    orderNewest.isHave = 2;
+                    orderNewest.purpose = "请回复收款结果";
+                    orderNewest.origin = "如果不回复结果，无法派发下个订单";
                 }
             }
         }
@@ -6126,15 +6127,19 @@ public class HodgepodgeMethod {
      * @Description: 组装查询订单信息的查询条件
      * @param did - 用户ID
      * @param collectionType - 收款账号类型：1微信，2支付宝，3微信群
+     * @param replenishType -  是否是补单：1初始化不是补单，2是补单
      * @return com.hz.fine.master.core.model.order.OrderModel
      * @author yoko
      * @date 2020/7/20 20:48
      */
-    public static OrderModel assembleOrderByNewest(long did, int collectionType){
+    public static OrderModel assembleOrderByNewest(long did, int collectionType, int replenishType){
         OrderModel resBean = new OrderModel();
         resBean.setDid(did);
         if(collectionType > 0){
             resBean.setCollectionType(collectionType);
+        }
+        if(replenishType > 0){
+            resBean.setReplenishType(replenishType);
         }
         return resBean;
     }

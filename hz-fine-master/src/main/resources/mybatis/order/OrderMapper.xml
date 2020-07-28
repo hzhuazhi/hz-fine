@@ -9,7 +9,9 @@
     <sql id="Base_Column_List">
         a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
         a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
-        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,a.end_status,a.eliminate_type,
+        a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
+        a.is_red_pack,a.red_pack_time,
+        a.is_reply,a.reply_data,a.reply_time,a.actual_money,a.money_fit_type,a.replenish_type,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
         a.create_time,a.update_time,a.yn,
         b.ac_name,b.ac_num
@@ -49,8 +51,11 @@
             <if test="orderStatusStr != null and orderStatusStr != '' " >
                 and a.order_status >= 3
             </if>
-            <if test="endStatus != null and endStatus != '' " >
-                and a.end_status = #{endStatus}
+            <if test="isReply != null and isReply != '' " >
+                and a.is_reply = #{isReply}
+            </if>
+            <if test="replenishType != null and replenishType != '' " >
+                and a.replenish_type = #{replenishType}
             </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
@@ -363,7 +368,9 @@
     <select id="getSucOrderList" resultType="com.hz.fine.master.core.model.order.OrderModel">
          select
             a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
-            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,a.eliminate_type,
+            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+            a.profit,a.is_red_pack,a.red_pack_time,
+            a.is_reply,a.reply_data,a.reply_time,a.actual_money,a.money_fit_type,a.replenish_type,
             a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
             a.create_time,a.update_time,a.yn,
             '****' as ac_name,a.profit
@@ -382,7 +389,9 @@
     <select id="getInitOrder" resultType="com.hz.fine.master.core.model.order.OrderModel">
          select
             a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
-            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,a.eliminate_type,
+            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+            a.profit,a.is_red_pack,a.red_pack_time,
+            a.is_reply,a.reply_data,a.reply_time,a.actual_money,a.money_fit_type,a.replenish_type,
             a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
             a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
             a.create_time,a.update_time,a.yn,
@@ -429,7 +438,9 @@
     <select id="getOrderByReward" resultType="com.hz.fine.master.core.model.order.OrderModel">
          select
             a.id,a.did,a.order_no,a.order_money,a.collection_account_id,a.collection_type,a.qr_code_id,
-            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,a.eliminate_type,
+            a.qr_code,a.wx_nickname,a.wx_id,a.out_trade_no,a.notify_url,a.order_status,a.invalid_time,
+            a.profit,a.is_red_pack,a.red_pack_time,
+            a.is_reply,a.reply_data,a.reply_time,a.actual_money,a.money_fit_type,a.replenish_type,
             a.user_id,a.zfb_ac_num,a.program_time,a.did_status,a.did_time,a.profit,
             a.curday,a.curhour,a.curminute,a.run_num,a.run_status,
             a.create_time,a.update_time,a.yn,

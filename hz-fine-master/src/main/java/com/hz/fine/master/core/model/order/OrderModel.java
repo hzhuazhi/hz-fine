@@ -109,10 +109,7 @@ public class OrderModel extends BasePage implements Serializable {
      */
     private String didTime;
 
-    /**
-     * 剔除成员类型：1初始化，2需要剔除成员，3已剔除支付用户成员
-     */
-    private Integer eliminateType;
+
 
     /**
      * 创建日期：存的日期格式20160530
@@ -174,9 +171,45 @@ public class OrderModel extends BasePage implements Serializable {
     private String profit;
 
     /**
-     * 订单是否处于完结状态：1未完结，2完结
+     * 是否发了红包：1初始化未发红包，2发了红包
      */
-    private Integer endStatus;
+    private Integer isRedPack;
+
+    /**
+     * 发红包的时间
+     */
+    private String redPackTime;
+
+    /**
+     * 是否回复：1初始化未回复，2系统默认回复，3已回复失败，4已回复成功
+     */
+    private Integer isReply;
+
+    /**
+     * 回复类容
+     */
+    private String replyData;
+
+    /**
+     * 回复时间
+     */
+    private String replyTime;
+
+    /**
+     * 回复的实际金额
+     */
+    private String actualMoney;
+
+    /**
+     * 金额是否与上报金额一致：1初始化，2少了，3多了，4一致
+     */
+    private Integer moneyFitType;
+
+    /**
+     * 是否是补单：1初始化不是补单，2是补单
+     */
+    private Integer replenishType;
+
 
     /**
      * 收益比例
@@ -501,19 +534,67 @@ public class OrderModel extends BasePage implements Serializable {
         this.orderStatusStr = orderStatusStr;
     }
 
-    public Integer getEndStatus() {
-        return endStatus;
+    public Integer getIsRedPack() {
+        return isRedPack;
     }
 
-    public void setEndStatus(Integer endStatus) {
-        this.endStatus = endStatus;
+    public void setIsRedPack(Integer isRedPack) {
+        this.isRedPack = isRedPack;
     }
 
-    public Integer getEliminateType() {
-        return eliminateType;
+    public String getRedPackTime() {
+        return redPackTime;
     }
 
-    public void setEliminateType(Integer eliminateType) {
-        this.eliminateType = eliminateType;
+    public void setRedPackTime(String redPackTime) {
+        this.redPackTime = redPackTime;
+    }
+
+    public Integer getIsReply() {
+        return isReply;
+    }
+
+    public void setIsReply(Integer isReply) {
+        this.isReply = isReply;
+    }
+
+    public String getReplyData() {
+        return replyData;
+    }
+
+    public void setReplyData(String replyData) {
+        this.replyData = replyData;
+    }
+
+    public String getReplyTime() {
+        return replyTime;
+    }
+
+    public void setReplyTime(String replyTime) {
+        this.replyTime = replyTime;
+    }
+
+    public String getActualMoney() {
+        return actualMoney;
+    }
+
+    public void setActualMoney(String actualMoney) {
+        this.actualMoney = actualMoney;
+    }
+
+    public Integer getMoneyFitType() {
+        return moneyFitType;
+    }
+
+    public void setMoneyFitType(Integer moneyFitType) {
+        this.moneyFitType = moneyFitType;
+    }
+
+    public Integer getReplenishType() {
+        return replenishType;
+    }
+
+    public void setReplenishType(Integer replenishType) {
+        this.replenishType = replenishType;
     }
 }
