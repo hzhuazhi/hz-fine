@@ -116,6 +116,11 @@ public class DidCollectionAccount implements Serializable {
      */
     public Integer dataType;
 
+    /**
+     * 执行类型：1需要回复指令，2需要上传二维码
+     */
+    public Integer isOk;
+
     public DidCollectionAccount(){
 
     }
@@ -287,5 +292,13 @@ public class DidCollectionAccount implements Serializable {
 
     public void setIsInvalid(Integer isInvalid) {
         this.isInvalid = isInvalid;
+    }
+
+    public Integer getIsOk() {
+        return isOk;
+    }
+
+    public void setIsOk(Integer isOk) {
+        this.isOk = isOk;
     }
 }

@@ -957,16 +957,16 @@ public class DidCollectionAccountController {
      * local:http://localhost:8086/fine/collAc/getGroupName
      * 请求的属性类:RequestDidCollectionAccount
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密字段:{"jsonData":"eyJpZCI6MSwiYWNUeXBlIjoiMiIsImFjTnVtIjoiYWNOdW0xMSIsIm1tUXJDb2RlIjoibW1RckNvZGUxMSIsInBheWVlIjoicGF5ZWUxMSIsImJhbmtOYW1lIjoiYmFua05hbWUxMSIsImJ1c2luZXNzVHlwZSI6IjIiLCJ3eFFyQ29kZUFkcyI6Ind4UXJDb2RlQWRzMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+cctime+秘钥=sign
      * 服务端加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJzaWduIjoiZDE0NzNhZTdjM2NiMWQyNGQ5OGNkYWU0ZWQyZGEwYzQiLCJzdGltZSI6MTU5NDIwMDg4NTY3N30="
+     *         "jsonData": "eyJncm91cE1vZGVsIjp7ImFjVHlwZSI6MywiY2hlY2tJbmZvIjoiIiwiY2hlY2tTdGF0dXMiOi0xLCJkZFFyQ29kZSI6IiIsImlkIjo4MSwiaW52YWxpZFRpbWUiOiIyMDIwLTA4LTA0IDIyOjUyOjA5IiwiaXNJbnZhbGlkIjoxLCJpc09rIjoyLCJtbVFyQ29kZSI6IiIsInBheWVlIjoiMemXqueUtTEiLCJyZWRQYWNrTnVtIjowLCJ1c2VTdGF0dXMiOjF9LCJzaWduIjoiMTJiNzZlZDk0ZmM5NDA0NmVjZDY3ZmI1MjdhMmM3MzAiLCJzdGltZSI6MTU5NjEyMjM4NTc4MX0="
      *     },
-     *     "sgid": "202007081734450000001",
+     *     "sgid": "202007302319370000001",
      *     "cgid": ""
      * }
      */
@@ -996,20 +996,68 @@ public class DidCollectionAccountController {
             did = HodgepodgeMethod.checkDidCollectionAccountGroupName(requestModel);
 
             // 查询策略里面的微信群名固定词
-            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NAME.getStgType());
-            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            StrategyModel strategyGroupNameQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NAME.getStgType());
+            StrategyModel strategyGroupNameModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupNameQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
 
+            // 查询策略里面的每个群最多允许收红包的数量
+            StrategyModel strategyGroupRedPackNumQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_RED_PACK_NUM.getStgType());
+            StrategyModel strategygroupRedPackNumModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupRedPackNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
+            // 获取用户信息
             DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
             DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
             HodgepodgeMethod.checkDidData(didModel);
 
+            // 组装群名
             int groupNum = didModel.getGroupNum() + 1;
-            String groupName = String.valueOf(did) + strategyModel.getStgValue() + groupNum;
+            String groupName = String.valueOf(did) + strategyGroupNameModel.getStgValue() + groupNum;
+
+            int isOk = 0;
+            // 查询此账号的最新的收款账号
+            DidCollectionAccountModel didCollectionAccountModel = new DidCollectionAccountModel();
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountByDidAndAcTypeQuery(did, 3);
+            didCollectionAccountModel = ComponentUtil.didCollectionAccountService.getDidCollectionAccount(didCollectionAccountQuery);
+            if (didCollectionAccountModel != null && didCollectionAccountModel.getId() > 0){
+                if (!StringUtils.isBlank(didCollectionAccountModel.getAcName()) && !StringUtils.isBlank(didCollectionAccountModel.getAcNum())){
+                    // 不需要回复指令
+                    if (StringUtils.isBlank(didCollectionAccountModel.getMmQrCode()) && StringUtils.isBlank(didCollectionAccountModel.getDdQrCode())){
+                        // 说明已经回复了指令，但是没有上传二维码
+                        isOk = 2;
+                    }else {
+                        // 说明已经回复了指令，并且已经上传了二维码；需要新增账号
+                        isOk = 1;
+                        // 新增收款账号
+                        DidCollectionAccountModel didCollectionAccountAdd = HodgepodgeMethod.assembleDidCollectionAccountAddByWx(did, 3, groupName, strategygroupRedPackNumModel.getStgNumValue());
+                        ComponentUtil.didCollectionAccountService.add(didCollectionAccountAdd);
+                        didCollectionAccountModel = didCollectionAccountAdd;
+
+                        // 修改微信群序号
+                        DidModel updateGroupOrSwitch = HodgepodgeMethod.assembleUpdateGroupOrSwitchData(did, 1, 0);
+                        ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+                    }
+
+                }else {
+                    // 不需要新增：但是需要回复
+                    isOk = 1;
+                }
+            }else {
+                // 表示需要新增收款账号
+                isOk = 1;
+                // 新增收款账号
+                DidCollectionAccountModel didCollectionAccountAdd = HodgepodgeMethod.assembleDidCollectionAccountAddByWx(did, 3, groupName, strategygroupRedPackNumModel.getStgNumValue());
+                ComponentUtil.didCollectionAccountService.add(didCollectionAccountAdd);
+                didCollectionAccountModel = didCollectionAccountAdd;
+                log.info("");
+                // 修改微信群序号
+                DidModel updateGroupOrSwitch = HodgepodgeMethod.assembleUpdateGroupOrSwitchData(did, 1, 0);
+                ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+            }
+
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleGroupNameResult(stime, sign, groupName);
+            String strData = HodgepodgeMethod.assembleGroupNameResult(stime, sign, didCollectionAccountModel, isOk);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();

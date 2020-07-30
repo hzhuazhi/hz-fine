@@ -117,6 +117,8 @@ public class ServerConstant {
         WX_GROUP_REPLY_INSTRUCT(32,""),
         REPLY_TIME(33,""),
         GROUP_NAME(34,""),
+        GROUP_RED_PACK_NUM(35,""),
+        GROUP_NUM(36,""),
 
 
 

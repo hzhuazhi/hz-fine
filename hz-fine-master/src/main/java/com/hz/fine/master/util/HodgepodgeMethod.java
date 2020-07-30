@@ -57,6 +57,7 @@ import com.hz.fine.master.core.protocol.response.consult.ResponseConsult;
 import com.hz.fine.master.core.protocol.response.did.ResponseDid;
 import com.hz.fine.master.core.protocol.response.did.basic.DidBasic;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccount;
+import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccountGroup;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.DidCollectionAccountZfb;
 import com.hz.fine.master.core.protocol.response.did.collectionaccount.ResponseDidCollectionAccount;
 import com.hz.fine.master.core.protocol.response.did.onoff.DidOnoff;
@@ -6466,22 +6467,48 @@ public class HodgepodgeMethod {
      * @Description: 获取群名称的数据组装返回客户端的方法
      * @param stime - 服务器的时间
      * @param sign - 签名
-     * @param groupName - 微信群名称
+     * @param didCollectionAccountModel - 收款账号
+     * @param isOk - 是否需要回复指令：1需要回复指令，2不需要回复指令
      * @return java.lang.String
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleGroupNameResult(long stime, String sign, String groupName){
+    public static String assembleGroupNameResult(long stime, String sign, DidCollectionAccountModel didCollectionAccountModel, int isOk){
         ResponseDidCollectionAccount dataModel = new ResponseDidCollectionAccount();
-        if (!StringUtils.isBlank(groupName)){
-            DidCollectionAccount data = new DidCollectionAccount();
-            data.payee = groupName;
-            dataModel.dataModel = data;
+        if (didCollectionAccountModel != null && didCollectionAccountModel.getId() > 0){
+            DidCollectionAccountGroup data = BeanUtils.copy(didCollectionAccountModel, DidCollectionAccountGroup.class);
+            data.isOk = isOk;
+            dataModel.groupModel = data;
         }
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
     }
+
+    /**
+     * @Description: 组装新增收款账号的方法
+     * @param did - 用户ID
+     * @param acType - 收款账户类型：1微信，2支付宝，3微信群
+     * @param payee - 微信群名称
+     * @param redPackNum - 可收红包个数
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/7/30 22:37
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountAddByWx(long did, int acType, String payee, int redPackNum){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setAcType(acType);
+        resBean.setPayee(payee);
+        if (acType == 3){
+            String invalidTime = DateUtil.increaseDayStr(new Date(), 5);
+            resBean.setInvalidTime(invalidTime);
+        }
+        resBean.setRedPackNum(redPackNum);
+        return resBean;
+
+    }
+
 
 
 

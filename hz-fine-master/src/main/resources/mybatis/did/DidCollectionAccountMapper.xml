@@ -8,7 +8,7 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.did,a.ac_name,a.ac_type,a.ac_num,a.user_id,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
-        a.wx_qr_code_ads,a.invalid_time,a.is_invalid,
+        a.wx_qr_code_ads,a.invalid_time,a.is_invalid,a.red_pack_num,
         a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -188,6 +188,9 @@
             <if test="invalidTime != null and invalidTime != '' " >
                 invalid_time,
             </if>
+            <if test="redPackNum != null and redPackNum != '' " >
+                red_pack_num,
+            </if>
             <if test="daySwitch != null and daySwitch != '' " >
                 day_switch,
             </if>
@@ -245,6 +248,9 @@
             </if>
             <if test="invalidTime != null and invalidTime != '' " >
                 <![CDATA[  #{invalidTime}, ]]>
+            </if>
+            <if test="redPackNum != null and redPackNum != '' " >
+                <![CDATA[  #{redPackNum}, ]]>
             </if>
             <if test="daySwitch != null and daySwitch != '' " >
                 <![CDATA[  #{daySwitch}, ]]>
@@ -421,6 +427,16 @@
         where 1=1
         and a.did = #{did}
         and a.ac_type = #{acType}
+        order by id desc
+        limit 1
+    </select>
+
+    <!-- 获取此用户的最新的收款账号-->
+    <select id="getDidCollectionAccount" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
         order by id desc
         limit 1
     </select>

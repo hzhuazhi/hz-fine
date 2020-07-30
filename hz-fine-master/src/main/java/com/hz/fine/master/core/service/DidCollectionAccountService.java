@@ -41,11 +41,26 @@ public interface DidCollectionAccountService<T> extends BaseService<T> {
 
     /**
      * @Description: 获取用户最新的收款账号的信息
+     * <p>
+     *     yn 可以等于任意
+     * </p>
      * @param model
      * @return
      * @author yoko
      * @date 2020/7/30 16:22
      */
     public DidCollectionAccountModel getNewDidCollectionAccount(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 获取此用户的最新的收款账号
+     * <p>
+     *     yn = 0
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/30 21:59
+     */
+    public DidCollectionAccountModel getDidCollectionAccount(DidCollectionAccountModel model);
 
 }
