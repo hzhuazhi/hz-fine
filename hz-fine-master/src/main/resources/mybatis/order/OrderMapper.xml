@@ -327,7 +327,8 @@
 
     <!-- 派发订单成功的金额-->
     <select id="getProfitByCurday" parameterType="Object" resultType="java.lang.String">
-        select ifnull(sum(convert(a.order_money,decimal(19,2))), '0.00') as profit from tb_fn_order a
+        <!--select ifnull(sum(convert(a.order_money,decimal(19,2))), '0.00') as profit from tb_fn_order a -->
+        select ifnull(sum(convert(case a.actual_money when '' then a.order_money else a.actual_money end,decimal(19,2))), '0.00') as profit from tb_fn_order a
         <include refid="Example_Where_Clause"/>
     </select>
 
