@@ -6510,6 +6510,61 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据当用户修改微信群二维码时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountUpdateGroupQrCodeData(RequestDidCollectionAccount requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00041.geteCode(), ErrorCode.ENUM_ERROR.DC00041.geteDesc());
+        }
+
+        if (requestModel.id == null || requestModel.id <= ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00042.geteCode(), ErrorCode.ENUM_ERROR.DC00042.geteDesc());
+        }
+
+        if (StringUtils.isBlank(requestModel.mmQrCode) || StringUtils.isBlank(requestModel.ddQrCode)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00043.geteCode(), ErrorCode.ENUM_ERROR.DC00043.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装用户修改微信群二维码的信息
+     * @param did - 用户的ID
+     * @param requestDidCollectionAccount - 要更新的基本信息
+     * @return
+     * @author yoko
+     * @date 2020/5/14 17:20
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountUpdateGroupQrCode(long did, RequestDidCollectionAccount requestDidCollectionAccount){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setId(requestDidCollectionAccount.getId());
+        resBean.setMmQrCode(requestDidCollectionAccount.mmQrCode);
+        resBean.setDdQrCode(requestDidCollectionAccount.ddQrCode);
+        resBean.setCheckStatus(3);
+        resBean.setCheckInfo("成功");
+        return resBean;
+    }
+
+
 
 
     public static void main(String [] args){

@@ -370,6 +370,9 @@
             <if test="mmQrCode != null and mmQrCode != '' " >
                 a.mm_qr_code = #{mmQrCode},
             </if>
+            <if test="ddQrCode != null and ddQrCode != '' " >
+                a.dd_qr_code = #{ddQrCode},
+            </if>
             <if test="payee != null and payee != '' " >
                 a.payee = #{payee},
             </if>
