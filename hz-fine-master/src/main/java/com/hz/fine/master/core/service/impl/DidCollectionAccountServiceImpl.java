@@ -44,4 +44,9 @@ public class DidCollectionAccountServiceImpl<T> extends BaseServiceImpl<T> imple
     public void updateDidCollectionAccountZfb(DidCollectionAccountModel model) {
         didCollectionAccountMapper.updateDidCollectionAccountZfb(model);
     }
+
+    @Override
+    public DidCollectionAccountModel getNewDidCollectionAccount(DidCollectionAccountModel model) {
+        return didCollectionAccountMapper.getNewDidCollectionAccount(model);
+    }
 }

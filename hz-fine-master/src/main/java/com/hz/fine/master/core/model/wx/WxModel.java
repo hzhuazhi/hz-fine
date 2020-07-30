@@ -49,6 +49,31 @@ public class WxModel extends BasePage implements Serializable {
     private String bindingMobile;
 
     /**
+     * 总共可以加多少个用户
+     */
+    private Integer dataNum;
+
+    /**
+     * 已经加了多少用户
+     */
+    private Integer isDataNum;
+
+    /**
+     * 是否以及完成了限制目标：1未完成，2完成
+     */
+    private Integer isOk;
+
+    /**
+     * 每日可加用户的数量
+     */
+    private Integer dayNum;
+
+    /**
+     * 微信名片二维码地址
+     */
+    private String wxQrCode;
+
+    /**
      * 使用状态:1初始化有效正常使用，2无效暂停使用
      */
     private Integer useStatus;
@@ -154,5 +179,45 @@ public class WxModel extends BasePage implements Serializable {
 
     public void setBindingMobile(String bindingMobile) {
         this.bindingMobile = bindingMobile;
+    }
+
+    public Integer getDataNum() {
+        return dataNum;
+    }
+
+    public void setDataNum(Integer dataNum) {
+        this.dataNum = dataNum;
+    }
+
+    public Integer getIsDataNum() {
+        return isDataNum;
+    }
+
+    public void setIsDataNum(Integer isDataNum) {
+        this.isDataNum = isDataNum;
+    }
+
+    public Integer getIsOk() {
+        return isOk;
+    }
+
+    public void setIsOk(Integer isOk) {
+        this.isOk = isOk;
+    }
+
+    public Integer getDayNum() {
+        return dayNum;
+    }
+
+    public void setDayNum(Integer dayNum) {
+        this.dayNum = dayNum;
+    }
+
+    public String getWxQrCode() {
+        return wxQrCode;
+    }
+
+    public void setWxQrCode(String wxQrCode) {
+        this.wxQrCode = wxQrCode;
     }
 }

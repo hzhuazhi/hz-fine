@@ -213,4 +213,19 @@ public interface CacheKey {
      */
     String LOCK_BANK_ID_MONEY = "-33";
 
+    /**
+     * 小微每天加好友的数量
+     * <p>
+     *     1.task配合去累加当日加好友数量。
+     *     2.redis的失效时间是：距离今天凌晨的时间失效
+     *
+     * </p>
+     */
+    String WX_DAY_NUM = "-34";
+
+    /**
+     * 用户已给出的小微
+     */
+    String WX_BY_DID = "-35";
+
 }

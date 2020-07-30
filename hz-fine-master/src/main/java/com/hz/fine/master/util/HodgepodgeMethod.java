@@ -44,6 +44,7 @@ import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 import com.hz.fine.master.core.protocol.request.statistics.RequestStatisticsClickPay;
 import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
+import com.hz.fine.master.core.protocol.request.wx.RequestWx;
 import com.hz.fine.master.core.protocol.response.ResponseData;
 import com.hz.fine.master.core.protocol.response.bank.Bank;
 import com.hz.fine.master.core.protocol.response.bank.BankMoney;
@@ -90,6 +91,8 @@ import com.hz.fine.master.core.protocol.response.strategy.share.StrategyShare;
 import com.hz.fine.master.core.protocol.response.upgrade.ResponseUpgrade;
 import com.hz.fine.master.core.protocol.response.vcode.ResponseVcode;
 import com.hz.fine.master.core.protocol.response.vcode.Vcode;
+import com.hz.fine.master.core.protocol.response.wx.ResponseWx;
+import com.hz.fine.master.core.protocol.response.wx.Wx;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6188,6 +6191,199 @@ public class HodgepodgeMethod {
         resBean.setEndType(endType);
         return resBean;
     }
+
+
+    /**
+     * @Description: check校验数据获取小微数据集合时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkWxListData(RequestWx requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.WX00001.geteCode(), ErrorCode.ENUM_ERROR.WX00001.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 根据条件查询小微的数据-集合
+     * @param requestModel - 基本查询条件
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static WxModel assembleWxList(RequestWx requestModel){
+        WxModel resBean = BeanUtils.copy(requestModel, WxModel.class);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 小微数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param wxList - 用户奖励记录集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleWxListResult(long stime, String sign, List<WxModel> wxList, Integer rowCount){
+        ResponseWx dataModel = new ResponseWx();
+        if (wxList != null && wxList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<Wx> dataList = BeanUtils.copyList(wxList, Wx.class);
+            dataModel.dataList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: check校验数据获取小微详情时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkWxData(RequestWx requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.WX00002.geteCode(), ErrorCode.ENUM_ERROR.WX00002.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装查询用户收款账号的查询条件
+     * @param did - 用户ID
+    * @param acType - 收款账号类型
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/7/30 16:37
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountByDidAndAcTypeQuery(long did, int acType){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        resBean.setAcType(acType);
+        return resBean;
+    }
+
+    /**
+     * @Description: 根据收款账号ID查询微信旗下店员的信息
+     * @param collectionAccountId - 收款账号ID
+     * @return
+     * @author yoko
+     * @date 2020/7/30 16:47
+    */
+    public static WxClerkModel assembleWxClerkByCollectionAccountQuery(long collectionAccountId){
+        WxClerkModel resBean = new WxClerkModel();
+        resBean.setCollectionAccountId(collectionAccountId);
+        return resBean;
+    }
+    
+    /**
+     * @Description: 组装根据小微主键ID查询小微信息
+     * @param id - 小微的主键ID
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @return 
+     * @author yoko
+     * @date 2020/7/30 16:56 
+    */
+    public static WxModel assembleWxByIdQuery(long id, int useStatus){
+        WxModel resBean = new WxModel();
+        resBean.setId(id);
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询小微数据的查询条件
+     * @param isOk - 是否以及完成了限制目标：1未完成，2完成
+    * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @return com.hz.fine.master.core.model.wx.WxModel
+     * @author yoko
+     * @date 2020/7/30 18:50
+     */
+    public static WxModel assembleWxByIsOkAndUseStatusQuery(int isOk, int useStatus){
+        WxModel resBean = new WxModel();
+        resBean.setIsOk(isOk);
+        resBean.setUseStatus(useStatus);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装缓存key查询缓存中存在的数据
+     * @param cacheKey - 缓存的类型key
+     * @param obj - 数据的ID
+     * @return
+     * @author yoko
+     * @date 2020/5/20 14:59
+     */
+    public static String getRedisDataByKey(String cacheKey, Object obj){
+        String str = null;
+        String strKeyCache = CachedKeyUtils.getCacheKey(cacheKey, obj);
+        String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
+        if (StringUtils.isBlank(strCache)){
+            return str;
+        }else{
+            str = strCache;
+            return str;
+        }
+    }
+
+
+    /**
+     * @Description: 获取小微-详情的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param wxModel - 小微的详情
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleWxDataResult(long stime, String sign, WxModel wxModel){
+        ResponseWx dataModel = new ResponseWx();
+        if (wxModel != null){
+            Wx data = BeanUtils.copy(wxModel, Wx.class);
+            dataModel.dataModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
 
 
     public static void main(String [] args){

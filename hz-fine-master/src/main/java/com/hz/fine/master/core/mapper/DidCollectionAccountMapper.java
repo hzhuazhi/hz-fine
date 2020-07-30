@@ -42,4 +42,13 @@ public interface DidCollectionAccountMapper<T> extends BaseDao<T> {
      * @date 2020/5/18 15:52
      */
     public void updateDidCollectionAccountZfb(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 获取用户最新的收款账号的信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/30 16:22
+    */
+    public DidCollectionAccountModel getNewDidCollectionAccount(DidCollectionAccountModel model);
 }

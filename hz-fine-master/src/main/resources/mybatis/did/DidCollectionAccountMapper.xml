@@ -412,4 +412,18 @@
         and a.yn = 0
     </update>
 
+
+    <!-- 获取用户最新的收款账号的信息 -->
+    <select id="getNewDidCollectionAccount" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        where 1=1
+        and a.did = #{did}
+        and a.ac_type = #{acType}
+        order by id desc
+        limit 1
+    </select>
+
+
 </mapper>

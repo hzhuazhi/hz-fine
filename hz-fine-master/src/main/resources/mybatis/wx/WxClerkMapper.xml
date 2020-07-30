@@ -201,6 +201,18 @@
     </update>
 
 
+    <!-- 查询微信旗下店员的信息 -->
+    <select id="getWxClerk" resultType="com.hz.fine.master.core.model.wx.WxClerkModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_wx_clerk a
+        where 1=1
+        and a.collection_account_id = #{collectionAccountId}
+        order by id desc
+        limit 1
+    </select>
+
+
 
 
 

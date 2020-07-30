@@ -7,7 +7,8 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.ac_name,a.wx_pass_wd,a.wx_name,a.to_wxid,a.total_link,a.binding_mobile,a.use_status,
+        a.id,a.ac_name,a.wx_pass_wd,a.wx_name,a.to_wxid,a.total_link,a.binding_mobile,
+        a.data_num,a.is_data_num,a.is_ok,a.day_num,a.wx_qr_code,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -30,6 +31,9 @@
             </if>
             <if test="toWxid != null and toWxid != '' " >
                 and a.to_wxid = #{toWxid}
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                and a.is_ok = #{isOk}
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
@@ -138,6 +142,21 @@
             <if test="bindingMobile != null and bindingMobile != '' " >
                 binding_mobile,
             </if>
+            <if test="dataNum != null and dataNum != '' " >
+                data_num,
+            </if>
+            <if test="isDataNum != null and isDataNum != '' " >
+                is_data_num,
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                is_ok,
+            </if>
+            <if test="dayNum != null and dayNum != '' " >
+                day_num,
+            </if>
+            <if test="wxQrCode != null and wxQrCode != '' " >
+                wx_qr_code,
+            </if>
             <if test="useStatus != null and useStatus != '' " >
                 use_status,
             </if>
@@ -162,6 +181,21 @@
             </if>
             <if test="bindingMobile != null and bindingMobile != '' " >
                 <![CDATA[  #{bindingMobile}, ]]>
+            </if>
+            <if test="dataNum != null and dataNum != '' " >
+                <![CDATA[  #{dataNum}, ]]>
+            </if>
+            <if test="isDataNum != null and isDataNum != '' " >
+                <![CDATA[  #{isDataNum}, ]]>
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                <![CDATA[  #{isOk}, ]]>
+            </if>
+            <if test="dayNum != null and dayNum != '' " >
+                <![CDATA[  #{dayNum}, ]]>
+            </if>
+            <if test="wxQrCode != null and wxQrCode != '' " >
+                <![CDATA[  #{wxQrCode}, ]]>
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 <![CDATA[  #{useStatus}, ]]>
@@ -189,12 +223,30 @@
             <if test="totalLink != null and totalLink != '' " >
                 a.total_link = #{totalLink},
             </if>
+            <if test="bindingMobile != null and bindingMobile != '' " >
+                a.binding_mobile = #{bindingMobile},
+            </if>
+            <if test="dataNum != null and dataNum != '' " >
+                a.data_num = #{dataNum},
+            </if>
+            <if test="isDataNum != null and isDataNum != '' " >
+                a.is_data_num = #{isDataNum},
+            </if>
+            <if test="isOk != null and isOk != '' " >
+                a.is_ok = #{isOk},
+            </if>
+            <if test="dayNum != null and dayNum != '' " >
+                a.day_num = #{dayNum},
+            </if>
+            <if test="wxQrCode != null and wxQrCode != '' " >
+                a.wx_qr_code = #{wxQrCode},
+            </if>
             <if test="useStatus != null and useStatus != '' " >
                 a.use_status = #{useStatus},
             </if>
             a.update_time = NOW(),
         </trim>
-        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Where_Clause_id"/>
     </update>
 
     <!-- 主要作用1.逻辑删除，2更新状态 -->
@@ -210,6 +262,15 @@
         </trim>
         <include refid="Example_Where_Clause_id"/>
     </update>
+
+
+    <!-- 获取小微的数据集合 -->
+    <select id="getWxList" parameterType="Object" resultType="com.hz.fine.master.core.model.wx.WxModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_wx a
+        <include refid="Example_Where_Clause"/>
+    </select>
 
 
 
