@@ -12,6 +12,7 @@ import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.region.RegionModel;
+import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
@@ -946,7 +947,86 @@ public class DidCollectionAccountController {
     }
 
 
+    /**
+     * @Description: 获取群名称-微信群
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/collAc/getGroupName
+     * 请求的属性类:RequestDidCollectionAccount
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJpZCI6MSwiYWNUeXBlIjoiMiIsImFjTnVtIjoiYWNOdW0xMSIsIm1tUXJDb2RlIjoibW1RckNvZGUxMSIsInBheWVlIjoicGF5ZWUxMSIsImJhbmtOYW1lIjoiYmFua05hbWUxMSIsImJ1c2luZXNzVHlwZSI6IjIiLCJ3eFFyQ29kZUFkcyI6Ind4UXJDb2RlQWRzMTEiLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiZDE0NzNhZTdjM2NiMWQyNGQ5OGNkYWU0ZWQyZGEwYzQiLCJzdGltZSI6MTU5NDIwMDg4NTY3N30="
+     *     },
+     *     "sgid": "202007081734450000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getGroupName", method = {RequestMethod.POST})
+    public JsonResult<Object> getGroupName(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
 
+        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        try {
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验数据
+            did = HodgepodgeMethod.checkDidCollectionAccountGroupName(requestModel);
+
+            // 查询策略里面的微信群名固定词
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NAME.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
+            DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
+            DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
+            HodgepodgeMethod.checkDidData(didModel);
+
+            int groupNum = didModel.getGroupNum() + 1;
+            String groupName = String.valueOf(did) + strategyModel.getStgValue() + groupNum;
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleGroupNameResult(stime, sign, groupName);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        } catch (Exception e) {
+            Map<String, String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidCollectionAccountController.getGroupName() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidCollectionAccountController.getGroupName() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+
+    }
 
 
 

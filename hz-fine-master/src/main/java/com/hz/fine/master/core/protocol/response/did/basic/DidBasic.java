@@ -123,6 +123,11 @@ public class DidBasic implements Serializable {
      */
     public Integer isTeam;
 
+    /**
+     * 个人出码开关：1打开状态，2暂停状态
+     */
+    public Integer switchType;
+
     public DidBasic(){
 
     }
@@ -302,5 +307,13 @@ public class DidBasic implements Serializable {
 
     public void setTodayTeamDirectConsumeProfit(String todayTeamDirectConsumeProfit) {
         this.todayTeamDirectConsumeProfit = todayTeamDirectConsumeProfit;
+    }
+
+    public Integer getSwitchType() {
+        return switchType;
+    }
+
+    public void setSwitchType(Integer switchType) {
+        this.switchType = switchType;
     }
 }

@@ -809,6 +809,36 @@ public class HodgepodgeMethod {
 
     }
 
+    /**
+     * @Description: check校验数据当用户更新出码开关
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidUpdateSwitch(RequestDid requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00034.geteCode(), ErrorCode.ENUM_ERROR.D00034.geteDesc());
+        }
+        // 校验出码开关
+        if(requestModel.switchType == null || requestModel.switchType <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00035.geteCode(), ErrorCode.ENUM_ERROR.D00035.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
 
     /**
      * @Description: 组装根据用户账号，密码登录查询的查询方法
@@ -837,6 +867,28 @@ public class HodgepodgeMethod {
         DidCollectionAccountModel resBean = new DidCollectionAccountModel();
         resBean.setDid(did);
         resBean.setAcType(acType);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装更新用户的群序号更出码开关的方法
+     * @param did - 用户ID
+     * @param groupNum - 群序号
+     * @param switchType - 个人出码开关：1打开状态，2暂停状态
+     * @return com.hz.fine.master.core.model.did.DidModel
+     * @author yoko
+     * @date 2020/7/30 20:09
+     */
+    public static DidModel assembleUpdateGroupOrSwitchData(long did, int groupNum, int switchType){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        if (groupNum > 0){
+            resBean.setGroupNum(groupNum);
+        }
+        if (switchType > 0){
+            resBean.setSwitchType(switchType);
+        }
         return resBean;
     }
 
@@ -6377,6 +6429,53 @@ public class HodgepodgeMethod {
         ResponseWx dataModel = new ResponseWx();
         if (wxModel != null){
             Wx data = BeanUtils.copy(wxModel, Wx.class);
+            dataModel.dataModel = data;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: check校验数据当用户获取微信群群名时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountGroupName(RequestDidCollectionAccount requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00040.geteCode(), ErrorCode.ENUM_ERROR.DC00040.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 获取群名称的数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param groupName - 微信群名称
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleGroupNameResult(long stime, String sign, String groupName){
+        ResponseDidCollectionAccount dataModel = new ResponseDidCollectionAccount();
+        if (!StringUtils.isBlank(groupName)){
+            DidCollectionAccount data = new DidCollectionAccount();
+            data.payee = groupName;
             dataModel.dataModel = data;
         }
         dataModel.setStime(stime);

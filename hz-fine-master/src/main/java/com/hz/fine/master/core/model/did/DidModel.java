@@ -181,6 +181,16 @@ public class DidModel extends BasePage implements Serializable {
     private Long ownId;
 
     /**
+     * 群序号
+     */
+    private Integer groupNum;
+
+    /**
+     * 个人出码开关：1打开状态，2暂停状态
+     */
+    private Integer switchType;
+
+    /**
      * 使用状态:1初始化有效正常使用，2无效暂停使用
      */
     private Integer useStatus;
@@ -602,5 +612,21 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setDdQrCode(String ddQrCode) {
         this.ddQrCode = ddQrCode;
+    }
+
+    public Integer getGroupNum() {
+        return groupNum;
+    }
+
+    public void setGroupNum(Integer groupNum) {
+        this.groupNum = groupNum;
+    }
+
+    public Integer getSwitchType() {
+        return switchType;
+    }
+
+    public void setSwitchType(Integer switchType) {
+        this.switchType = switchType;
     }
 }

@@ -115,6 +115,8 @@ public class ServerConstant {
         WX_GROUP_CONSUME_MONEY_LIST(30,""),
         TEAM_CONSUME_REWARD_WX_GROUP(31,""),
         WX_GROUP_REPLY_INSTRUCT(32,""),
+        REPLY_TIME(33,""),
+        GROUP_NAME(34,""),
 
 
 

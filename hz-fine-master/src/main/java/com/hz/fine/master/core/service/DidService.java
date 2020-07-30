@@ -67,4 +67,13 @@ public interface DidService<T> extends BaseService<T> {
      * @date 2020/7/2 10:56
      */
     public List<DidModel> getEffectiveDidByWxGroupList(DidModel model);
+
+    /**
+     * @Description: 更新用户的群序号或者更新用户的出码开关
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/30 19:57
+     */
+    public int updateDidGroupNumOrSwitchType(DidModel model);
 }
