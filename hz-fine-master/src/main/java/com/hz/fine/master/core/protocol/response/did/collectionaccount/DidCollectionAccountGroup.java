@@ -52,7 +52,7 @@ public class DidCollectionAccountGroup implements Serializable {
     public Integer redPackNum;
 
     /**
-     * 收款账号审核：1初始化，2审核失败，2审核成功
+     * 收款账号审核：1初始化，2审核失败，3审核成功
      */
     public Integer checkStatus;
 

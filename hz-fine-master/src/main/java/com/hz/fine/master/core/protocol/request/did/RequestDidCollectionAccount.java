@@ -84,7 +84,7 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
     public String operateWd;
 
     /**
-     * 是否失效：1未失效，2已失效
+     * 是否有效：1未失效/有效，2已失效/无效
      */
     public Integer isInvalid;
 
