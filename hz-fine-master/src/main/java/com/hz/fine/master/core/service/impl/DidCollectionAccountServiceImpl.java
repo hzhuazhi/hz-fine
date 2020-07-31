@@ -8,6 +8,8 @@ import com.hz.fine.master.core.service.DidCollectionAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description 用户的收款账号的Service层的实现层
  * @Author yoko
@@ -53,5 +55,12 @@ public class DidCollectionAccountServiceImpl<T> extends BaseServiceImpl<T> imple
     @Override
     public DidCollectionAccountModel getDidCollectionAccount(DidCollectionAccountModel model) {
         return didCollectionAccountMapper.getDidCollectionAccount(model);
+    }
+
+    @Override
+    public List<DidCollectionAccountModel> getDidCollectionAccountByInvalid(DidCollectionAccountModel model) {
+        Integer rowCount = didCollectionAccountMapper.countDidCollectionAccountByInvalid(model);
+        model.setRowCount(rowCount);
+        return didCollectionAccountMapper.getDidCollectionAccountByInvalid(model);
     }
 }

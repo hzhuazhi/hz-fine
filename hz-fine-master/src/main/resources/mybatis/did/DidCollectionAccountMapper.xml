@@ -48,6 +48,12 @@
             <if test="isInvalid != null and isInvalid != '' " >
                 and a.is_invalid = #{isInvalid}
             </if>
+            <if test="invalidTimeStart != null and invalidTimeStart != '' " >
+                and a.invalid_time > now()
+            </if>
+            <if test="invalidTimeEnd != null and invalidTimeEnd != '' " >
+                or a.invalid_time &lt;= now()
+            </if>
             <if test="daySwitch != null and daySwitch != '' " >
                 and a.day_switch = #{daySwitch}
             </if>
@@ -442,6 +448,47 @@
         <include refid="Example_Where_Clause"/>
         order by id desc
         limit 1
+    </select>
+
+
+
+    <!-- 计算无效的收款账号数量-微信群-->
+    <select id="countDidCollectionAccountByInvalid" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1) from (
+            select * from tb_fn_did_collection_account a
+            where 1=1
+            and a.is_invalid = #{isInvalid} or a.invalid_time &lt;= now()
+            and a.did = #{did}
+            and a.ac_type = #{acType}
+            and a.yn = 0
+            union
+            select * from tb_fn_did_collection_account a
+            where 1=1
+            and a.check_status = #{checkStatus}
+            and a.did = #{did}
+            and a.ac_type = #{acType}
+            and a.yn = 0
+        ) a
+    </select>
+
+    <!-- 查询无效的收款账号-微信群 -->
+    <select id="getDidCollectionAccountByInvalid" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select <include refid="Base_Column_List" /> from tb_fn_did_collection_account a
+        where 1=1
+        and a.is_invalid = #{isInvalid} or a.invalid_time &lt;= now()
+        and a.did = #{did}
+        and a.ac_type = #{acType}
+        and a.yn = 0
+          union
+        select <include refid="Base_Column_List" /> from tb_fn_did_collection_account a
+        where 1=1
+        and a.check_status = #{checkStatus}
+        and a.did = #{did}
+        and a.ac_type = #{acType}
+        and a.yn = 0
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
     </select>
 
 

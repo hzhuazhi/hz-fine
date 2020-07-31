@@ -18,6 +18,7 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
     public DidCollectionAccount dataModel;
     public DidCollectionAccountZfb zfbModel;
     public DidCollectionAccountGroup groupModel;
+    public List<DidCollectionAccountGroup> groupList;
     public Integer rowCount;
 
     public ResponseDidCollectionAccount(){
@@ -64,5 +65,13 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
 
     public void setGroupModel(DidCollectionAccountGroup groupModel) {
         this.groupModel = groupModel;
+    }
+
+    public List<DidCollectionAccountGroup> getGroupList() {
+        return groupList;
+    }
+
+    public void setGroupList(List<DidCollectionAccountGroup> groupList) {
+        this.groupList = groupList;
     }
 }

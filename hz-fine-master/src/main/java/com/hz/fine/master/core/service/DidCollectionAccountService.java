@@ -3,6 +3,8 @@ package com.hz.fine.master.core.service;
 import com.hz.fine.master.core.common.service.BaseService;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 
+import java.util.List;
+
 /**
  * @Description 用户的收款账号的Service层
  * @Author yoko
@@ -62,5 +64,17 @@ public interface DidCollectionAccountService<T> extends BaseService<T> {
      * @date 2020/7/30 21:59
      */
     public DidCollectionAccountModel getDidCollectionAccount(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 查询无效的收款账号-微信群
+     * <p>
+     *     分页
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/31 14:32
+     */
+    public List<DidCollectionAccountModel> getDidCollectionAccountByInvalid(DidCollectionAccountModel model);
 
 }

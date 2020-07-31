@@ -4,6 +4,8 @@ import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @Description 用户的收款账号的Dao层
  * @Author yoko
@@ -66,4 +68,28 @@ public interface DidCollectionAccountMapper<T> extends BaseDao<T> {
      * @date 2020/7/30 21:59
     */
     public DidCollectionAccountModel getDidCollectionAccount(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 计算无效的收款账号数量-微信群
+     * <p>
+     *     分页
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/31 14:33
+    */
+    public int countDidCollectionAccountByInvalid(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 查询无效的收款账号-微信群
+     * <p>
+     *     分页
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/31 14:32
+     */
+    public List<DidCollectionAccountModel> getDidCollectionAccountByInvalid(DidCollectionAccountModel model);
 }

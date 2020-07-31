@@ -153,6 +153,18 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
      */
     private Long qrCodeId;
 
+    /**
+     * 有效时间
+     * SQL判断
+     */
+    private String invalidTimeStart;
+
+    /**
+     * 失效时间
+     * SQL判断
+     */
+    private String invalidTimeEnd;
+
 
     public Long getId() {
         return id;
@@ -376,5 +388,21 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setRedPackNum(Integer redPackNum) {
         this.redPackNum = redPackNum;
+    }
+
+    public String getInvalidTimeStart() {
+        return invalidTimeStart;
+    }
+
+    public void setInvalidTimeStart(String invalidTimeStart) {
+        this.invalidTimeStart = invalidTimeStart;
+    }
+
+    public String getInvalidTimeEnd() {
+        return invalidTimeEnd;
+    }
+
+    public void setInvalidTimeEnd(String invalidTimeEnd) {
+        this.invalidTimeEnd = invalidTimeEnd;
     }
 }

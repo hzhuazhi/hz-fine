@@ -6565,6 +6565,117 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据用户获取微信群收款账号信息-集合时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidCollectionAccountGroupDataList(RequestDidCollectionAccount requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00044.geteCode(), ErrorCode.ENUM_ERROR.DC00044.geteDesc());
+        }
+
+        // 校验是否失效值
+        if (requestModel.isInvalid == null || requestModel.isInvalid <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00045.geteCode(), ErrorCode.ENUM_ERROR.DC00045.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 根据条件查询用户获取微信群收款账号信息-集合-有效
+     * @param requestDidCollectionAccount - 基本查询条件
+     * @param did - 用户ID
+     * @param acType - 收款账号类型
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountListByInvalid(RequestDidCollectionAccount requestDidCollectionAccount, long did, int acType){
+        DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
+        resBean.setDid(did);
+        if (requestDidCollectionAccount.isInvalid == 1){
+            // 未失效
+            resBean.setInvalidTimeStart("1");
+            resBean.setCheckStatus(3);
+        }else {
+            // 已失效
+            resBean.setInvalidTimeEnd("1");
+        }
+        if(acType > 0){
+            resBean.setAcType(acType);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: 根据条件查询用户获取微信群收款账号信息-集合-失效
+     * @param requestDidCollectionAccount - 基本查询条件
+     * @param did - 用户ID
+     * @param acType - 收款账号类型
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountListByInvalidOk(RequestDidCollectionAccount requestDidCollectionAccount, long did, int acType){
+        DidCollectionAccountModel resBean = BeanUtils.copy(requestDidCollectionAccount, DidCollectionAccountModel.class);
+        resBean.setDid(did);
+        if (requestDidCollectionAccount.isInvalid == 1){
+            // 未失效
+            resBean.setInvalidTimeStart("1");
+            resBean.setCheckStatus(3);
+        }else {
+            // 已失效
+            resBean.setInvalidTimeEnd("1");
+            resBean.setCheckStatus(1);
+        }
+        if(acType > 0){
+            resBean.setAcType(acType);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 用户获取微信群收款账号信息数据组装返回客户端的方法-集合
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param didCollectionAccountList - 微信群收款账号信息-集合
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleDidCollectionAccountGroupDataListResult(long stime, String sign, List<DidCollectionAccountModel> didCollectionAccountList, Integer rowCount){
+        ResponseDidCollectionAccount dataModel = new ResponseDidCollectionAccount();
+        if (didCollectionAccountList != null && didCollectionAccountList.size() > ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            List<DidCollectionAccountGroup> dataList = BeanUtils.copyList(didCollectionAccountList, DidCollectionAccountGroup.class);
+            dataModel.groupList = dataList;
+        }
+        if (rowCount != null){
+            dataModel.rowCount = rowCount;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+
 
 
     public static void main(String [] args){

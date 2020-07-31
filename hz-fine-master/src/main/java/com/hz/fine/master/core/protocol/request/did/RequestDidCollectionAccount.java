@@ -83,6 +83,11 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
      */
     public String operateWd;
 
+    /**
+     * 是否失效：1未失效，2已失效
+     */
+    public Integer isInvalid;
+
 
     public RequestDidCollectionAccount(){
 
@@ -199,5 +204,13 @@ public class RequestDidCollectionAccount extends BaseRequest implements Serializ
 
     public void setDdQrCode(String ddQrCode) {
         this.ddQrCode = ddQrCode;
+    }
+
+    public Integer getIsInvalid() {
+        return isInvalid;
+    }
+
+    public void setIsInvalid(Integer isInvalid) {
+        this.isInvalid = isInvalid;
     }
 }

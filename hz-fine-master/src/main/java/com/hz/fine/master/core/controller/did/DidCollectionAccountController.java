@@ -1095,9 +1095,9 @@ public class DidCollectionAccountController {
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJzaWduIjoiZjQyZDEwNjU4NzMzMzI2NDc5NmUxZTM5YjE4MWM5MWMiLCJzdGltZSI6MTU4OTc4ODcwOTY1NX0="
+     *         "jsonData": "eyJzaWduIjoiYTI2OTY5NTE2NDE3M2IwZjY4OTdiMDk2Yzg4ODYzZjgiLCJzdGltZSI6MTU5NjE2MTAzMTgxMX0="
      *     },
-     *     "sgid": "202005181558280000001",
+     *     "sgid": "202007311003510000001",
      *     "cgid": ""
      * }
      */
@@ -1152,6 +1152,90 @@ public class DidCollectionAccountController {
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
 
+    }
+
+
+    /**
+     * @Description: 用户获取微信群收款账号信息-集合
+     * <p>
+     *     获取有效或者无效的微信群集合数据
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/collAc/getGroupDataList
+     * 请求的属性类:RequestDidCollectionAccount
+     * 必填字段:{"isInvalid":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
+     * 加密字段:{"jsonData":"eyJpc0ludmFsaWQiOjEsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJwYWdlTnVtYmVyIjoxLCJwYWdlU2l6ZSI6MTAsInRva2VuIjoiMTExMTExIn0="}
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJncm91cExpc3QiOlt7ImFjVHlwZSI6MywiY2hlY2tJbmZvIjoiIiwiY2hlY2tTdGF0dXMiOjMsImRkUXJDb2RlIjoiZGRRckNvZGUxIiwiaWQiOjgxLCJpbnZhbGlkVGltZSI6IjIwMjAtMDgtMDQgMjI6NTI6MDkiLCJpc0ludmFsaWQiOjEsIm1tUXJDb2RlIjoibW1RckNvZGUxIiwicGF5ZWUiOiIx6Zeq55S1MSIsInJlZFBhY2tOdW0iOjEsInVzZVN0YXR1cyI6MX0seyJhY1R5cGUiOjMsImNoZWNrSW5mbyI6IuaIkOWKnyIsImNoZWNrU3RhdHVzIjozLCJkZFFyQ29kZSI6ImRkUXJDb2RlMiIsImlkIjo4MiwiaW52YWxpZFRpbWUiOiIyMDIwLTA4LTA0IDIzOjIyOjE1IiwiaXNJbnZhbGlkIjoxLCJtbVFyQ29kZSI6Im1tUXJDb2RlMiIsInBheWVlIjoiMemXqueUtTIiLCJyZWRQYWNrTnVtIjoyLCJ1c2VTdGF0dXMiOjF9LHsiYWNUeXBlIjozLCJjaGVja0luZm8iOiIiLCJjaGVja1N0YXR1cyI6MywiZGRRckNvZGUiOiJkZFFyQ29kZTUiLCJpZCI6ODUsImludmFsaWRUaW1lIjoiMjAyMC0wOC0wNCAyMzoyMjoxNSIsImlzSW52YWxpZCI6MSwibW1RckNvZGUiOiJtbVFyQ29kZTUiLCJwYXllZSI6Iue+pOWQjTUiLCJyZWRQYWNrTnVtIjo1LCJ1c2VTdGF0dXMiOjF9LHsiYWNUeXBlIjozLCJjaGVja0luZm8iOiIiLCJjaGVja1N0YXR1cyI6MywiZGRRckNvZGUiOiJkZFFyQ29kZTYiLCJpZCI6ODYsImludmFsaWRUaW1lIjoiMjAyMC0wOC0wNCAyMzoyMjoxNSIsImlzSW52YWxpZCI6MSwibW1RckNvZGUiOiJtbVFyQ29kZTYiLCJwYXllZSI6Iue+pOWQjTYiLCJyZWRQYWNrTnVtIjo2LCJ1c2VTdGF0dXMiOjF9LHsiYWNUeXBlIjozLCJjaGVja0luZm8iOiIiLCJjaGVja1N0YXR1cyI6MywiZGRRckNvZGUiOiJkZFFyQ29kZTciLCJpZCI6ODcsImludmFsaWRUaW1lIjoiMjAyMC0wOC0wNCAyMzoyMjoxNSIsImlzSW52YWxpZCI6MSwibW1RckNvZGUiOiJtbVFyQ29kZTciLCJwYXllZSI6Iue+pOWQjTciLCJyZWRQYWNrTnVtIjo3LCJ1c2VTdGF0dXMiOjF9LHsiYWNUeXBlIjozLCJjaGVja0luZm8iOiIiLCJjaGVja1N0YXR1cyI6MywiZGRRckNvZGUiOiJkZFFyQ29kZTgiLCJpZCI6ODgsImludmFsaWRUaW1lIjoiMjAyMC0wOC0wNCAyMzoyMjoxNSIsImlzSW52YWxpZCI6MSwibW1RckNvZGUiOiJtbVFyQ29kZTgiLCJwYXllZSI6Iue+pOWQjTgiLCJyZWRQYWNrTnVtIjo4LCJ1c2VTdGF0dXMiOjF9LHsiYWNUeXBlIjozLCJjaGVja0luZm8iOiIiLCJjaGVja1N0YXR1cyI6MywiZGRRckNvZGUiOiJkZFFyQ29kZTkiLCJpZCI6ODksImludmFsaWRUaW1lIjoiMjAyMC0wOC0wNCAyMzoyMjoxNSIsImlzSW52YWxpZCI6MSwibW1RckNvZGUiOiJtbVFyQ29kZTkiLCJwYXllZSI6Iue+pOWQjTkiLCJyZWRQYWNrTnVtIjo5LCJ1c2VTdGF0dXMiOjF9XSwicm93Q291bnQiOjcsInNpZ24iOiIzZjVlZTVkODlhZWFmZTk0MGQ5YmVhNTA5Zjc4NTA1ZSIsInN0aW1lIjoxNTk2MTc4Nzg3ODk2fQ=="
+     *     },
+     *     "sgid": "202007311457580000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getGroupDataList", method = {RequestMethod.POST})
+    public JsonResult<Object> getGroupDataList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+
+        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestDidCollectionAccount.class);
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验数据
+
+            did = HodgepodgeMethod.checkDidCollectionAccountGroupDataList(requestModel);
+
+            DidCollectionAccountModel didCollectionAccountQuery = new DidCollectionAccountModel();
+            List<DidCollectionAccountModel> dataList = new ArrayList<>();
+            if (requestModel.isInvalid == 1){
+                // 组装有效的收款账号的查询条件
+                didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListByInvalid(requestModel, did, 3);
+                // 获取用户收款账号集合数据-有效
+                dataList = ComponentUtil.didCollectionAccountService.queryByList(didCollectionAccountQuery);
+            }else{
+                // 组装无效的收款账号的查询条件
+                didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListByInvalidOk(requestModel, did, 3);
+                dataList = ComponentUtil.didCollectionAccountService.getDidCollectionAccountByInvalid(didCollectionAccountQuery);
+            }
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleDidCollectionAccountGroupDataListResult(stime, sign, dataList, didCollectionAccountQuery.getRowCount());
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this DidCollectionAccountController.getGroupDataList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidCollectionAccountController.getGroupDataList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
     }
 
 
