@@ -228,4 +228,10 @@ public interface CacheKey {
      */
     String WX_BY_DID = "-35";
 
+    /**
+     * 判断用户收款账号是否有挂单正在进行中
+     * 才正式派单完成之后，需要把这个收款账号挂单填入缓存中；直到订单成功：把缓存删除、或者订单超过有效期
+     */
+    String LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING = "-36";// 当有回执数据时：要使用task需要删除redis缓存
+
 }

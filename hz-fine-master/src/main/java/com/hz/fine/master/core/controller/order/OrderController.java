@@ -913,6 +913,7 @@ public class OrderController {
             log.info("");
 
             // 获取可派单的用户集合
+            //#段峰 assembleEffectiveDidGroup()
             DidModel didQuery = HodgepodgeMethod.assembleEffectiveDid(requestModel);
             List<DidModel> didList = ComponentUtil.didService.getEffectiveDidByZfbList(didQuery);
             // check校验是否有有效的用户
@@ -1098,14 +1099,20 @@ public class OrderController {
 
 
             // 策略数据：出码开关
-            StrategyModel strategyBankWorkQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.QR_CODE_SWITCH.getStgType());
-            StrategyModel strategyBankWorkModel = ComponentUtil.strategyService.getStrategyModel(strategyBankWorkQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            HodgepodgeMethod.checkStrategyByQrCodeSwitch(strategyBankWorkModel);
+            StrategyModel strategyQrCodeSwitchQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.QR_CODE_SWITCH.getStgType());
+            StrategyModel strategyQrCodeSwitchModel = ComponentUtil.strategyService.getStrategyModel(strategyQrCodeSwitchQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyByQrCodeSwitch(strategyQrCodeSwitchModel);
+
+            // 策略数据：微信群有效个数才允许正常出码
+            StrategyModel strategyGroupNumQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NUM.getStgType());
+            StrategyModel strategyGroupNumModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            HodgepodgeMethod.checkStrategyByGroupNum(strategyGroupNumModel);
 
 
             // 获取可派单的用户集合
-            DidModel didQuery = HodgepodgeMethod.assembleEffectiveDid(requestModel);
-            List<DidModel> didList = ComponentUtil.didService.getEffectiveDidByWxGroupList(didQuery);
+            DidModel didQuery = HodgepodgeMethod.assembleEffectiveDidGroup(requestModel, strategyGroupNumModel.getStgNumValue());
+//            List<DidModel> didList = ComponentUtil.didService.getEffectiveDidByWxGroupList(didQuery);
+            List<DidModel> didList = ComponentUtil.didService.getNewEffectiveDidByWxGroupList(didQuery);
             // check校验是否有有效的用户
             HodgepodgeMethod.checkEffectiveDidData(didList);
 
@@ -1212,7 +1219,7 @@ public class OrderController {
             did = HodgepodgeMethod.checkNewestOrderData(requestModel);
 
             // 收款账号详情数据
-            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 0, 1);
+            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 0, 1, 0);
             OrderModel orderData = (OrderModel) ComponentUtil.orderService.getNewestOrder(orderQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();

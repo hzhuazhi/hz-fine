@@ -492,4 +492,15 @@
     </select>
 
 
+    <!-- 获取有效的微信群收款账号 -->
+    <select id="getEffectiveDidCollectionAccountByWxGroup" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        <include refid="Example_Where_Clause"/>
+        order by a.id asc
+        limit #{countGroupNum}
+    </select>
+
+
 </mapper>

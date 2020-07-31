@@ -61,4 +61,9 @@ public class DidServiceImpl<T> extends BaseServiceImpl<T> implements DidService<
     public int updateDidGroupNumOrSwitchType(DidModel model) {
         return didMapper.updateDidGroupNumOrSwitchType(model);
     }
+
+    @Override
+    public List<DidModel> getNewEffectiveDidByWxGroupList(DidModel model) {
+        return didMapper.getNewEffectiveDidByWxGroupList(model);
+    }
 }

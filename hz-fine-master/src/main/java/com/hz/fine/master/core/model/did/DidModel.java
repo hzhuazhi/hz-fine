@@ -253,6 +253,11 @@ public class DidModel extends BasePage implements Serializable {
      */
     private String ddQrCode;
 
+    /**
+     * 有效微信群个数
+     */
+    private Integer countGroupNum;
+
     public Long getId() {
         return id;
     }
@@ -628,5 +633,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setSwitchType(Integer switchType) {
         this.switchType = switchType;
+    }
+
+    public Integer getCountGroupNum() {
+        return countGroupNum;
+    }
+
+    public void setCountGroupNum(Integer countGroupNum) {
+        this.countGroupNum = countGroupNum;
     }
 }

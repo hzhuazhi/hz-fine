@@ -76,4 +76,17 @@ public interface DidService<T> extends BaseService<T> {
      * @date 2020/7/30 19:57
      */
     public int updateDidGroupNumOrSwitchType(DidModel model);
+
+
+    /**
+     * @Description: 获取有效的用户-微信群-new
+     * <p>
+     *     获取有余额，并且有效的微信群收款账号个数超过5个
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/2 10:56
+     */
+    public List<DidModel> getNewEffectiveDidByWxGroupList(DidModel model);
 }

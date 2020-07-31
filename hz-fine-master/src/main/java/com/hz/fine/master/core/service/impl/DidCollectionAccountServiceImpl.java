@@ -63,4 +63,9 @@ public class DidCollectionAccountServiceImpl<T> extends BaseServiceImpl<T> imple
         model.setRowCount(rowCount);
         return didCollectionAccountMapper.getDidCollectionAccountByInvalid(model);
     }
+
+    @Override
+    public List<DidCollectionAccountModel> getEffectiveDidCollectionAccountByWxGroup(DidCollectionAccountModel model) {
+        return didCollectionAccountMapper.getEffectiveDidCollectionAccountByWxGroup(model);
+    }
 }

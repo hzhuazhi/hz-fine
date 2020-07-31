@@ -92,4 +92,14 @@ public interface DidCollectionAccountMapper<T> extends BaseDao<T> {
      * @date 2020/7/31 14:32
      */
     public List<DidCollectionAccountModel> getDidCollectionAccountByInvalid(DidCollectionAccountModel model);
+
+
+    /**
+     * @Description: 获取有效的微信群收款账号
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/31 16:37
+    */
+    public List<DidCollectionAccountModel> getEffectiveDidCollectionAccountByWxGroup(DidCollectionAccountModel model);
 }

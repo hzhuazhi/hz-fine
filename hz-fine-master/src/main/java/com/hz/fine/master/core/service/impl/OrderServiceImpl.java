@@ -427,6 +427,30 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         return orderMapper.getNewestOrder(model);
     }
 
+    @Override
+    public DidModel screenNewCollectionAccountByWxGroup(List<DidModel> didList, String orderMoney, int countGroupNum) {
+        DidModel didModel = new DidModel();
+        int count = 0;// 加一把防止死循环的锁
+        while (1==1){
+            if (count <= 50){
+                // 随机选一个用户
+                int random = new Random().nextInt(didList.size());
+                DidModel randomDidModel = didList.get(random);
+
+                // 筛选收款账号
+                didModel = getNewDidCollectionAccountByWxGroup(randomDidModel, orderMoney, countGroupNum);
+                if (didModel != null && didModel.getId() > 0){
+                    break;
+                }
+                count ++;
+            }else {
+                break;
+            }
+        }
+
+        return didModel;
+    }
+
 
     /**
      * @Description: 筛选可使用的支付宝收款账号以及用户
@@ -481,7 +505,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             String redisKey_did = getRedisDataByKey(CacheKey.LOCK_DID_ORDER_ING, didModel.getId());
             if (StringUtils.isBlank(redisKey_did)){
                 // 查询此用户上一个订单的订单状态是否是否已回复
-                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3, 1);
+                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3, 1, 0);
                 OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
                 if (orderModel != null && orderModel.getId() > 0){
                     if (orderModel.getIsRedPack() == 1){
@@ -529,6 +553,100 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         }
         return null;
     }
+
+
+
+    /**
+     * @Description: 筛选可使用的微信群收款账号以及用户-new
+     * @param didModel - 用户信息
+     * @param orderMoney - 派单金额
+     * @param countGroupNum - 微信群有效个数才允许正常出码
+     * @return
+     * @author yoko
+     * @date 2020/6/1 19:51
+     */
+    public DidModel getNewDidCollectionAccountByWxGroup(DidModel didModel, String orderMoney, int countGroupNum){
+        // 判断此用户是否被锁住
+        String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER, didModel.getId());
+        boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
+        if (flagLock_did){
+
+            // 根据用户ID查询此用户下的有效微信群数据集合
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListByInvalid(didModel.getId(), 3, 1, 3, countGroupNum);
+            List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountQuery);
+            if (didCollectionAccountList != null && didCollectionAccountList.size() > 0){
+                // 判断有效群是否是规定的数量
+                if (didCollectionAccountList.size() == countGroupNum){
+                    // 循环判断此收款账号是否有挂单的存在
+                    for (DidCollectionAccountModel didCollectionAccountModel : didCollectionAccountList){
+                        // 锁住这个收款账号
+                        String lockKey_did_collection_account = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_FOR, didCollectionAccountModel.getId());
+                        boolean flagLock_did_collection_account = ComponentUtil.redisIdService.lock(lockKey_did_collection_account);
+                        if (flagLock_did_collection_account){
+                            // 判断这个收款账号是否有挂单的-正在进行中
+                            String strKeyCache_check_lock_did_collection_account_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING, didCollectionAccountModel.getId());
+                            String strCache_check_strKeyCache_check_lock_did_collection_account_order_ing = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_order_ing);
+                            if (StringUtils.isBlank(strCache_check_strKeyCache_check_lock_did_collection_account_order_ing)){
+                                // 查询此用户的收款账号的上一个订单的订单状态是否是否已回复
+                                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3, 1, didCollectionAccountModel.getId());
+                                OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
+                                if (orderModel != null && orderModel.getId() > 0){
+                                    if (orderModel.getIsRedPack() == 1){
+                                        // 未发过红包
+                                        if (orderModel.getOrderStatus() == 1){
+                                            // 未发过红包，并且订单未超时
+                                            continue;
+                                        }
+                                    }else {
+                                        // 发过红包
+                                        if (orderModel.getIsReply() < ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
+                                            // 发过红包，并且未回复结果
+                                            continue;
+                                        }
+                                    }
+                                }
+                                // 正式给码
+
+                                // 赋值收款账号
+                                didModel.setCollectionAccountId(didCollectionAccountModel.getId());
+                                if (!StringUtils.isBlank(didCollectionAccountModel.getDdQrCode())){
+                                    didModel.setDdQrCode(didCollectionAccountModel.getDdQrCode());
+                                }
+                                if (!StringUtils.isBlank(didCollectionAccountModel.getUserId())){
+                                    didModel.setUserId(didCollectionAccountModel.getUserId());
+                                }
+                                if (!StringUtils.isBlank(didCollectionAccountModel.getPayee())){
+                                    didModel.setPayee(didCollectionAccountModel.getPayee());
+                                }
+                                if (!StringUtils.isBlank(didCollectionAccountModel.getAcName())){
+                                    didModel.setZfbAcNum(didCollectionAccountModel.getAcName());
+                                }
+
+                                // redis存储-用户收款账号
+                                String strKeyCache_lock_did_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING, didCollectionAccountModel.getId());
+                                ComponentUtil.redisService.set(strKeyCache_lock_did_order_ing, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, FIVE_MIN);
+                                return didModel;
+                            }
+                        }
+                        // 解锁
+                        ComponentUtil.redisIdService.delLock(lockKey_did_collection_account);
+                    }
+
+                }else {
+                    // 时时保持的有效群的数量不在规定的数量内
+                    return null;
+                }
+            }else {
+                // 没有查询到有效的微信群数据
+                return null;
+            }
+            // 解锁
+            ComponentUtil.redisIdService.delLock(lockKey_did);
+        }
+        return null;
+    }
+
+
 
     /**
      * @Description: 组装缓存key查询缓存中存在的数据

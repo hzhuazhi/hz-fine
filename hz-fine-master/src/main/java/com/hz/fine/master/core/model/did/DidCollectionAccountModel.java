@@ -104,7 +104,7 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
     private Integer totalSwitch;
 
     /**
-     * 收款账号审核：1初始化，2审核失败，2审核成功
+     * 收款账号审核：1初始化，2审核失败，3审核成功
      */
     private Integer checkStatus;
 
@@ -164,6 +164,11 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
      * SQL判断
      */
     private String invalidTimeEnd;
+
+    /**
+     * 有效微信群个数
+     */
+    private Integer countGroupNum;
 
 
     public Long getId() {
@@ -404,5 +409,13 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setInvalidTimeEnd(String invalidTimeEnd) {
         this.invalidTimeEnd = invalidTimeEnd;
+    }
+
+    public Integer getCountGroupNum() {
+        return countGroupNum;
+    }
+
+    public void setCountGroupNum(Integer countGroupNum) {
+        this.countGroupNum = countGroupNum;
     }
 }

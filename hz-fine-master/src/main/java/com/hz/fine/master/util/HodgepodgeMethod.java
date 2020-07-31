@@ -1801,6 +1801,20 @@ public class HodgepodgeMethod {
 
     }
 
+
+    /**
+     * @Description: 校验策略类型数据:微信群有效个数才允许正常出码
+     * @return void
+     * @author yoko
+     * @date 2019/12/2 14:35
+     */
+    public static void checkStrategyByGroupNum(StrategyModel strategyModel) throws Exception{
+        if (strategyModel == null){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.S00028.geteCode(), ErrorCode.ENUM_ERROR.S00028.geteDesc());
+        }
+    }
+
+
     public static BankModel assembleBankQuery(List<MobileCardModel> mobileCardList, String bankWorkTime){
         BankModel resBean = new BankModel();
         List<Long> mobileCardIdList = new ArrayList<>();
@@ -2477,6 +2491,7 @@ public class HodgepodgeMethod {
     /**
      * @Description: 组装查询可以进行派发订单的用户查询条件的方法
      * @param requestModel - 金额跟支付类型
+     * @param countGroupNum - 微信群有效个数才允许正常出码
      * @return 
      * @author yoko
      * @date 2020/5/25 14:15 
@@ -2488,6 +2503,28 @@ public class HodgepodgeMethod {
 //        resBean.setMoney(Double.parseDouble(requestModel.money));
         BigDecimal bd = new BigDecimal(requestModel.money);
         resBean.setMoney(bd);
+
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装查询可以进行派发订单的用户查询条件的方法-微信群
+     * @param requestModel - 金额跟支付类型
+     * @param countGroupNum - 微信群有效个数才允许正常出码
+     * @return
+     * @author yoko
+     * @date 2020/5/25 14:15
+     */
+    public static DidModel assembleEffectiveDidGroup(RequestOrder requestModel, int countGroupNum){
+        DidModel resBean = new DidModel();
+        resBean.setBalance(requestModel.money);
+        resBean.setAcType(requestModel.payType);
+//        resBean.setMoney(Double.parseDouble(requestModel.money));
+        BigDecimal bd = new BigDecimal(requestModel.money);
+        resBean.setMoney(bd);
+        if (countGroupNum > 0){
+            resBean.setCountGroupNum(countGroupNum);
+        }
         return resBean;
     }
 
@@ -4904,6 +4941,9 @@ public class HodgepodgeMethod {
         resBean.setUserId(didModel.getUserId());
         resBean.setWxNickname(didModel.getPayee());
         resBean.setQrCode(didModel.getDdQrCode());
+        if (!StringUtils.isBlank(didModel.getZfbAcNum())){
+            resBean.setZfbAcNum(didModel.getZfbAcNum());
+        }
         String profit = getConsumeProfit(consumeMoneyList, orderMoney);
         resBean.setProfit(profit);
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
@@ -6185,11 +6225,12 @@ public class HodgepodgeMethod {
      * @param did - 用户ID
      * @param collectionType - 收款账号类型：1微信，2支付宝，3微信群
      * @param replenishType -  是否是补单：1初始化不是补单，2是补单
+     * @param collectionAccountId - 收款账号ID
      * @return com.hz.fine.master.core.model.order.OrderModel
      * @author yoko
      * @date 2020/7/20 20:48
      */
-    public static OrderModel assembleOrderByNewest(long did, int collectionType, int replenishType){
+    public static OrderModel assembleOrderByNewest(long did, int collectionType, int replenishType, long collectionAccountId){
         OrderModel resBean = new OrderModel();
         resBean.setDid(did);
         if(collectionType > 0){
@@ -6197,6 +6238,9 @@ public class HodgepodgeMethod {
         }
         if(replenishType > 0){
             resBean.setReplenishType(replenishType);
+        }
+        if(collectionAccountId > 0){
+            resBean.setCollectionAccountId(collectionAccountId);
         }
         return resBean;
     }
@@ -6673,6 +6717,33 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 根据条件查询用户获取微信群收款账号信息-有效
+     * @param did - 用户ID
+     * @param acType - 收款账号类型
+     * @param isInvalid - 是否失效：1未失效，2已失效
+     * @param checkStatus - 收款账号审核：1初始化，2审核失败，3审核成功
+     * @param countGroupNum - 有效微信群个数
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountListByInvalid(long did, int acType, int isInvalid, int checkStatus, int countGroupNum){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        if(acType > 0){
+            resBean.setAcType(acType);
+        }
+        resBean.setIsInvalid(isInvalid);
+        if (isInvalid == 1){
+            // 未失效
+            resBean.setInvalidTimeStart("1");
+        }
+        resBean.setCheckStatus(checkStatus);
+        resBean.setCountGroupNum(countGroupNum);
+        return resBean;
     }
 
 

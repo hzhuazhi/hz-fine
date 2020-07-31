@@ -160,4 +160,16 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/7/20 20:24
     */
     public OrderModel getNewestOrder(OrderModel model);
+
+
+    /**
+     * @Description: 筛选出要派单的微信群收款账号以及用户-new
+     * @param didList - 可以正常使用的did账号集合
+     * @param orderMoney - 订单金额
+     * @param countGroupNum - 微信群有效个数才允许正常出码
+     * @return
+     * @author yoko
+     * @date 2020/5/26 15:58
+     */
+    public DidModel screenNewCollectionAccountByWxGroup(List<DidModel> didList, String orderMoney, int countGroupNum);
 }
