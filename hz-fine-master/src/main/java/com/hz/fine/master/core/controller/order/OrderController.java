@@ -1117,7 +1117,7 @@ public class OrderController {
             HodgepodgeMethod.checkEffectiveDidData(didList);
 
             // 循环筛选有效
-            DidModel didModel = ComponentUtil.orderService.screenCollectionAccountByWxGroup(didList, requestModel.money);
+            DidModel didModel = ComponentUtil.orderService.screenNewCollectionAccountByWxGroup(didList, requestModel.money, strategyGroupNumModel.getStgNumValue());
             // check校验
             HodgepodgeMethod.checkDidAndByAddWxGroupCollectionAccountOrder(didModel);
 
@@ -1220,7 +1220,7 @@ public class OrderController {
 
             // 收款账号详情数据
             OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 0, 1, 0);
-            OrderModel orderData = (OrderModel) ComponentUtil.orderService.getNewestOrder(orderQuery);
+            OrderModel orderData = ComponentUtil.orderService.getNewestOrder(orderQuery);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
