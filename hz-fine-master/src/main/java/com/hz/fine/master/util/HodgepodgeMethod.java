@@ -6603,6 +6603,8 @@ public class HodgepodgeMethod {
         resBean.setId(requestDidCollectionAccount.getId());
         resBean.setMmQrCode(requestDidCollectionAccount.mmQrCode);
         resBean.setDdQrCode(requestDidCollectionAccount.ddQrCode);
+        String invalidTime = DateUtil.increaseDayStr(new Date(), 5);
+        resBean.setInvalidTime(invalidTime);
         resBean.setCheckStatus(3);
         resBean.setCheckInfo("成功");
         return resBean;

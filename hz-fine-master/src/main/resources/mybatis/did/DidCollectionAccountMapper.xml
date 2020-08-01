@@ -391,6 +391,9 @@
             <if test="wxQrCodeAds != null and wxQrCodeAds != '' " >
                 a.wx_qr_code_ads = #{wxQrCodeAds},
             </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                a.invalid_time = #{invalidTime}
+            </if>
             a.check_status = #{checkStatus},
             a.check_info = #{checkInfo},
             a.update_time = NOW(),
