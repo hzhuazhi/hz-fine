@@ -2,12 +2,14 @@ package com.hz.fine.master.core.controller.did;
 
 import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ExceptionMethod;
+import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.utils.DateUtil;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
+import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
@@ -17,6 +19,7 @@ import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.did.DidRewardModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.region.RegionModel;
+import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -781,10 +784,31 @@ public class DidController {
             did = HodgepodgeMethod.checkDidUpdateSwitch(requestModel);
 
 
+            // 策略数据：微信群有效个数才允许正常出码
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NUM.getStgType());
+            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            int groupNum = strategyModel.getStgNumValue();
 
             // 正式更新出码开关
             DidModel updateGroupOrSwitch = HodgepodgeMethod.assembleUpdateGroupOrSwitchData(did, 0, requestModel.switchType);
-            ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+            if (requestModel.switchType == 1){
+                // 打开开关：需要check有效微信群的个数
+                // 根据用户ID查询此用户下的有效微信群数据集合
+                DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListByInvalid(did, 3, 1, 3, groupNum);
+                List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountQuery);
+                if (didCollectionAccountList != null && didCollectionAccountList.size() > 0){
+                    if (didCollectionAccountList.size() < groupNum){
+                        throw new ServiceException("D10001", "有效微信群数量小于" + groupNum + "个，无法打开出码开关!");
+                    }else {
+                        ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+                    }
+
+                }else {
+                    throw new ServiceException("D10001", "有效微信群数量小于" + groupNum + "个，无法打开出码开关!");
+                }
+            }else {
+                ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+            }
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
