@@ -1447,6 +1447,9 @@ public class DidCollectionAccountController {
                 // 更新此账号的wxId
                 DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
                 ComponentUtil.didCollectionAccountService.update(updateData);
+            }else{
+                WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(didCollectionAccountModel.getWxId(), 1);
+                wxDataModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
             }
 
 
