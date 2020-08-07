@@ -196,7 +196,7 @@ public class WxController {
             //#临时数据
 //            if (!StringUtils.isBlank(requestModel.token)){
 //                if (requestModel.token.equals("111111")){
-//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                    ComponentUtil.redisService.set(requestModel.token, "420");
 //                }
 //            }
 

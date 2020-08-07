@@ -69,6 +69,26 @@ public class WxModel extends BasePage implements Serializable {
     private Integer dayNum;
 
     /**
+     * 总共可以加多少个群
+     */
+    private Integer groupNum;
+
+    /**
+     * 已经下了多少个群
+     */
+    private Integer isGroupNum;
+
+    /**
+     * 加群是否以及完成了限制目标：1未完成，2完成
+     */
+    private Integer isOkGroup;
+
+    /**
+     * 每天可加多少个群
+     */
+    private Integer dayGroupNum;
+
+    /**
      * 微信名片二维码地址
      */
     private String wxQrCode;
@@ -219,5 +239,37 @@ public class WxModel extends BasePage implements Serializable {
 
     public void setWxQrCode(String wxQrCode) {
         this.wxQrCode = wxQrCode;
+    }
+
+    public Integer getGroupNum() {
+        return groupNum;
+    }
+
+    public void setGroupNum(Integer groupNum) {
+        this.groupNum = groupNum;
+    }
+
+    public Integer getIsGroupNum() {
+        return isGroupNum;
+    }
+
+    public void setIsGroupNum(Integer isGroupNum) {
+        this.isGroupNum = isGroupNum;
+    }
+
+    public Integer getIsOkGroup() {
+        return isOkGroup;
+    }
+
+    public void setIsOkGroup(Integer isOkGroup) {
+        this.isOkGroup = isOkGroup;
+    }
+
+    public Integer getDayGroupNum() {
+        return dayGroupNum;
+    }
+
+    public void setDayGroupNum(Integer dayGroupNum) {
+        this.dayGroupNum = dayGroupNum;
     }
 }
