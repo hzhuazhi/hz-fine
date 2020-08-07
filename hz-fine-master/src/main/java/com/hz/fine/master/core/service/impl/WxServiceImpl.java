@@ -39,6 +39,37 @@ public class WxServiceImpl<T> extends BaseServiceImpl<T> implements WxService<T>
         return wxMapper;
     }
 
+//    @Override
+//    public WxModel screenWx(WxModel model) {
+//        List<WxModel> wxList = wxMapper.getWxList(model);
+//        WxModel resModel = new WxModel();
+//        if (wxList != null && wxList.size() > 0){
+//            Iterator<WxModel> iter_wx = wxList.iterator();
+//            while(iter_wx.hasNext()){
+//                // 获取集合中最小ID
+//                Optional<WxModel> dataOp = wxList.stream().min(Comparator.comparing(WxModel :: getId));
+//                long minId = dataOp.get().getId();
+//                // 从缓存中获取今日加好友的用户数
+//                String redis_wx_day_num = getRedisDataByKey(CacheKey.WX_DAY_NUM, minId);
+//                int dayNum = 0;// 当日加好友的数量
+//                if (!StringUtils.isBlank(redis_wx_day_num)){
+//                    dayNum = Integer.parseInt(redis_wx_day_num);
+//                }
+//                WxModel wxDto = iter_wx.next();
+//                if (wxDto.getId() == minId && wxDto.getDayNum() <= dayNum){
+//                    // 代表着今日加好友超过当日的上限
+//                    iter_wx.remove();
+//                }else {
+//                    resModel = wxDto;
+//                    return resModel;
+//                }
+//            }
+//
+//        }
+//        return null;
+//    }
+
+
     @Override
     public WxModel screenWx(WxModel model) {
         List<WxModel> wxList = wxMapper.getWxList(model);
@@ -55,9 +86,16 @@ public class WxServiceImpl<T> extends BaseServiceImpl<T> implements WxService<T>
                 if (!StringUtils.isBlank(redis_wx_day_num)){
                     dayNum = Integer.parseInt(redis_wx_day_num);
                 }
+
+                // 从缓存中获取今日加群的数量
+                String redis_wx_day_group_num = getRedisDataByKey(CacheKey.WX_DAY_GROUP_NUM, minId);
+                int dayGroupNum = 0;// 当日加群的数量
+                if (!StringUtils.isBlank(redis_wx_day_group_num)){
+                    dayGroupNum = Integer.parseInt(redis_wx_day_group_num);
+                }
                 WxModel wxDto = iter_wx.next();
-                if (wxDto.getId() == minId && wxDto.getDayNum() <= dayNum){
-                    // 代表着今日加好友超过当日的上限
+                if ((wxDto.getId() == minId && wxDto.getDayNum() <= dayNum) || (wxDto.getId() == minId && wxDto.getDayGroupNum() <= dayGroupNum)){
+                    // 代表着今日加好友超过当日的上限或者今日加群超过当日的上限
                     iter_wx.remove();
                 }else {
                     resModel = wxDto;
@@ -68,8 +106,6 @@ public class WxServiceImpl<T> extends BaseServiceImpl<T> implements WxService<T>
         }
         return null;
     }
-
-
 
     /**
      * @Description: 组装缓存key查询缓存中存在的数据

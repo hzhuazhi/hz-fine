@@ -234,4 +234,14 @@ public interface CacheKey {
      */
     String LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING = "-36";// 当有回执数据时：要使用task需要删除redis缓存
 
+    /**
+     * 小微每天加群的数量
+     * <p>
+     *     1.task配合去累加当日加群的数量。
+     *     2.redis的失效时间是：距离今天凌晨的时间失效
+     *
+     * </p>
+     */
+    String WX_DAY_GROUP_NUM = "-37";
+
 }

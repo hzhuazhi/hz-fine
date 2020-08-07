@@ -179,6 +179,7 @@ public class WxController {
      *     "cgid": ""
      * }
      */
+/*
     @RequestMapping(value = "/getData", method = {RequestMethod.POST})
     public JsonResult<Object> getData(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
         String sgid = ComponentUtil.redisIdService.getNewId();
@@ -218,13 +219,13 @@ public class WxController {
                         dataModel = wxModel;
                     }else {
                         // 说明之前的小微已经被暂停或者删除了
-                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1);
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
                         dataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                     }
 
                 }else {
                     // 缓存中的数据可能是脏数据
-                    WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1);
+                    WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
                     dataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                 }
 
@@ -246,18 +247,18 @@ public class WxController {
                             dataModel = wxModel;
                         }else{
                             // 代表之前的小微暂停使用或者已经被删除了；需要给出新的小微
-                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1);
+                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
                             dataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                         }
                     }else{
                         // 之前没有与我方小微建立关联关系，需要给出新的小微
-                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1);
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
                         dataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                     }
 
                 }else {
                     // 之前没有加过我方小微，需要给出新的小微
-                    WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1);
+                    WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
                     dataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                 }
             }
@@ -288,6 +289,6 @@ public class WxController {
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
-    }
+    }*/
 
 }

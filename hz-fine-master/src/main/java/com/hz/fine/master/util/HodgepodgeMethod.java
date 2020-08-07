@@ -6428,14 +6428,16 @@ public class HodgepodgeMethod {
     /**
      * @Description: 组装查询小微数据的查询条件
      * @param isOk - 是否以及完成了限制目标：1未完成，2完成
-    * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param isOkGroup - 加群是否以及完成了限制目标：1未完成，2完成
      * @return com.hz.fine.master.core.model.wx.WxModel
      * @author yoko
      * @date 2020/7/30 18:50
      */
-    public static WxModel assembleWxByIsOkAndUseStatusQuery(int isOk, int useStatus){
+    public static WxModel assembleWxByIsOkAndUseStatusQuery(int isOk, int useStatus, int isOkGroup){
         WxModel resBean = new WxModel();
         resBean.setIsOk(isOk);
+        resBean.setIsOkGroup(isOkGroup);
         resBean.setUseStatus(useStatus);
         return resBean;
     }
@@ -6517,12 +6519,16 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleGroupNameResult(long stime, String sign, DidCollectionAccountModel didCollectionAccountModel, int isOk){
+    public static String assembleGroupNameResult(long stime, String sign, DidCollectionAccountModel didCollectionAccountModel, int isOk, WxModel wxModel){
         ResponseDidCollectionAccount dataModel = new ResponseDidCollectionAccount();
         if (didCollectionAccountModel != null && didCollectionAccountModel.getId() > 0){
             DidCollectionAccountGroup data = BeanUtils.copy(didCollectionAccountModel, DidCollectionAccountGroup.class);
             data.isOk = isOk;
             dataModel.groupModel = data;
+        }
+        if (wxModel != null && wxModel.getId() != null && wxModel.getId() > 0){
+            Wx data = BeanUtils.copy(wxModel, Wx.class);
+            dataModel.wxModel = data;
         }
         dataModel.setStime(stime);
         dataModel.setSign(sign);
@@ -6745,6 +6751,55 @@ public class HodgepodgeMethod {
         }
         resBean.setCheckStatus(checkStatus);
         resBean.setCountGroupNum(countGroupNum);
+        return resBean;
+    }
+
+    /**
+     * @Description: 校验小微群是否超过上限
+     * <p>
+     *     加群总上限，加群日上限
+     * </p>
+     * @param wxModel
+     * @return
+     * @author yoko
+     * @date 2020/8/7 19:05
+    */
+    public static boolean checkWxGroupNum(WxModel wxModel){
+        boolean flag = false;
+        if (wxModel.getIsOkGroup() == 2){
+            flag = false;
+            return flag;
+        }
+
+        // 从缓存中获取今日加群的数量
+        String redis_wx_day_group_num = getRedisDataByKey(CacheKey.WX_DAY_GROUP_NUM, wxModel.getId());
+        int dayGroupNum = 0;// 当日加群的数量
+        if (!StringUtils.isBlank(redis_wx_day_group_num)){
+            dayGroupNum = Integer.parseInt(redis_wx_day_group_num);
+        }
+
+        if (wxModel.getDayGroupNum() <= dayGroupNum){
+            flag = false;
+            return flag;
+        }
+
+        flag = true;
+        return flag;
+    }
+
+
+    /**
+     * @Description: 更新收款账号的小微ID
+     * @param id - 收款账号的主键ID
+     * @param wxId - 小微ID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/8/7 19:31
+     */
+    public static DidCollectionAccountModel assembleUpdateDidCollectionAccountWxIdById(long id, long wxId){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setId(id);
+        resBean.setWxId(wxId);
         return resBean;
     }
 

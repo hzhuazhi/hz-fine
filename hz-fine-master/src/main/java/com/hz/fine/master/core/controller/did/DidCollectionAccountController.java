@@ -1,10 +1,13 @@
 package com.hz.fine.master.core.controller.did;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hz.fine.master.core.common.exception.ExceptionMethod;
 import com.hz.fine.master.core.common.utils.JsonResult;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
+import com.hz.fine.master.core.common.utils.constant.CacheKey;
+import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
@@ -15,6 +18,7 @@ import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
+import com.hz.fine.master.core.model.wx.WxModel;
 import com.hz.fine.master.core.protocol.request.did.RequestDidCollectionAccount;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -32,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description 用户的收款账号的Controller
@@ -59,6 +64,11 @@ public class DidCollectionAccountController {
      * 30分钟.
      */
     public long THIRTY_MIN = 30;
+
+    /**
+     * 5小时
+     */
+    public long FIVE_HOUR = 5;
 
     @Value("${secret.key.token}")
     private String secretKeyToken;
@@ -970,6 +980,7 @@ public class DidCollectionAccountController {
      *     "cgid": ""
      * }
      */
+    /*
     @RequestMapping(value = "/getGroupName", method = {RequestMethod.POST})
     public JsonResult<Object> getGroupName(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
         String sgid = ComponentUtil.redisIdService.getNewId();
@@ -1074,7 +1085,7 @@ public class DidCollectionAccountController {
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
 
-    }
+    }*/
 
 
 
@@ -1237,6 +1248,233 @@ public class DidCollectionAccountController {
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
         }
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * @Description: 获取群名称-微信群-新版本
+     * <p>
+     *     1.根据找寻此用户是否有未完成的微信群。
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/collAc/getNewGroupName
+     * 请求的属性类:RequestDidCollectionAccount
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+cctime+秘钥=sign
+     * 服务端加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJncm91cE1vZGVsIjp7ImFjVHlwZSI6MywiaWQiOjExMCwiaW52YWxpZFRpbWUiOiIyMDIwLTA4LTEyIDE5OjUzOjE3IiwiaXNPayI6MSwicGF5ZWUiOiIx6Zeq55S1MyIsInJlZFBhY2tOdW0iOjN9LCJzaWduIjoiZDEzNjcyZmUzZTRhYWI2MjJjOTNhMDcwNDMzNTE4MDciLCJzdGltZSI6MTU5NjgwMTQzNjYwOCwid3hNb2RlbCI6eyJhY05hbWUiOiIxOTgxNzE4NDkzMSIsInd4TmFtZSI6ImxldDAwMTAiLCJ3eFFyQ29kZSI6Imh0dHBzOi8vdS53ZWNoYXQuY29tL01LRlFaV1dtMm95a2FVUkJBcjVGZzBRIn19"
+     *     },
+     *     "sgid": "202008071952070000001",
+     *     "cgid": ""
+     * }
+     */
+    @RequestMapping(value = "/getNewGroupName", method = {RequestMethod.POST})
+    public JsonResult<Object> getNewGroupName(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception {
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String token = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+
+        RequestDidCollectionAccount requestModel = new RequestDidCollectionAccount();
+        try {
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel = JSON.parseObject(data, RequestDidCollectionAccount.class);
+
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+            // check校验数据
+            did = HodgepodgeMethod.checkDidCollectionAccountGroupName(requestModel);
+
+            // 查询策略里面的微信群名固定词
+            StrategyModel strategyGroupNameQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NAME.getStgType());
+            StrategyModel strategyGroupNameModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupNameQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
+            // 查询策略里面的每个群最多允许收红包的数量
+            StrategyModel strategyGroupRedPackNumQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_RED_PACK_NUM.getStgType());
+            StrategyModel strategygroupRedPackNumModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupRedPackNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
+            // 获取用户信息
+            DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
+            DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
+            HodgepodgeMethod.checkDidData(didModel);
+
+            // 组装群名
+            int groupNum = didModel.getGroupNum() + 1;
+            String groupName = String.valueOf(did) + strategyGroupNameModel.getStgValue() + groupNum;
+
+            int isOk = 0;
+            // 查询此账号的最新的收款账号
+            DidCollectionAccountModel didCollectionAccountModel = new DidCollectionAccountModel();
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountByDidAndAcTypeQuery(did, 3);
+            didCollectionAccountModel = ComponentUtil.didCollectionAccountService.getDidCollectionAccount(didCollectionAccountQuery);
+            if (didCollectionAccountModel != null && didCollectionAccountModel.getId() > 0){
+                if (!StringUtils.isBlank(didCollectionAccountModel.getAcName()) && !StringUtils.isBlank(didCollectionAccountModel.getAcNum())){
+                    // 不需要回复指令
+                    if (StringUtils.isBlank(didCollectionAccountModel.getMmQrCode()) && StringUtils.isBlank(didCollectionAccountModel.getDdQrCode())){
+                        // 说明已经回复了指令，但是没有上传二维码
+                        isOk = 2;
+                    }else {
+                        // 说明已经回复了指令，并且已经上传了二维码；需要新增账号
+                        isOk = 1;
+                        // 新增收款账号
+                        DidCollectionAccountModel didCollectionAccountAdd = HodgepodgeMethod.assembleDidCollectionAccountAddByWx(did, 3, groupName, strategygroupRedPackNumModel.getStgNumValue());
+                        ComponentUtil.didCollectionAccountService.add(didCollectionAccountAdd);
+                        didCollectionAccountModel = didCollectionAccountAdd;
+
+                        // 修改微信群序号
+                        DidModel updateGroupOrSwitch = HodgepodgeMethod.assembleUpdateGroupOrSwitchData(did, 1, 0);
+                        ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+                    }
+
+                }else {
+                    // 不需要新增：但是需要回复
+                    isOk = 1;
+                }
+            }else {
+                // 表示需要新增收款账号
+                isOk = 1;
+                // 新增收款账号
+                DidCollectionAccountModel didCollectionAccountAdd = HodgepodgeMethod.assembleDidCollectionAccountAddByWx(did, 3, groupName, strategygroupRedPackNumModel.getStgNumValue());
+                ComponentUtil.didCollectionAccountService.add(didCollectionAccountAdd);
+                didCollectionAccountModel = didCollectionAccountAdd;
+                log.info("");
+                // 修改微信群序号
+                DidModel updateGroupOrSwitch = HodgepodgeMethod.assembleUpdateGroupOrSwitchData(did, 1, 0);
+                ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+            }
+
+
+            WxModel wxDataModel = new WxModel();
+
+            if (didCollectionAccountModel.getWxId() == null || didCollectionAccountModel.getWxId() <= 0){
+                // 需要派给小微
+                // redis中取出之前给出的小微
+                String redis_wx = HodgepodgeMethod.getRedisDataByKey(CacheKey.WX_BY_DID, did);
+                if (!StringUtils.isBlank(redis_wx)){
+                    // 之前已给过的小微-储存在缓存中的
+                    WxModel redis_wxModel = JSON.parseObject(redis_wx, WxModel.class);
+                    if (redis_wxModel != null && redis_wxModel.getId() > 0){
+                        // 查询储存在缓存中的小微目前状态是否正常
+                        WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(redis_wxModel.getId(), 1);
+                        WxModel wxModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
+                        if (wxModel != null && wxModel.getId() >0 ){
+                            // 判断要给出的微信是否有超过加群上限
+                            boolean flag_group = HodgepodgeMethod.checkWxGroupNum(wxModel);
+                            if (flag_group){
+                                // 表示未超过群上限：可以直接给出
+                                wxDataModel = wxModel;
+                            }else{
+                                // 超出，需要重新给出一个
+                                // 说明之前的小微已经被暂停或者删除了
+                                WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                                wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                            }
+                        }else {
+                            // 说明之前的小微已经被暂停或者删除了
+                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                            wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                        }
+
+                    }else {
+                        // 缓存中的数据可能是脏数据
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                    }
+
+                }else {
+                    // 查询此用户下属于微信群的最新的收款账号ID：包含yn=1的收款账号都要查询出来
+                    DidCollectionAccountModel didCollectionAccountByWxQuery = HodgepodgeMethod.assembleDidCollectionAccountByDidAndAcTypeQuery(did, 3);
+                    DidCollectionAccountModel didCollectionAccountByWxModel = ComponentUtil.didCollectionAccountService.getNewDidCollectionAccount(didCollectionAccountByWxQuery);
+                    if (didCollectionAccountByWxModel != null && didCollectionAccountByWxModel.getId() > 0){
+                        // 之前有加过我方小微，查找之前的小微信息
+                        WxClerkModel wxClerkQuery = HodgepodgeMethod.assembleWxClerkByCollectionAccountQuery(didCollectionAccountByWxModel.getId());
+                        WxClerkModel wxClerkModel = ComponentUtil.wxClerkService.getWxClerk(wxClerkQuery);
+                        if (wxClerkModel != null && wxClerkModel.getId() > 0){
+                            // 之前有我方小微的关联关系
+                            // 查询此小微是否是正常状态的小微
+                            WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(wxClerkModel.getWxId(), 1);
+                            WxModel wxModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
+                            if (wxModel != null && wxModel.getId() > 0){
+                                // 此小微是可以正式给出的小微
+                                wxDataModel = wxModel;
+                            }else{
+                                // 代表之前的小微暂停使用或者已经被删除了；需要给出新的小微
+                                WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                                wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                            }
+                        }else{
+                            // 之前没有与我方小微建立关联关系，需要给出新的小微
+                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                            wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                        }
+
+                    }else {
+                        // 之前没有加过我方小微，需要给出新的小微
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                    }
+                }
+
+                if (wxDataModel != null && wxDataModel.getId() > 0){
+                    // 储存到redis缓存中
+                    String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.WX_BY_DID, did);
+                    ComponentUtil.redisService.set(strKeyCache, JSON.toJSONString(wxDataModel, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullStringAsEmpty), FIVE_HOUR, TimeUnit.HOURS);
+                }
+
+                // 更新此账号的wxId
+                DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
+                ComponentUtil.didCollectionAccountService.update(updateData);
+            }
+
+
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleGroupNameResult(stime, sign, didCollectionAccountModel, isOk, wxDataModel);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        } catch (Exception e) {
+            Map<String, String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            log.error(String.format("this DidCollectionAccountController.getNewGroupName() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this DidCollectionAccountController.getNewGroupName() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+
+    }
+
+
+
 
 
 

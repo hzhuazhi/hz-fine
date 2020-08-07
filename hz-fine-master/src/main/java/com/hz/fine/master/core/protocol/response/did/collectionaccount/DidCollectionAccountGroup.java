@@ -17,7 +17,7 @@ public class DidCollectionAccountGroup implements Serializable {
     public Long id;
 
     /**
-     * 收款账户类型：1微信，2支付宝，3银行卡
+     * 收款账户类型：1微信，2支付宝，3微信群
      */
     public Integer acType;
 

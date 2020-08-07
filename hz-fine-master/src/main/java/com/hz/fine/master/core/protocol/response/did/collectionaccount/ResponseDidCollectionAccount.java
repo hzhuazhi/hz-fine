@@ -1,6 +1,7 @@
 package com.hz.fine.master.core.protocol.response.did.collectionaccount;
 
 import com.hz.fine.master.core.protocol.base.BaseResponse;
+import com.hz.fine.master.core.protocol.response.wx.Wx;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,6 +20,8 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
     public DidCollectionAccountZfb zfbModel;
     public DidCollectionAccountGroup groupModel;
     public List<DidCollectionAccountGroup> groupList;
+
+    public Wx wxModel;
     public Integer rowCount;
 
     public ResponseDidCollectionAccount(){
@@ -73,5 +76,13 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
 
     public void setGroupList(List<DidCollectionAccountGroup> groupList) {
         this.groupList = groupList;
+    }
+
+    public Wx getWxModel() {
+        return wxModel;
+    }
+
+    public void setWxModel(Wx wxModel) {
+        this.wxModel = wxModel;
     }
 }

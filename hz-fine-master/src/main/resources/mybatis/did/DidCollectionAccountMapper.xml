@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.ac_name,a.ac_type,a.ac_num,a.user_id,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
+        a.id,a.did,a.wx_id,a.ac_name,a.ac_type,a.ac_num,a.user_id,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
         a.wx_qr_code_ads,a.invalid_time,a.is_invalid,a.red_pack_num,
         a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
         a.create_time,a.update_time,a.yn
@@ -284,6 +284,9 @@
     <update id="update" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
         UPDATE tb_fn_did_collection_account a
         <trim prefix="set" suffixOverrides=",">
+            <if test="wxId != null and wxId != '' " >
+                a.wx_id = #{wxId},
+            </if>
             <if test="acName != null and acName != '' " >
                 a.ac_name = #{acName},
             </if>
