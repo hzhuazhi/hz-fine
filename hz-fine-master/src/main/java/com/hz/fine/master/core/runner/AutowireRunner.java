@@ -143,6 +143,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private OperateService operateService;
 
+    @Autowired
+    private WxOrderService wxOrderService;
+
 
 
 
@@ -192,6 +195,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.consultAskReplyService = consultAskReplyService;
         ComponentUtil.statisticsClickPayService = statisticsClickPayService;
         ComponentUtil.operateService = operateService;
+        ComponentUtil.wxOrderService = wxOrderService;
 
         runThread = new RunThread();
         runThread.start();
