@@ -609,6 +609,9 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
 
                                 // 赋值收款账号
                                 didModel.setCollectionAccountId(didCollectionAccountModel.getId());
+                                if (didCollectionAccountModel.getWxId() != null && didCollectionAccountModel.getWxId() > 0){
+                                    didModel.setWxId(didCollectionAccountModel.getWxId());
+                                }
                                 if (!StringUtils.isBlank(didCollectionAccountModel.getDdQrCode())){
                                     didModel.setDdQrCode(didCollectionAccountModel.getDdQrCode());
                                 }

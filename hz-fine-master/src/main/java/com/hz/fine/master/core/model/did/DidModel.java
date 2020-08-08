@@ -258,6 +258,11 @@ public class DidModel extends BasePage implements Serializable {
      */
     private Integer countGroupNum;
 
+    /**
+     * 小微主键ID
+     */
+    private Long wxId;
+
     public Long getId() {
         return id;
     }
@@ -641,5 +646,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setCountGroupNum(Integer countGroupNum) {
         this.countGroupNum = countGroupNum;
+    }
+
+    public Long getWxId() {
+        return wxId;
+    }
+
+    public void setWxId(Long wxId) {
+        this.wxId = wxId;
     }
 }

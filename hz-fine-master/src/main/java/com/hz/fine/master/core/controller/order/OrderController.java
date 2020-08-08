@@ -18,6 +18,7 @@ import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.region.RegionModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
+import com.hz.fine.master.core.model.wx.WxOrderModel;
 import com.hz.fine.master.core.protocol.request.order.RequestOrder;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -1148,6 +1149,10 @@ public class OrderController {
 
             // 正式处理派单的逻辑
             ComponentUtil.orderService.handleOrder(orderModel, didBalanceDeductModel, updateBalance);
+
+            // 添加小微给出订单记录
+            WxOrderModel wxOrderModel = HodgepodgeMethod.assembleWxOrderAdd(didModel, sgid);
+            ComponentUtil.wxOrderService.add(wxOrderModel);
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign

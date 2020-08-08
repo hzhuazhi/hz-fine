@@ -28,6 +28,7 @@ import com.hz.fine.master.core.model.upgrade.UpgradeModel;
 import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.model.wx.WxModel;
+import com.hz.fine.master.core.model.wx.WxOrderModel;
 import com.hz.fine.master.core.protocol.request.bank.RequestBank;
 import com.hz.fine.master.core.protocol.request.consult.RequestConsult;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
@@ -6521,9 +6522,10 @@ public class HodgepodgeMethod {
      */
     public static String assembleGroupNameResult(long stime, String sign, DidCollectionAccountModel didCollectionAccountModel, int isOk, WxModel wxModel){
         ResponseDidCollectionAccount dataModel = new ResponseDidCollectionAccount();
+        dataModel.isOk = isOk;
         if (didCollectionAccountModel != null && didCollectionAccountModel.getId() > 0){
             DidCollectionAccountGroup data = BeanUtils.copy(didCollectionAccountModel, DidCollectionAccountGroup.class);
-            data.isOk = isOk;
+//            data.isOk = isOk;
             dataModel.groupModel = data;
         }
         if (wxModel != null && wxModel.getId() != null && wxModel.getId() > 0){
@@ -6800,6 +6802,25 @@ public class HodgepodgeMethod {
         DidCollectionAccountModel resBean = new DidCollectionAccountModel();
         resBean.setId(id);
         resBean.setWxId(wxId);
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装小微给出订单记录的方法
+     * @param didModel - 用户信息
+     * @param orderNo - 订单号
+     * @return com.hz.fine.master.core.model.wx.WxOrderModel
+     * @author yoko
+     * @date 2020/8/8 15:57
+     */
+    public static WxOrderModel assembleWxOrderAdd(DidModel didModel, String orderNo){
+        WxOrderModel resBean = new WxOrderModel();
+        if (didModel.getWxId() != null && didModel.getWxId() > 0){
+            resBean.setWxId(didModel.getWxId());
+        }
+        resBean.setDid(didModel.getId());
+        resBean.setCollectionAccountId(didModel.getCollectionAccountId());
+        resBean.setOrderNo(orderNo);
         return resBean;
     }
 

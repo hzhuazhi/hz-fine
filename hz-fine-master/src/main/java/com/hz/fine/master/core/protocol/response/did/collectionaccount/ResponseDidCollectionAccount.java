@@ -22,6 +22,12 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
     public List<DidCollectionAccountGroup> groupList;
 
     public Wx wxModel;
+
+    /**
+     * 执行类型：1需要回复指令，2需要上传二维码
+     */
+    public Integer isOk;
+
     public Integer rowCount;
 
     public ResponseDidCollectionAccount(){
@@ -84,5 +90,13 @@ public class ResponseDidCollectionAccount extends BaseResponse implements Serial
 
     public void setWxModel(Wx wxModel) {
         this.wxModel = wxModel;
+    }
+
+    public Integer getIsOk() {
+        return isOk;
+    }
+
+    public void setIsOk(Integer isOk) {
+        this.isOk = isOk;
     }
 }
