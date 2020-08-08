@@ -7,8 +7,8 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.wx_id,a.did,a.collection_account_id,a.order_no,a.data_type
-        a.create_time,a.update_time,a.yn
+        a.id,a.wx_id,a.did,a.collection_account_id,a.order_no,a.data_type,
+        a.curday,a.curhour,a.curminute,a.create_time,a.update_time,a.yn
     </sql>
 
 
@@ -135,6 +135,15 @@
             <if test="dataType != null and dataType != '' " >
                 data_type,
             </if>
+            <if test="curday != null and curday != '' " >
+                curday,
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                curhour,
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                curminute,
+            </if>
             create_time,
         </trim>
         values
@@ -153,6 +162,15 @@
             </if>
             <if test="dataType != null and dataType != '' " >
                 <![CDATA[  #{dataType}, ]]>
+            </if>
+            <if test="curday != null and curday != '' " >
+                <![CDATA[  #{curday}, ]]>
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                <![CDATA[  #{curhour}, ]]>
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                <![CDATA[  #{curminute}, ]]>
             </if>
             NOW(),
         </trim>

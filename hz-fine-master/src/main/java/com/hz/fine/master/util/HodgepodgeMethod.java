@@ -6821,6 +6821,9 @@ public class HodgepodgeMethod {
         resBean.setDid(didModel.getId());
         resBean.setCollectionAccountId(didModel.getCollectionAccountId());
         resBean.setOrderNo(orderNo);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
         return resBean;
     }
 

@@ -44,6 +44,21 @@ public class WxOrderModel extends BasePage implements Serializable {
     private Integer dataType;
 
     /**
+     * 创建日期：存的日期格式20160530
+     */
+    private Integer curday;
+
+    /**
+     * 创建所属小时：24小时制
+     */
+    private Integer curhour;
+
+    /**
+     * 创建所属分钟：60分钟制
+     */
+    private Integer curminute;
+
+    /**
      * 创建时间
      */
     private String createTime;
@@ -128,5 +143,29 @@ public class WxOrderModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public Integer getCurday() {
+        return curday;
+    }
+
+    public void setCurday(Integer curday) {
+        this.curday = curday;
+    }
+
+    public Integer getCurhour() {
+        return curhour;
+    }
+
+    public void setCurhour(Integer curhour) {
+        this.curhour = curhour;
+    }
+
+    public Integer getCurminute() {
+        return curminute;
+    }
+
+    public void setCurminute(Integer curminute) {
+        this.curminute = curminute;
     }
 }
