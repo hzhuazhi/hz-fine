@@ -3068,7 +3068,8 @@ public class HodgepodgeMethod {
             String [] fg_stgValue = stgValue.split("-");
             instruct.successInstruct = fg_stgValue[0];
             instruct.failInstruct = fg_stgValue[1];
-            instruct.endInstruct = fg_stgValue[2];
+            instruct.checkInstruct = fg_stgValue[2];
+            instruct.badInstruct = fg_stgValue[3];
 
         }
         dataModel.instruct = instruct;
