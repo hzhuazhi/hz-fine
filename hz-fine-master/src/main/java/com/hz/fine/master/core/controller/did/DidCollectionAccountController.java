@@ -1450,6 +1450,45 @@ public class DidCollectionAccountController {
             }else{
                 WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(didCollectionAccountModel.getWxId(), 1);
                 wxDataModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
+                if (wxDataModel == null || wxDataModel.getId() == null || wxDataModel.getId() <= 0){
+                    // 表示之前的小微已被删除或者被暂停了
+                    // 判断收款账号是否已经回复了
+                    if (isOk == 1){
+                        // 表示需要回复的账号：直接筛选一个小微账号，然后进行关系绑定
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+                        // 更新此账号的wxId
+                        DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
+                        ComponentUtil.didCollectionAccountService.update(updateData);
+                    }else{
+                        // 表示需要上传二维码的，则删除此收款账号，然后新增一个收款账号
+                        DidCollectionAccountModel didCollectionAccountUpdateYn = HodgepodgeMethod.assembleDidCollectionAccountUpdateYn(didCollectionAccountModel.getId(), 1);
+                        ComponentUtil.didCollectionAccountService.manyOperation(didCollectionAccountUpdateYn);
+
+                        // 删除小微与收款账号的关联关系
+                        WxClerkModel wxClerkUpdate = HodgepodgeMethod.assembleWxClerkUpdateData(didCollectionAccountModel.getId());
+                        ComponentUtil.wxClerkService.manyOperation(wxClerkUpdate);
+
+                        // 在新增收款账号
+                        isOk = 1;
+                        // 新增收款账号
+                        DidCollectionAccountModel didCollectionAccountAdd = HodgepodgeMethod.assembleDidCollectionAccountAddByWx(did, 3, groupName, strategygroupRedPackNumModel.getStgNumValue());
+                        ComponentUtil.didCollectionAccountService.add(didCollectionAccountAdd);
+                        didCollectionAccountModel = didCollectionAccountAdd;
+                        log.info("");
+                        // 修改微信群序号
+                        DidModel updateGroupOrSwitch = HodgepodgeMethod.assembleUpdateGroupOrSwitchData(did, 1, 0);
+                        ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
+
+                        // 获取小微，绑定关联关系
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
+
+                        // 更新此账号的wxId
+                        DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
+                        ComponentUtil.didCollectionAccountService.update(updateData);
+                    }
+                }
             }
 
 

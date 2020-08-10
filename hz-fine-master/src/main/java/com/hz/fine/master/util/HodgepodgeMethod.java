@@ -3069,6 +3069,7 @@ public class HodgepodgeMethod {
             instruct.successInstruct = fg_stgValue[0];
             instruct.failInstruct = fg_stgValue[1];
             instruct.endInstruct = fg_stgValue[2];
+
         }
         dataModel.instruct = instruct;
         dataModel.setStime(stime);
@@ -6824,6 +6825,21 @@ public class HodgepodgeMethod {
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装删除收款账号的方法
+     * @param id - 收款账号主键ID
+     * @param yn - 是否有效
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/8/8 21:37
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountUpdateYn(long id, int yn){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setId(id);
+        resBean.setYn(yn);
         return resBean;
     }
 

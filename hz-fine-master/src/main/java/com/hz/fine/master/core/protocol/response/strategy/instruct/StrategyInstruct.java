@@ -22,9 +22,14 @@ public class StrategyInstruct implements Serializable {
     public String failInstruct;
 
     /**
-     * 结束指令回复
+     * 群审核指令回复
      */
-    public String endInstruct;
+    public String checkInstruct;
+
+    /**
+     * 坏指令：指当收款账号无法收钱时，在群里面回复的指令
+     */
+    public String badInstruct;
 
     public StrategyInstruct(){
 
@@ -47,11 +52,20 @@ public class StrategyInstruct implements Serializable {
         this.failInstruct = failInstruct;
     }
 
-    public String getEndInstruct() {
-        return endInstruct;
+
+    public String getCheckInstruct() {
+        return checkInstruct;
     }
 
-    public void setEndInstruct(String endInstruct) {
-        this.endInstruct = endInstruct;
+    public void setCheckInstruct(String checkInstruct) {
+        this.checkInstruct = checkInstruct;
+    }
+
+    public String getBadInstruct() {
+        return badInstruct;
+    }
+
+    public void setBadInstruct(String badInstruct) {
+        this.badInstruct = badInstruct;
     }
 }
