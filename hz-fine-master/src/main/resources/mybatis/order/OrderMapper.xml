@@ -51,6 +51,10 @@
             <if test="orderStatusStr != null and orderStatusStr != '' " >
                 and a.order_status >= 3
             </if>
+            <if test="isRedPack != null and isRedPack != '' " >
+                and a.is_red_pack = #{isRedPack}
+            </if>
+
             <if test="isReply != null and isReply != '' " >
                 and a.is_reply = #{isReply}
             </if>
