@@ -236,6 +236,11 @@ public class OrderModel extends BasePage implements Serializable {
      */
     private String orderStatusStr;
 
+    /**
+     * SQL条件
+     */
+    private String isReplyStr;
+
 
     public Long getId() {
         return id;
@@ -596,5 +601,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setReplenishType(Integer replenishType) {
         this.replenishType = replenishType;
+    }
+
+    public String getIsReplyStr() {
+        return isReplyStr;
+    }
+
+    public void setIsReplyStr(String isReplyStr) {
+        this.isReplyStr = isReplyStr;
     }
 }

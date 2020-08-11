@@ -6845,6 +6845,36 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: 组装查询订单信息的查询条件
+     * @param did - 用户ID
+     * @param collectionType - 收款账号类型：1微信，2支付宝，3微信群
+     * @param replenishType -  是否是补单：1初始化不是补单，2是补单
+     * @param isRedPack - 是否发了红包：1初始化未发红包，2发了红包
+     * @param isReply - 是否回复：1初始化未回复，2系统默认回复，3已回复失败，4已回复成功
+     * @return com.hz.fine.master.core.model.order.OrderModel
+     * @author yoko
+     * @date 2020/7/20 20:48
+     */
+    public static OrderModel assembleOrderByIsReply(long did, int collectionType, int replenishType, int isRedPack, int isReply){
+        OrderModel resBean = new OrderModel();
+        resBean.setDid(did);
+        if(collectionType > 0){
+            resBean.setCollectionType(collectionType);
+        }
+        if(replenishType > 0){
+            resBean.setReplenishType(replenishType);
+        }
+        if (isRedPack > 0){
+            resBean.setIsRedPack(isRedPack);
+        }
+        if (isReply > 0){
+            resBean.setIsReply(isReply);
+        }
+        return resBean;
+    }
+
+
 
 
     public static void main(String [] args){

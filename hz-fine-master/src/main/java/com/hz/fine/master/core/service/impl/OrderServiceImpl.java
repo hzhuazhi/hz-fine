@@ -437,10 +437,19 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 int random = new Random().nextInt(didList.size());
                 DidModel randomDidModel = didList.get(random);
 
-                // 筛选收款账号
-                didModel = getNewDidCollectionAccountByWxGroup(randomDidModel, orderMoney, countGroupNum);
-                if (didModel != null && didModel.getId() > 0){
-                    break;
+                // 查询此用户下订单，已经发过红包，但是没有回复的订单信息
+                OrderModel orderByDidQuery = HodgepodgeMethod.assembleOrderByIsReply(randomDidModel.getId(), 3, 1, 2,2);
+                OrderModel orderByDidModel = ComponentUtil.orderService.getOrderByNotIsReply(orderByDidQuery);
+                if (orderByDidModel == null || orderByDidModel.getId() == null || randomDidModel.getId() <= 0){
+                    // 表示用户名下订单一切正常
+
+                    // 筛选收款账号
+                    didModel = getNewDidCollectionAccountByWxGroup(randomDidModel, orderMoney, countGroupNum);
+                    if (didModel != null && didModel.getId() > 0 && didModel.getCollectionAccountId() > 0){
+                        break;
+                    }
+                }else{
+                    // 表示此用户名下有订单已经发了红包，但是没有回复，只是系统默认回复
                 }
                 count ++;
             }else {
@@ -449,6 +458,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         }
 
         return didModel;
+    }
+
+    @Override
+    public OrderModel getOrderByNotIsReply(OrderModel model) {
+        return orderMapper.getOrderByNotIsReply(model);
     }
 
 
@@ -629,6 +643,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                                 String strKeyCache_lock_did_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING, didCollectionAccountModel.getId());
                                 ComponentUtil.redisService.set(strKeyCache_lock_did_order_ing, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, FIVE_MIN);
                                 return didModel;
+
                             }
                         }
                         // 解锁

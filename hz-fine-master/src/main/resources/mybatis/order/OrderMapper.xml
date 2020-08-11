@@ -486,5 +486,14 @@
     </select>
 
 
+    <!-- 根据条件查询订单信息-->
+    <select id="getOrderByNotIsReply" parameterType="Object" resultType="com.hz.fine.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_order a left join tb_fn_did_collection_account b on a.collection_account_id = b.id
+        <include refid="Example_Where_Clause"/>
+        order by id desc
+        limit 1
+    </select>
 
 </mapper>
