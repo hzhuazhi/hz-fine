@@ -1378,7 +1378,7 @@ public class DidCollectionAccountController {
                     WxModel redis_wxModel = JSON.parseObject(redis_wx, WxModel.class);
                     if (redis_wxModel != null && redis_wxModel.getId() > 0){
                         // 查询储存在缓存中的小微目前状态是否正常
-                        WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(redis_wxModel.getId(), 1);
+                        WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(redis_wxModel.getId(), 1, 2);
                         WxModel wxModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
                         if (wxModel != null && wxModel.getId() >0 ){
                             // 判断要给出的微信是否有超过加群上限
@@ -1389,18 +1389,18 @@ public class DidCollectionAccountController {
                             }else{
                                 // 超出，需要重新给出一个
                                 // 说明之前的小微已经被暂停或者删除了
-                                WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                                WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1, 2);
                                 wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                             }
                         }else {
                             // 说明之前的小微已经被暂停或者删除了
-                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1, 2);
                             wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                         }
 
                     }else {
                         // 缓存中的数据可能是脏数据
-                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1, 2);
                         wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                     }
 
@@ -1415,25 +1415,25 @@ public class DidCollectionAccountController {
                         if (wxClerkModel != null && wxClerkModel.getId() > 0){
                             // 之前有我方小微的关联关系
                             // 查询此小微是否是正常状态的小微
-                            WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(wxClerkModel.getWxId(), 1);
+                            WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(wxClerkModel.getWxId(), 1,2);
                             WxModel wxModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
                             if (wxModel != null && wxModel.getId() > 0){
                                 // 此小微是可以正式给出的小微
                                 wxDataModel = wxModel;
                             }else{
                                 // 代表之前的小微暂停使用或者已经被删除了；需要给出新的小微
-                                WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                                WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                                 wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                             }
                         }else{
                             // 之前没有与我方小微建立关联关系，需要给出新的小微
-                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                            WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                             wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                         }
 
                     }else {
                         // 之前没有加过我方小微，需要给出新的小微
-                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                         wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                     }
                 }
@@ -1448,14 +1448,14 @@ public class DidCollectionAccountController {
                 DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
                 ComponentUtil.didCollectionAccountService.update(updateData);
             }else{
-                WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(didCollectionAccountModel.getWxId(), 1);
+                WxModel wxQuery = HodgepodgeMethod.assembleWxByIdQuery(didCollectionAccountModel.getWxId(), 1,2);
                 wxDataModel = (WxModel) ComponentUtil.wxService.findByObject(wxQuery);
                 if (wxDataModel == null || wxDataModel.getId() == null || wxDataModel.getId() <= 0){
                     // 表示之前的小微已被删除或者被暂停了
                     // 判断收款账号是否已经回复了
                     if (isOk == 1){
                         // 表示需要回复的账号：直接筛选一个小微账号，然后进行关系绑定
-                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                         wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
                         // 更新此账号的wxId
                         DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
@@ -1481,7 +1481,7 @@ public class DidCollectionAccountController {
                         ComponentUtil.didService.updateDidGroupNumOrSwitchType(updateGroupOrSwitch);
 
                         // 获取小微，绑定关联关系
-                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1);
+                        WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                         wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
 
                         // 更新此账号的wxId

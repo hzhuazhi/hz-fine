@@ -94,6 +94,11 @@ public class WxModel extends BasePage implements Serializable {
     private String wxQrCode;
 
     /**
+     * 小微登录状态：1登出/未登录，2登入/已登录
+     */
+    private Integer loginType;
+
+    /**
      * 使用状态:1初始化有效正常使用，2无效暂停使用
      */
     private Integer useStatus;
@@ -271,5 +276,13 @@ public class WxModel extends BasePage implements Serializable {
 
     public void setDayGroupNum(Integer dayGroupNum) {
         this.dayGroupNum = dayGroupNum;
+    }
+
+    public Integer getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(Integer loginType) {
+        this.loginType = loginType;
     }
 }

@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.did,a.wx_id,a.ac_name,a.ac_type,a.ac_num,a.user_id,a.mm_qr_code,a.dd_qr_code,a.payee,a.bank_name,a.business_type,
         a.wx_qr_code_ads,a.invalid_time,a.is_invalid,a.red_pack_num,
-        a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.use_status,
+        a.day_switch,a.month_switch,a.total_switch,a.check_status,a.check_info,a.login_type,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -71,6 +71,9 @@
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
+            </if>
+            <if test="loginType != null and loginType != '' " >
+                and a.login_type = #{loginType}
             </if>
             and a.yn = 0
         </trim>
@@ -212,6 +215,9 @@
             <if test="checkInfo != null and checkInfo != '' " >
                 check_info,
             </if>
+            <if test="loginType != null and loginType != '' " >
+                login_type,
+            </if>
             <if test="useStatus != null and useStatus != '' " >
                 use_status,
             </if>
@@ -273,6 +279,9 @@
             <if test="checkInfo != null and checkInfo != '' " >
                 <![CDATA[  #{checkInfo}, ]]>
             </if>
+            <if test="loginType != null and loginType != '' " >
+                <![CDATA[  #{loginType}, ]]>
+            </if>
             <if test="useStatus != null and useStatus != '' " >
                 <![CDATA[  #{useStatus}, ]]>
             </if>
@@ -328,6 +337,9 @@
             </if>
             <if test="checkInfo != null and checkInfo != '' " >
                 a.check_info = #{checkInfo},
+            </if>
+            <if test="loginType != null and loginType != '' " >
+                a.login_type = #{loginType},
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 a.use_status = #{useStatus},

@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.ac_name,a.wx_pass_wd,a.wx_name,a.to_wxid,a.total_link,a.binding_mobile,
         a.data_num,a.is_data_num,a.is_ok,a.day_num,a.group_num,a.is_group_num,a.is_ok_group,
-        a.day_group_num,a.wx_qr_code,a.use_status,
+        a.day_group_num,a.wx_qr_code,a.login_type,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -38,6 +38,9 @@
             </if>
             <if test="isOkGroup != null and isOkGroup != '' " >
                 and a.is_ok_group = #{isOkGroup}
+            </if>
+            <if test="loginType != null and loginType != '' " >
+                and a.login_type = #{loginType}
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
@@ -280,6 +283,9 @@
             </if>
             <if test="wxQrCode != null and wxQrCode != '' " >
                 a.wx_qr_code = #{wxQrCode},
+            </if>
+            <if test="loginType != null and loginType != '' " >
+                a.login_type = #{loginType},
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 a.use_status = #{useStatus},

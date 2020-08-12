@@ -6415,15 +6415,19 @@ public class HodgepodgeMethod {
      * @Description: 组装根据小微主键ID查询小微信息
      * @param id - 小微的主键ID
      * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param loginType - 小微登录状态：1登出/未登录，2登入/已登录
      * @return 
      * @author yoko
      * @date 2020/7/30 16:56 
     */
-    public static WxModel assembleWxByIdQuery(long id, int useStatus){
+    public static WxModel assembleWxByIdQuery(long id, int useStatus, int loginType){
         WxModel resBean = new WxModel();
         resBean.setId(id);
         if (useStatus > 0){
             resBean.setUseStatus(useStatus);
+        }
+        if (loginType > 0){
+            resBean.setLoginType(loginType);
         }
         return resBean;
     }
@@ -6433,15 +6437,17 @@ public class HodgepodgeMethod {
      * @param isOk - 是否以及完成了限制目标：1未完成，2完成
      * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
      * @param isOkGroup - 加群是否以及完成了限制目标：1未完成，2完成
+     * @param loginType - 小微登录状态：1登出/未登录，2登入/已登录
      * @return com.hz.fine.master.core.model.wx.WxModel
      * @author yoko
      * @date 2020/7/30 18:50
      */
-    public static WxModel assembleWxByIsOkAndUseStatusQuery(int isOk, int useStatus, int isOkGroup){
+    public static WxModel assembleWxByIsOkAndUseStatusQuery(int isOk, int useStatus, int isOkGroup, int loginType){
         WxModel resBean = new WxModel();
         resBean.setIsOk(isOk);
         resBean.setIsOkGroup(isOkGroup);
         resBean.setUseStatus(useStatus);
+        resBean.setLoginType(loginType);
         return resBean;
     }
 
@@ -6559,6 +6565,7 @@ public class HodgepodgeMethod {
             resBean.setInvalidTime(invalidTime);
         }
         resBean.setRedPackNum(redPackNum);
+        resBean.setLoginType(2);
         return resBean;
 
     }
