@@ -146,6 +146,15 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private WxOrderService wxOrderService;
 
+    @Autowired
+    private PoolOpenService poolOpenService;
+
+    @Autowired
+    private PoolWaitService poolWaitService;
+
+    @Autowired
+    private PoolOriginService poolOriginService;
+
 
 
 
@@ -196,6 +205,9 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.statisticsClickPayService = statisticsClickPayService;
         ComponentUtil.operateService = operateService;
         ComponentUtil.wxOrderService = wxOrderService;
+        ComponentUtil.poolOpenService = poolOpenService;
+        ComponentUtil.poolWaitService = poolWaitService;
+        ComponentUtil.poolOriginService = poolOriginService;
 
         runThread = new RunThread();
         runThread.start();

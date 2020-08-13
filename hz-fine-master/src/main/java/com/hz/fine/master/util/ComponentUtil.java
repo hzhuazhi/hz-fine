@@ -49,6 +49,9 @@ public class ComponentUtil {
     public static StatisticsClickPayService statisticsClickPayService;
     public static OperateService operateService;
     public static WxOrderService wxOrderService;
+    public static PoolOpenService poolOpenService;
+    public static PoolWaitService poolWaitService;
+    public static PoolOriginService poolOriginService;
 
 
 
