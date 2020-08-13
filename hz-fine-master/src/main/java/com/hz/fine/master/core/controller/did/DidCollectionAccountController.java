@@ -1319,7 +1319,7 @@ public class DidCollectionAccountController {
             // 获取用户信息
             DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
             DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
-            HodgepodgeMethod.checkDidData(didModel);
+            HodgepodgeMethod.checkDidVipType(didModel);
 
             // 组装群名
             int groupNum = didModel.getGroupNum() + 1;

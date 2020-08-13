@@ -1164,6 +1164,27 @@ public class HodgepodgeMethod {
 //        }
     }
 
+
+    /**
+     * @Description: check校验用户信息
+     * <p>
+     *     用户只有充值以后才能进行收款账号的添加
+     * </p>
+     * @param didModel
+     * @return
+     * @author yoko
+     * @date 2020/6/12 14:26
+     */
+    public static void checkDidVipType(DidModel didModel) throws Exception{
+        if (didModel == null || didModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00025.geteCode(), ErrorCode.ENUM_ERROR.DC00025.geteDesc());
+        }
+
+        if (didModel.getVipType() == 1){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00026.geteCode(), ErrorCode.ENUM_ERROR.DC00026.geteDesc());
+        }
+    }
+
     /**
      * @Description: 组装根据收款具体账号昵称查询的查询条件
      * @param payee - 收款账号昵称
