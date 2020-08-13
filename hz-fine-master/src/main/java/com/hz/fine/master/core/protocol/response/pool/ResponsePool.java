@@ -14,8 +14,9 @@ import java.util.List;
 public class ResponsePool extends BaseResponse implements Serializable {
     private static final long   serialVersionUID = 2233023131155L;
 
-    public Integer waitNum;// 当前等待排的位置
-    public Integer totalNum;// 总的等待数
+
+    public Integer poolStatus;// 用户目前在池子中状态：1未排队，2排队中，3进行中
+    public WaitInfo wait;// 在池子属于排队中的信息
 
     public Integer rowCount;
     public ResponsePool(){
@@ -23,21 +24,6 @@ public class ResponsePool extends BaseResponse implements Serializable {
     }
 
 
-    public Integer getWaitNum() {
-        return waitNum;
-    }
-
-    public void setWaitNum(Integer waitNum) {
-        this.waitNum = waitNum;
-    }
-
-    public Integer getTotalNum() {
-        return totalNum;
-    }
-
-    public void setTotalNum(Integer totalNum) {
-        this.totalNum = totalNum;
-    }
 
     @Override
     public Integer getRowCount() {
@@ -47,5 +33,21 @@ public class ResponsePool extends BaseResponse implements Serializable {
     @Override
     public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public Integer getPoolStatus() {
+        return poolStatus;
+    }
+
+    public void setPoolStatus(Integer poolStatus) {
+        this.poolStatus = poolStatus;
+    }
+
+    public WaitInfo getWait() {
+        return wait;
+    }
+
+    public void setWait(WaitInfo wait) {
+        this.wait = wait;
     }
 }

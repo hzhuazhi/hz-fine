@@ -13,9 +13,21 @@ import java.io.Serializable;
 public class RequestPool extends BaseRequest implements Serializable {
     private static final long   serialVersionUID = 1233223332241L;
 
-
+    /**
+     * 抢单行为：1开始抢单，2取消抢单
+     */
+    public Integer actionStatus;
 
     public RequestPool(){
 
+    }
+
+
+    public Integer getActionStatus() {
+        return actionStatus;
+    }
+
+    public void setActionStatus(Integer actionStatus) {
+        this.actionStatus = actionStatus;
     }
 }

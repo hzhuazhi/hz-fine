@@ -17,6 +17,8 @@ import com.hz.fine.master.core.model.mobilecard.MobileCardModel;
 import com.hz.fine.master.core.model.notice.NoticeModel;
 import com.hz.fine.master.core.model.operate.OperateModel;
 import com.hz.fine.master.core.model.order.OrderModel;
+import com.hz.fine.master.core.model.pool.PoolOpenModel;
+import com.hz.fine.master.core.model.pool.PoolWaitModel;
 import com.hz.fine.master.core.model.question.QuestionDDModel;
 import com.hz.fine.master.core.model.question.QuestionDModel;
 import com.hz.fine.master.core.model.question.QuestionMModel;
@@ -42,6 +44,7 @@ import com.hz.fine.master.core.protocol.request.did.recharge.RequestDidRecharge;
 import com.hz.fine.master.core.protocol.request.did.reward.RequestReward;
 import com.hz.fine.master.core.protocol.request.notice.RequestNotice;
 import com.hz.fine.master.core.protocol.request.order.RequestOrder;
+import com.hz.fine.master.core.protocol.request.pool.RequestPool;
 import com.hz.fine.master.core.protocol.request.statistics.RequestStatisticsClickPay;
 import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
@@ -76,6 +79,8 @@ import com.hz.fine.master.core.protocol.response.order.Order;
 import com.hz.fine.master.core.protocol.response.order.OrderDistribution;
 import com.hz.fine.master.core.protocol.response.order.OrderNewest;
 import com.hz.fine.master.core.protocol.response.order.ResponseOrder;
+import com.hz.fine.master.core.protocol.response.pool.ResponsePool;
+import com.hz.fine.master.core.protocol.response.pool.WaitInfo;
 import com.hz.fine.master.core.protocol.response.question.QuestionD;
 import com.hz.fine.master.core.protocol.response.question.QuestionDD;
 import com.hz.fine.master.core.protocol.response.question.QuestionM;
@@ -6903,6 +6908,102 @@ public class HodgepodgeMethod {
     }
 
 
+    /**
+     * @Description: check校验数据获取用户在池子中抢单状态时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkGetPoolStatusData(RequestPool requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00001.geteCode(), ErrorCode.ENUM_ERROR.P00001.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+    /**
+     * @Description: 组装查询抢单等待中的查询条件
+     * @param id - 主键ID
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.pool.PoolWaitModel
+     * @author yoko
+     * @date 2020/8/13 17:36
+     */
+    public static PoolWaitModel assemblePoolWaitQuery(long id, long did, String createTime){
+        PoolWaitModel resBean = new PoolWaitModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (did > 0){
+            resBean.setDid(did);
+        }
+        if (!StringUtils.isBlank(createTime)){
+            resBean.setCreateTime(createTime);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询抢单进行中的查询条件
+     * @param id - 主键ID
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.pool.PoolWaitModel
+     * @author yoko
+     * @date 2020/8/13 17:36
+     */
+    public static PoolOpenModel assemblePoolOpenQuery(long id, long did){
+        PoolOpenModel resBean = new PoolOpenModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (did > 0){
+            resBean.setDid(did);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 获取用户在池子中抢单状态返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param poolStatus - 用户目前在池子中状态：1未排队，2排队中，3进行中
+     * @param waitNum - 当前等待排的位置
+     * @param totalNum - 总的等待数
+     * @param waitTime - 预计等待时长
+     * @param rowCount - 总行数
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleGetPoolStatusResult(long stime, String sign, int poolStatus, int waitNum, int totalNum, int waitTime, Integer rowCount){
+        ResponsePool dataModel = new ResponsePool();
+        dataModel.poolStatus = poolStatus;
+        if (poolStatus == 2){
+            WaitInfo wait = new WaitInfo();
+            wait.waitNum = waitNum;
+            wait.totalNum = totalNum;
+            wait.waitTime = waitTime;
+            dataModel.wait = wait;
+        }
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
 
 
     public static void main(String [] args){

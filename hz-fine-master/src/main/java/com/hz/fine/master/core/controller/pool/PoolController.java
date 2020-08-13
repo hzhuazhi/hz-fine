@@ -14,8 +14,11 @@ import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.did.DidOnoffModel;
 import com.hz.fine.master.core.model.order.OrderModel;
+import com.hz.fine.master.core.model.pool.PoolOpenModel;
+import com.hz.fine.master.core.model.pool.PoolWaitModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
+import com.hz.fine.master.core.protocol.request.pool.RequestPool;
 import com.hz.fine.master.core.protocol.request.sell.RequestSell;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
@@ -75,92 +78,103 @@ public class PoolController {
 
 
     /**
-     * @Description: 获取我要卖的数据-集合
+     * @Description: 获取用户在池子中抢单状态
+     * <p>
+     *     池子中状态分别是：1未排队，2排队中，3进行中；
+     *     未排队跟进行中无需查询排队当前人数以及预计等待时长
+     * </p>
      * @param request
      * @param response
      * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
      * @author yoko
      * @date 2019/11/25 22:58
-     * local:http://localhost:8086/fine/sell/getDataList
+     * local:http://localhost:8086/fine/pool/getPoolStatus
      * 请求的属性类:RequestSell
-     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","pageNumber":1,"pageSize":3,"token":"111111"}
-     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwicGFnZU51bWJlciI6MSwicGFnZVNpemUiOjMsInRva2VuIjoiMTExMTExIn0="}
+     * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+秘钥=sign
      * 返回加密字段:stime+秘钥=sign
      * result={
      *     "resultCode": "0",
      *     "message": "success",
      *     "data": {
-     *         "jsonData": "eyJkYXRhTGlzdCI6W3siYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiI4MDAuMDAiLCJwcm9maXQiOiI4Iiwic2VsbE51bSI6IjgwMC4wMCIsInRpbWUiOiIxNTo1MjoxMCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNTAwLjAwIiwicHJvZml0IjoiMTUiLCJzZWxsTnVtIjoiMTUwMC4wMCIsInRpbWUiOiIxNTo1MjozNSJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxOTAwLjAwIiwicHJvZml0IjoiMTkiLCJzZWxsTnVtIjoiMTkwMC4wMCIsInRpbWUiOiIxNTo1MjowNSJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNzAwLjAwIiwicHJvZml0IjoiMTciLCJzZWxsTnVtIjoiMTcwMC4wMCIsInRpbWUiOiIxNTo1MjoxNCJ9LHsiYWNOYW1lIjoiKioqKiIsIm9yZGVyTW9uZXkiOiIxNTAwLjAwIiwicHJvZml0IjoiMTUiLCJzZWxsTnVtIjoiMTUwMC4wMCIsInRpbWUiOiIxNTo1MjoyNCJ9XSwic2lnbiI6IjlhMGY0ODNmMmZiMDc0NTFjZmJiMzBlZmZlMjk1YjI2Iiwic3RpbWUiOjE1OTM1MDM1NjMzODgsInRvdGFsTnVtIjoxNTAsIndhaXROdW0iOjk4fQ=="
+     *         "jsonData": "eyJwb29sU3RhdHVzIjoyLCJzaWduIjoiNWNiY2QyYzM0NWVlZjY1MWFmNGVjNjE0MTBiMTk3NjEiLCJzdGltZSI6MTU5NzMxNTE4Mzk3Nywid2FpdCI6eyJ0b3RhbE51bSI6MjAsIndhaXROdW0iOjksIndhaXRUaW1lIjo0NX19"
      *     },
-     *     "sgid": "202006301552370000001",
+     *     "sgid": "202008131839430000001",
      *     "cgid": ""
      * }
+     *
      */
-    @RequestMapping(value = "/getDataList", method = {RequestMethod.POST})
-    public JsonResult<Object> getDataList(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+    @RequestMapping(value = "/getPoolStatus", method = {RequestMethod.POST})
+    public JsonResult<Object> getPoolStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
         String sgid = ComponentUtil.redisIdService.getNewId();
         String cgid = "";
         String ip = StringUtil.getIpAddress(request);
         String data = "";
         long did = 0;
-        RequestSell requestModel = new RequestSell();
+        RequestPool requestModel = new RequestPool();
         try{
             // 解密
             data = StringUtil.decoderBase64(requestData.jsonData);
-            requestModel  = JSON.parseObject(data, RequestSell.class);
+            requestModel  = JSON.parseObject(data, RequestPool.class);
             //#临时数据
-//            if (!StringUtils.isBlank(requestModel.token)){
-//                if (requestModel.token.equals("111111")){
-//                    ComponentUtil.redisService.set(requestModel.token, "1");
-//                }
-//            }
-
-            // 获取用户的ID
-            String strCache = (String) ComponentUtil.redisService.get(requestModel.token);
-            if (!StringUtils.isBlank(strCache)) {
-                // 登录存储在缓存中的用户id
-                did = Long.parseLong(strCache);
-                // 设置10秒钟的redis缓存时间
-
-                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.DID_ONOFF, did);
-                ComponentUtil.redisService.set(strKeyCache, String.valueOf(did), 10L);
-
-                // 判断用户是否有余额可进行抢单
-                DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
-                DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
-                HodgepodgeMethod.checkDidData(didModel);
-                if (!StringUtils.isBlank(didModel.getBalance())){
-                    if (Double.parseDouble(didModel.getBalance()) > 0){
-                        // 上线（开始抢单）
-                        DidOnoffModel didOnoffUpdate = HodgepodgeMethod.assembleDidOnoffUpdate(did, 2);
-                        ComponentUtil.didOnoffService.updateDidOnoff(didOnoffUpdate);
-                    }
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
                 }
-
             }
 
-            // 查询策略里面的消耗金额范围内的奖励规则列表
-            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.CONSUME_MONEY_LIST.getStgType());
+            // check校验请求的数据
+            did = HodgepodgeMethod.checkGetPoolStatusData(requestModel);
+
+
+            // 查询策略里面的池子中每个人的消耗时间
+            int stgTime = 0;
+            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.POOL_CONSUME_TIME.getStgType());
             StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-            // 解析奖励规则的值
-            List<StrategyData> consumeMoneyList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+            stgTime = strategyModel.getStgNumValue();
 
-            OrderModel orderQuery = HodgepodgeMethod.assembleOrderQuery("0.01");
-            List<OrderModel> orderList = ComponentUtil.orderService.getSucOrderList(orderQuery);
-            if (orderList == null || orderList.size() <= 0){
-                // 组装假数据
-                orderList = HodgepodgeMethod.getTempOrderList(consumeMoneyList, 0);
-            }else if(orderList.size() > 0 && orderList.size() <= 3){
-                // 因为数据少，还需组装假数据
-                List<OrderModel> tempOrderList = HodgepodgeMethod.getTempOrderList(consumeMoneyList, 1);
-                orderList.addAll(tempOrderList);
+            int poolStatus = 0;
+            // 查询用户当前抢单状态
+            String createTime = "";
+            PoolWaitModel poolWaitQuery = HodgepodgeMethod.assemblePoolWaitQuery(0, did, null);
+            PoolWaitModel poolWaitModel = (PoolWaitModel) ComponentUtil.poolWaitService.findByObject(poolWaitQuery);
+            if (poolWaitModel != null && poolWaitModel.getId() != null && poolWaitModel.getId() > 0){
+                // 说明用户在等待池中
+                poolStatus = 2;
+                createTime = poolWaitModel.getCreateTime();
+            }else {
+                PoolOpenModel poolOpenQuery = HodgepodgeMethod.assemblePoolOpenQuery(0, did);
+                PoolOpenModel poolOpenModel = (PoolOpenModel) ComponentUtil.poolOpenService.findByObject(poolOpenQuery);
+                if (poolOpenModel != null && poolOpenModel.getId() != null && poolOpenModel.getId() > 0){
+                    // 说明用户处于抢单进行中
+                    poolStatus = 3;
+                }else{
+                    // 说明用户未排队
+                    poolStatus = 1;
+                }
             }
+
+            int waitNum = 0;
+            int totalNum = 0;
+            int waitTime = 0;
+            if (poolStatus == 2){
+                // 需要计算出当前排队的详情数据
+                PoolWaitModel poolWaitCountQuery = HodgepodgeMethod.assemblePoolWaitQuery(0, 0, createTime);
+                waitNum = ComponentUtil.poolWaitService.queryByCount(poolWaitCountQuery);
+                totalNum = ComponentUtil.poolWaitService.queryByCount(new PoolWaitModel());
+                if (waitNum > 0){
+                    waitTime = waitNum * stgTime;
+                }
+            }
+
+
+
 
             // 组装返回客户端的数据
             long stime = System.currentTimeMillis();
             String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-            String strData = HodgepodgeMethod.assembleSellListResult(stime, sign, orderList, null);
+            String strData = HodgepodgeMethod.assembleGetPoolStatusResult(stime, sign, poolStatus, waitNum, totalNum,waitTime,null);
             // 数据加密
             String encryptionData = StringUtil.mergeCodeBase64(strData);
             ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
@@ -170,9 +184,9 @@ public class PoolController {
         }catch (Exception e){
             Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
             // #添加异常
-            log.error(String.format("this SellController.getDataList() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            log.error(String.format("this PoolController.getPoolStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
-                log.error(String.format("this SellController.getDataList() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+                log.error(String.format("this PoolController.getPoolStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);

@@ -37,6 +37,9 @@
             <if test="curdayStart != null and curdayStart != '' and curdayEnd != null and curdayEnd != '' " >
                 and a.curday >= #{curdayStart} and a.curday &lt;= #{curdayEnd}
             </if>
+            <if test="createTime != null and createTime != '' " >
+                and a.create_time &lt;= #{createTime}
+            </if>
             and a.yn = 0
         </trim>
     </sql>

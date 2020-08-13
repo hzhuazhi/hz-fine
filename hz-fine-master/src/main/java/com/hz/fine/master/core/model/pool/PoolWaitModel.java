@@ -67,6 +67,16 @@ public class PoolWaitModel extends BasePage implements Serializable {
      */
     private List<Long> idList;
 
+    /**
+     * SQL查询条件
+     */
+    private String createTimeStart;
+
+    /**
+     * SQL查询条件
+     */
+    private String createTimeEnd;
+
     public Long getId() {
         return id;
     }
@@ -161,5 +171,21 @@ public class PoolWaitModel extends BasePage implements Serializable {
 
     public void setIdList(List<Long> idList) {
         this.idList = idList;
+    }
+
+    public String getCreateTimeStart() {
+        return createTimeStart;
+    }
+
+    public void setCreateTimeStart(String createTimeStart) {
+        this.createTimeStart = createTimeStart;
+    }
+
+    public String getCreateTimeEnd() {
+        return createTimeEnd;
+    }
+
+    public void setCreateTimeEnd(String createTimeEnd) {
+        this.createTimeEnd = createTimeEnd;
     }
 }
