@@ -121,6 +121,7 @@ public class ServerConstant {
         GROUP_NUM(36,""),
         WX_NUM(37,""),
         POOL_CONSUME_TIME(38,""),
+        POOL_OPEN_MIN_MONEY(39,""),
 
 
 

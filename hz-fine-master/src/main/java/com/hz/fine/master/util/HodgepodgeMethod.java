@@ -2518,8 +2518,7 @@ public class HodgepodgeMethod {
     /**
      * @Description: 组装查询可以进行派发订单的用户查询条件的方法
      * @param requestModel - 金额跟支付类型
-     * @param countGroupNum - 微信群有效个数才允许正常出码
-     * @return 
+     * @return
      * @author yoko
      * @date 2020/5/25 14:15 
     */
@@ -6993,7 +6992,7 @@ public class HodgepodgeMethod {
     public static String assembleGetPoolStatusResult(long stime, String sign, int poolStatus, int waitNum, int totalNum, int waitTime, Integer rowCount){
         ResponsePool dataModel = new ResponsePool();
         dataModel.poolStatus = poolStatus;
-        if (poolStatus == 2){
+        if (poolStatus <= 2){
             WaitInfo wait = new WaitInfo();
             wait.waitNum = waitNum;
             wait.totalNum = totalNum;
@@ -7003,6 +7002,215 @@ public class HodgepodgeMethod {
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: check校验数据更新抢单池状态时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkUpdatePoolStatusData(RequestPool requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00002.geteCode(), ErrorCode.ENUM_ERROR.P00002.geteDesc());
+        }
+
+        // 校验抢单行为值
+        if (requestModel.actionStatus == null || requestModel.actionStatus == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00003.geteCode(), ErrorCode.ENUM_ERROR.P00003.geteDesc());
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
+     * @Description: 组装更新抢单等待中的查询条件
+     * @param id - 主键ID
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.pool.PoolWaitModel
+     * @author yoko
+     * @date 2020/8/13 17:36
+     */
+    public static PoolWaitModel assemblePoolWaitUpdate(long id, long did, int yn){
+        PoolWaitModel resBean = new PoolWaitModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (did > 0){
+            resBean.setDid(did);
+        }
+        if (yn > 0){
+            resBean.setYn(yn);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装更新抢单进行中的查询条件
+     * @param id - 主键ID
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.pool.PoolWaitModel
+     * @author yoko
+     * @date 2020/8/13 17:36
+     */
+    public static PoolOpenModel assemblePoolOpenUpdate(long id, long did, int yn){
+        PoolOpenModel resBean = new PoolOpenModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (did > 0){
+            resBean.setDid(did);
+        }
+        if (yn > 0){
+            resBean.setYn(yn);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: check校验开始抢单用户的余额
+     * @param didModel - 用户信息
+     * @param minMoney - 策略里面抢单金额的最低标准
+     * @return void
+     * @author yoko
+     * @date 2020/8/13 19:28
+     */
+    public static void checkDidMoney(DidModel didModel, String minMoney) throws Exception{
+        if (didModel == null || didModel.getId() == null || didModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00004.geteCode(), ErrorCode.ENUM_ERROR.P00004.geteDesc());
+        }
+
+        if(StringUtils.isBlank(didModel.getBalance())){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00005.geteCode(), ErrorCode.ENUM_ERROR.P00005.geteDesc());
+        }else{
+            boolean flag = StringUtil.getBigDecimalSubtract(didModel.getBalance(), minMoney);
+            if (!flag){
+                throw new ServiceException(ErrorCode.ENUM_ERROR.P00006.geteCode(), ErrorCode.ENUM_ERROR.P00006.geteDesc());
+            }
+        }
+    }
+
+
+    /**
+     * @Description: 根据条件查询用户获取微信群收款账号信息-有效
+     * @param did - 用户ID
+     * @param acType - 收款账号类型
+     * @param isInvalid - 是否失效：1未失效，2已失效
+     * @param checkStatus - 收款账号审核：1初始化，2审核失败，3审核成功
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param loginType - 归属小微登录状态：1登出/未登录，2登入/已登录
+     * @param countGroupNum - 有效微信群个数
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountListEffective(long did, int acType, int isInvalid, int checkStatus,int useStatus, int loginType, int countGroupNum){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        if(acType > 0){
+            resBean.setAcType(acType);
+        }
+        resBean.setIsInvalid(isInvalid);
+        if (isInvalid == 1){
+            // 未失效
+            resBean.setInvalidTimeStart("1");
+        }
+        resBean.setCheckStatus(checkStatus);
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        if (loginType > 0){
+            resBean.setLoginType(loginType);
+        }
+        if (countGroupNum > 0){
+            resBean.setCountGroupNum(countGroupNum);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: check用户有效群信息
+     * @param didCollectionAccountList - 有效群集合
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+    */
+    public static void checkDidCollectionAccountListEffective(List<DidCollectionAccountModel> didCollectionAccountList) throws Exception{
+        if (didCollectionAccountList == null || didCollectionAccountList.size() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00007.geteCode(), ErrorCode.ENUM_ERROR.P00007.geteDesc());
+        }
+    }
+
+    /**
+     * @Description: check用户是否有未回复的订单信息
+     * @param orderModel - 订单信息
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+     */
+    public static void checkOrderByIsReply(OrderModel orderModel) throws Exception{
+        if (orderModel != null && orderModel.getId() > 0){
+            throw new ServiceException("HM00001", "微信群名：《" + orderModel.getWxNickname() + "》未回复结果！");
+        }
+    }
+
+    /**
+     * @Description: 组装添加抢单等待中的方法
+     * @param did - 用户ID
+     * @return com.hz.fine.master.core.model.pool.PoolWaitModel
+     * @author yoko
+     * @date 2020/8/13 17:36
+     */
+    public static PoolWaitModel assemblePoolWaitAdd(long did, int dataType){
+        PoolWaitModel resBean = new PoolWaitModel();
+        resBean.setDid(did);
+        if (dataType > 0){
+            resBean.setDataType(dataType);
+        }
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+    /**
+     * @Description: check用户是否已经存在在抢单等待中
+     * @param poolWaitModel - 抢单等待中的信息
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+     */
+    public static void checkPoolWait(PoolWaitModel poolWaitModel) throws Exception{
+        if (poolWaitModel != null && poolWaitModel.getId() != null && poolWaitModel.getId() > 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00008.geteCode(), ErrorCode.ENUM_ERROR.P00008.geteDesc());
+        }
+    }
+
+    /**
+     * @Description: check用户是否已经存在在抢单进行中
+     * @param poolOpenModel - 抢单进行中的信息
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+     */
+    public static void checkPoolOpen(PoolOpenModel poolOpenModel) throws Exception{
+        if (poolOpenModel != null && poolOpenModel.getId() != null && poolOpenModel.getId() > 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00009.geteCode(), ErrorCode.ENUM_ERROR.P00009.geteDesc());
+        }
     }
 
 

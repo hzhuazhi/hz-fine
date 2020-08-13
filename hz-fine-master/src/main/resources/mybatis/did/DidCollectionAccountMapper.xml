@@ -517,7 +517,9 @@
         from tb_fn_did_collection_account a
         <include refid="Example_Where_Clause"/>
         order by a.id asc
-        limit #{countGroupNum}
+        <if test="countGroupNum != null and countGroupNum != ''" >
+            limit #{countGroupNum}
+        </if>
     </select>
 
 

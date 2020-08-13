@@ -11,15 +11,14 @@ import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.controller.sell.SellController;
 import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
+import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.did.DidOnoffModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.pool.PoolOpenModel;
 import com.hz.fine.master.core.model.pool.PoolWaitModel;
-import com.hz.fine.master.core.model.strategy.StrategyData;
 import com.hz.fine.master.core.model.strategy.StrategyModel;
 import com.hz.fine.master.core.protocol.request.pool.RequestPool;
-import com.hz.fine.master.core.protocol.request.sell.RequestSell;
 import com.hz.fine.master.util.ComponentUtil;
 import com.hz.fine.master.util.HodgepodgeMethod;
 import org.apache.commons.lang.StringUtils;
@@ -89,7 +88,7 @@ public class PoolController {
      * @author yoko
      * @date 2019/11/25 22:58
      * local:http://localhost:8086/fine/pool/getPoolStatus
-     * 请求的属性类:RequestSell
+     * 请求的属性类:RequestPool
      * 必填字段:{"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
      * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
      * 客户端加密字段:ctime+秘钥=sign
@@ -118,11 +117,11 @@ public class PoolController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestPool.class);
             //#临时数据
-            if (!StringUtils.isBlank(requestModel.token)){
-                if (requestModel.token.equals("111111")){
-                    ComponentUtil.redisService.set(requestModel.token, "1");
-                }
-            }
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
 
             // check校验请求的数据
             did = HodgepodgeMethod.checkGetPoolStatusData(requestModel);
@@ -158,7 +157,9 @@ public class PoolController {
             int waitNum = 0;
             int totalNum = 0;
             int waitTime = 0;
-            if (poolStatus == 2){
+            if (poolStatus == 1){
+                totalNum = ComponentUtil.poolWaitService.queryByCount(new PoolWaitModel());
+            }else if (poolStatus == 2){
                 // 需要计算出当前排队的详情数据
                 PoolWaitModel poolWaitCountQuery = HodgepodgeMethod.assemblePoolWaitQuery(0, 0, createTime);
                 waitNum = ComponentUtil.poolWaitService.queryByCount(poolWaitCountQuery);
@@ -187,6 +188,131 @@ public class PoolController {
             log.error(String.format("this PoolController.getPoolStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
             if (!StringUtils.isBlank(map.get("dbCode"))){
                 log.error(String.format("this PoolController.getPoolStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+            }
+            e.printStackTrace();
+            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+        }
+    }
+
+
+    /**
+     * @Description: 更新抢单池状态
+     * <p>
+     *     用户可更新状态：1取消抢单，2抢单
+     * </p>
+     * @param request
+     * @param response
+     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+     * @author yoko
+     * @date 2019/11/25 22:58
+     * local:http://localhost:8086/fine/pool/updatePoolStatus
+     * 请求的属性类:RequestPool
+     * 必填字段:{"actionStatus":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 客户端加密字段:ctime+秘钥=sign
+     * 返回加密字段:stime+秘钥=sign
+     * result={
+     *     "resultCode": "0",
+     *     "message": "success",
+     *     "data": {
+     *         "jsonData": "eyJzaWduIjoiZWFlNjllNTQ3NTc2Yjg3NjI0YjE2NGRlYWVhZTM1N2IiLCJzdGltZSI6MTU5NzMyMjQzODU4M30="
+     *     },
+     *     "sgid": "202008132040380000001",
+     *     "cgid": ""
+     * }
+     *
+     */
+    @RequestMapping(value = "/updatePoolStatus", method = {RequestMethod.POST})
+    public JsonResult<Object> updatePoolStatus(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+        String sgid = ComponentUtil.redisIdService.getNewId();
+        String cgid = "";
+        String ip = StringUtil.getIpAddress(request);
+        String data = "";
+        long did = 0;
+        RequestPool requestModel = new RequestPool();
+        try{
+            // 解密
+            data = StringUtil.decoderBase64(requestData.jsonData);
+            requestModel  = JSON.parseObject(data, RequestPool.class);
+            //#临时数据
+//            if (!StringUtils.isBlank(requestModel.token)){
+//                if (requestModel.token.equals("111111")){
+//                    ComponentUtil.redisService.set(requestModel.token, "1");
+//                }
+//            }
+
+            // check校验请求的数据
+            did = HodgepodgeMethod.checkUpdatePoolStatusData(requestModel);
+            int poolStatus = 0;
+            if (requestModel.actionStatus == 1){
+                // 开始抢单
+
+                // 查询策略里面的池子开启抢单最低保底金额
+                String minMoney = "";
+                StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.POOL_OPEN_MIN_MONEY.getStgType());
+                StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                minMoney = strategyModel.getStgValue();
+
+                // 查询此用户是否已经存在在抢单等待中
+                PoolWaitModel poolWaitQuery = HodgepodgeMethod.assemblePoolWaitQuery(0, did, null);
+                PoolWaitModel poolWaitModel = (PoolWaitModel) ComponentUtil.poolWaitService.findByObject(poolWaitQuery);
+                // check校验是否存在抢单等待中
+                HodgepodgeMethod.checkPoolWait(poolWaitModel);
+
+                // 查询此用户是否已经存在在抢单进行中
+                PoolOpenModel poolOpenQuery = HodgepodgeMethod.assemblePoolOpenQuery(0, did);
+                PoolOpenModel poolOpenModel = (PoolOpenModel) ComponentUtil.poolOpenService.findByObject(poolOpenQuery);
+                HodgepodgeMethod.checkPoolOpen(poolOpenModel);
+
+                // 查询用户信息
+                DidModel didQuery = HodgepodgeMethod.assembleDidQueryByDid(did);
+                DidModel didModel = (DidModel) ComponentUtil.didService.findByObject(didQuery);
+                // 校验用户余额是否满足策略部署的余额的最低标准
+                HodgepodgeMethod.checkDidMoney(didModel, minMoney);
+
+                // 查询此用户的有效群
+                DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, 0);
+                List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountQuery);
+                // 校验有效群
+                HodgepodgeMethod.checkDidCollectionAccountListEffective(didCollectionAccountList);
+
+                // 查询此用户下订单，已经发过红包，但是没有回复的订单信息
+                OrderModel orderQuery = HodgepodgeMethod.assembleOrderByIsReply(did, 3, 1, 2,2);
+                OrderModel orderModel = ComponentUtil.orderService.getOrderByNotIsReply(orderQuery);
+                // 校验订单已发过红包，但是没有回复的订单信息
+                HodgepodgeMethod.checkOrderByIsReply(orderModel);
+
+                // 添加数据到排队表中
+                PoolWaitModel poolWaitAdd = HodgepodgeMethod.assemblePoolWaitAdd(did, 1);
+                ComponentUtil.poolWaitService.add(poolWaitAdd);
+
+
+
+            }else if (requestModel.actionStatus == 2){
+                // 取消抢单
+                PoolWaitModel poolWaitUpdate = HodgepodgeMethod.assemblePoolWaitUpdate(0, did, 1);
+                ComponentUtil.poolWaitService.manyOperation(poolWaitUpdate);
+
+                PoolOpenModel poolOpenUpdate = HodgepodgeMethod.assemblePoolOpenUpdate(0, did , 1);
+                ComponentUtil.poolOpenService.manyOperation(poolOpenUpdate);
+            }
+
+            // 组装返回客户端的数据
+            long stime = System.currentTimeMillis();
+            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+            String strData = HodgepodgeMethod.assembleResult(stime, null, sign);
+            // 数据加密
+            String encryptionData = StringUtil.mergeCodeBase64(strData);
+            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+            resultDataModel.jsonData = encryptionData;
+            // 返回数据给客户端
+            return JsonResult.successResult(resultDataModel, cgid, sgid);
+        }catch (Exception e){
+            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+            // #添加异常
+            log.error(String.format("this PoolController.updatePoolStatus() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+            if (!StringUtils.isBlank(map.get("dbCode"))){
+                log.error(String.format("this PoolController.updatePoolStatus() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
             }
             e.printStackTrace();
             return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
