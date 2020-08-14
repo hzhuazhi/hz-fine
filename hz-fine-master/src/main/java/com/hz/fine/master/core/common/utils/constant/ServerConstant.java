@@ -123,6 +123,7 @@ public class ServerConstant {
         POOL_CONSUME_TIME(38,""),
         POOL_OPEN_MIN_MONEY(39,""),
         GROUP_MIN_MONEY(40,""),
+        POOL_MIN_MONEY(41,""),
 
 
 

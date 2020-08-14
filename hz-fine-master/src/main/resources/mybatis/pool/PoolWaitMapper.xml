@@ -184,6 +184,7 @@
                 a.yn = #{yn},
             </if>
         </trim>
+        where 1=1
         <if test="id != null and id != '' " >
             and a.id = #{id}
         </if>

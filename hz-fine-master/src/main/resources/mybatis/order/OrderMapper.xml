@@ -496,7 +496,7 @@
         <include refid="Base_Column_List" />
         from tb_fn_order a left join tb_fn_did_collection_account b on a.collection_account_id = b.id
         <include refid="Example_Where_Clause"/>
-        order by id desc
+        order by a.id desc
         limit 1
     </select>
 
