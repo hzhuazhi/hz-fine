@@ -1748,9 +1748,14 @@ public class DidCollectionAccountController {
                         // 表示需要回复的账号：直接筛选一个小微账号，然后进行关系绑定
                         WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                         wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
-                        // 更新此账号的wxId
-                        DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
-                        ComponentUtil.didCollectionAccountService.update(updateData);
+                        if (wxDataModel != null && wxDataModel.getId() != null && wxDataModel.getId() > 0){
+                            // 更新此账号的wxId
+                            DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
+                            ComponentUtil.didCollectionAccountService.update(updateData);
+                        }else {
+                            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00048.geteCode(), ErrorCode.ENUM_ERROR.DC00048.geteDesc());
+                        }
+
                     }else{
                         // 表示需要上传二维码的，则删除此收款账号，然后新增一个收款账号
                         DidCollectionAccountModel didCollectionAccountUpdateYn = HodgepodgeMethod.assembleDidCollectionAccountUpdateYn(didCollectionAccountModel.getId(), 1);
@@ -1774,10 +1779,13 @@ public class DidCollectionAccountController {
                         // 获取小微，绑定关联关系
                         WxModel wxByQuery = HodgepodgeMethod.assembleWxByIsOkAndUseStatusQuery(1, 1, 1,2);
                         wxDataModel = ComponentUtil.wxService.screenWx(wxByQuery);
-
-                        // 更新此账号的wxId
-                        DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
-                        ComponentUtil.didCollectionAccountService.update(updateData);
+                        if (wxDataModel != null && wxDataModel.getId() != null && wxDataModel.getId() > 0){
+                            // 更新此账号的wxId
+                            DidCollectionAccountModel updateData = HodgepodgeMethod.assembleUpdateDidCollectionAccountWxIdById(didCollectionAccountModel.getId(), wxDataModel.getId());
+                            ComponentUtil.didCollectionAccountService.update(updateData);
+                        }else {
+                            throw new ServiceException(ErrorCode.ENUM_ERROR.DC00048.geteCode(), ErrorCode.ENUM_ERROR.DC00048.geteDesc());
+                        }
                     }
                 }
             }
