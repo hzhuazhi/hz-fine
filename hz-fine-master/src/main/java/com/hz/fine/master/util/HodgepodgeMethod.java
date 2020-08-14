@@ -7213,6 +7213,73 @@ public class HodgepodgeMethod {
         }
     }
 
+    /**
+     * @Description: check用户是否有新建群的资格
+     * @param balance - 用户余额
+     * @param groupMinMoney - 每个群创建微信群的最低保底金额
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+     */
+    public static boolean checkAddGroup(String balance, String groupMinMoney){
+        boolean flag = false;
+        if (StringUtils.isBlank(balance)){
+            return flag;
+        }
+        boolean flag_money = StringUtil.getBigDecimalSubtract(balance, groupMinMoney);
+        if (flag_money){
+            flag = true;
+        }
+        return flag;
+    }
+
+    /**
+     * @Description: 计算用户还能新建几个群
+     * @param balance - 用户余额
+     * @param groupMinMoney - 每个群的保底金额
+     * @param groupNum - 目前已经拥有的有效群个数
+     * @return int
+     * @author yoko
+     * @date 2020/8/14 10:29
+     */
+    public static int getGroupNumByMoney(String balance, String groupMinMoney, int groupNum){
+        int num = 0;
+        double balance_db = Double.parseDouble(balance);
+        double groupMinMoney_db = Double.parseDouble(groupMinMoney);
+        double res = balance_db/groupMinMoney_db;
+        int res_num = (int) Math.floor(res);
+        if (res_num <= 0){
+            num = 0;
+        }else{
+            if (res_num <= groupNum){
+                num = 0;
+            }else{
+                num = res_num - groupNum;
+            }
+        }
+        return num;
+    }
+
+    /**
+     * @Description: 用户已拥有多少个有效群
+     * @param didCollectionAccountList - 有效群集合
+     * @return
+     * @author yoko
+     * @date 2020/8/14 10:35
+    */
+    public static int getHaveGroupNum(List<DidCollectionAccountModel> didCollectionAccountList){
+        int num = 0;
+        if (didCollectionAccountList == null || didCollectionAccountList.size() <= 0){
+            num = 0;
+        }else {
+            num = didCollectionAccountList.size();
+        }
+        return num;
+    }
+
+
+
+
 
     public static void main(String [] args){
         String bankWorkTime = "09:00-14:10";

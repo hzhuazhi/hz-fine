@@ -13,7 +13,7 @@ import java.util.Date;
 public class Temp {
     public static void main(String[] args) {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm");//设置日期格式
-//初始化
+        //初始化
         Date nowTime = null;
         Date beginTime = null;
         Date endTime = null;
@@ -39,6 +39,16 @@ public class Temp {
             //不处于规定的时间段内，执行对应的逻辑代码
             System.out.println(flag);
         }
+
+//        String balance = "0.73221121";
+//        String groupMinMoney = "100.2458712313312";
+        String balance = "18";
+        String groupMinMoney = "3";
+        int groupNum = 5;
+
+//        int num = getGroupNumByMoney(balance, groupMinMoney, groupNum);
+//        System.out.println("num:" + num);
+
     }
 
     /**
@@ -65,6 +75,25 @@ public class Temp {
             return false;
         }
     }
+
+//    public static int getGroupNumByMoney(String balance, String groupMinMoney, int groupNum){
+//        int num = 0;
+//        double balance_db = Double.parseDouble(balance);
+//        double groupMinMoney_db = Double.parseDouble(groupMinMoney);
+//
+//        double res = balance_db/groupMinMoney_db;
+//        int res_num = (int) Math.floor(res);
+//        if (res_num <= 0){
+//            num = 0;
+//        }else{
+//            if (res_num <= groupNum){
+//                num = 0;
+//            }else{
+//                num = res_num - groupNum;
+//            }
+//        }
+//        return num;
+//    }
 
 
 
