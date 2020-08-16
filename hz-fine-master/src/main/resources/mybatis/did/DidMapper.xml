@@ -514,5 +514,17 @@
     </select>
 
 
+    <!-- 获取可出码用户集合 -->
+    <select id="getDidByWxGroupList" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did a
+        where 1=1
+        and a.id in(
+        select a.did from tb_fn_pool_open a where a.yn =0 order by a.create_time asc)
+        and a.balance >= #{money} and a.balance > 0 and a.use_status =1 and a.yn = 0
+    </select>
+
+
 
 </mapper>

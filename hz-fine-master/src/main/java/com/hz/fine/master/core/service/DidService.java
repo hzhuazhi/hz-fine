@@ -89,4 +89,16 @@ public interface DidService<T> extends BaseService<T> {
      * @date 2020/7/2 10:56
      */
     public List<DidModel> getNewEffectiveDidByWxGroupList(DidModel model);
+
+    /**
+     * @Description: 获取可出码用户集合
+     * <p>
+     *     从池子中正在进行的用户ID集合找出余额比此订单金额大的用户集合数据
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/8/16 19:23
+    */
+    public List<DidModel> getDidByWxGroupList(DidModel model);
 }

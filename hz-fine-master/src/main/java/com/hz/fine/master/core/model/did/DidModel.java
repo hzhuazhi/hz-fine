@@ -4,6 +4,7 @@ import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Description 用户的基本属性实体Bean
@@ -262,6 +263,11 @@ public class DidModel extends BasePage implements Serializable {
      * 小微主键ID
      */
     private Long wxId;
+
+    /**
+     * 用户ID集合
+     */
+    private List<Long> idList;
 
     public Long getId() {
         return id;
@@ -654,5 +660,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setWxId(Long wxId) {
         this.wxId = wxId;
+    }
+
+    public List<Long> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<Long> idList) {
+        this.idList = idList;
     }
 }

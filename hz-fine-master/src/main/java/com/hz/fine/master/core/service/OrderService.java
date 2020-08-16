@@ -185,4 +185,16 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/8/11 15:49
     */
     public OrderModel getOrderByNotIsReply(OrderModel model);
+
+
+    /**
+     * @Description: 根据池子用户筛选池子中可给码的收款账号
+     * @param didList - 可以正常使用的did账号集合
+     * @param orderMoney - 订单金额
+     * @param countGroupNum - 微信群有效个数才允许正常出码
+     * @return
+     * @author yoko
+     * @date 2020/5/26 15:58
+     */
+    public DidModel screenCollectionAccountByPool(List<DidModel> didList, String orderMoney, int countGroupNum);
 }
