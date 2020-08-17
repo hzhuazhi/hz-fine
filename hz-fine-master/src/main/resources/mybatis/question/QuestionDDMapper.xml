@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.question_d_id,a.seat_d_d,a.title,a.sketch,a.page_ads,a.keyword,a.create_time,a.update_time,a.yn
+        a.id,a.question_d_id,a.seat_d_d,a.title,a.sketch,a.page_ads,a.keyword,a.data_type,a.create_time,a.update_time,a.yn
     </sql>
 
 
@@ -127,6 +127,9 @@
             <if test="keyword != null and keyword != '' " >
                 keyword,
             </if>
+            <if test="dataType != null and dataType != '' " >
+                data_type,
+            </if>
             create_time,
         </trim>
         values
@@ -148,6 +151,9 @@
             </if>
             <if test="keyword != null and keyword != '' " >
                 <![CDATA[  #{keyword}, ]]>
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                <![CDATA[  #{dataType}, ]]>
             </if>
             NOW(),
         </trim>
@@ -174,6 +180,9 @@
             </if>
             <if test="keyword != null and keyword != '' " >
                 a.keyword = #{keyword},
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                a.data_type = #{dataType},
             </if>
             a.update_time = NOW(),
         </trim>

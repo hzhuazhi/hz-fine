@@ -53,6 +53,11 @@ public class QuestionDDModel extends BasePage implements Serializable {
      */
     private String keyword;
 
+    /**
+     * 数据类型：1文字或图片数据，2视频数据
+     */
+    private Integer dataType;
+
 
     /**
      * 创建时间
@@ -169,5 +174,13 @@ public class QuestionDDModel extends BasePage implements Serializable {
 
     public void setSearchKey(String searchKey) {
         this.searchKey = searchKey;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
     }
 }

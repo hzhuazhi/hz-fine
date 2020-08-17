@@ -1,5 +1,7 @@
 package com.hz.fine.master.core.controller;
 
+import com.alibaba.fastjson.JSON;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,6 +50,14 @@ public class Temp {
 
 //        int num = getGroupNumByMoney(balance, groupMinMoney, groupNum);
 //        System.out.println("num:" + num);
+
+
+//        String sb = "{'pid': 2500, 'type': 1, 'self': 0, 'head': '<msgsource>\\n\\t<silence>0</silence>\\n\\t<membercount>3</membercount>\\n</msgsource>\\n', 'wxid1': 'wxid_61qowsrtpt4d11', 'wxid2': '卢云', 'content': '1#5', 'log_nickname': '只听', 'log_wechatid': 'wxid_zsehsimp97dr22', 'chartid': '19349014070@chatroom', 'wxid3': '29闪电9'}";
+        String sb1 = "{'pid': 2500, 'type': 1, 'self': 0, 'head': '<msgsource>\n\t<silence>0</silence>\n\t<membercount>3</membercount>\n</msgsource>\n', 'wxid1': 'wxid_61qowsrtpt4d11', 'wxid2': '卢云', 'content': '1#5', 'log_nickname': '只听', 'log_wechatid': 'wxid_zsehsimp97dr22', 'chartid': '19349014070@chatroom', 'wxid3': '29闪电9'}";
+        sb1 = sb1.replaceAll("'", "\"");
+
+        JSON.toJSONString(sb1);
+        System.out.println("sb:" + sb1);
 
     }
 
