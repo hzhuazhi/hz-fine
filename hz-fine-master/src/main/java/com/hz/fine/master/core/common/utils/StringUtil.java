@@ -1168,6 +1168,18 @@ public class StringUtil {
 	}
 
 	/**
+	 * base64解密
+	 * @param str
+	 * @return
+	 */
+	public final static String decoderBase64ByUTF8(String str) throws IOException {
+		BASE64Decoder decoder = new BASE64Decoder();
+		byte[] bytes = decoder.decodeBuffer(str);
+		String res=new String(bytes,"UTF-8");
+		return res;
+	}
+
+	/**
 	 * 获取用户的ip地址
 	 * @param request
 	 * @return
