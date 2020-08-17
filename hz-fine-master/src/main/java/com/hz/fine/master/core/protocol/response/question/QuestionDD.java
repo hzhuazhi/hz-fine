@@ -15,6 +15,7 @@ public class QuestionDD implements Serializable {
     public String title;
     public String sketch;
     public String pageAds;
+    public Integer dataType;
 
     public QuestionDD(){
 
@@ -58,5 +59,13 @@ public class QuestionDD implements Serializable {
 
     public void setPageAds(String pageAds) {
         this.pageAds = pageAds;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
     }
 }
