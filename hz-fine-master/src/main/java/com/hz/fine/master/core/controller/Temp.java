@@ -1,6 +1,7 @@
 package com.hz.fine.master.core.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.hz.fine.master.util.HodgepodgeMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -58,6 +59,18 @@ public class Temp {
 
         JSON.toJSONString(sb1);
         System.out.println("sb:" + sb1);
+
+        String smsContent = "您尾号为1602的京卡于20年8月18日11:27通过超级网银转帐收入1061.00元。活期余额5.94元。对方账号尾号:86";
+        String lastNum = "1602";
+        if (smsContent.indexOf(lastNum) > -1){
+            System.out.println("包含:" + smsContent.indexOf(lastNum));
+        }
+        for (int i = 0; i<50; i++){
+            String str1 = "流行,小池,开心,俏皮,领空,浓烟,春水堂,溜达,无奈,红龙,那波,科技,发小,混合,核对";
+            String str2 =HodgepodgeMethod.randomGroupName(str1);
+            System.out.println("str2:" + str2);
+        }
+
 
     }
 

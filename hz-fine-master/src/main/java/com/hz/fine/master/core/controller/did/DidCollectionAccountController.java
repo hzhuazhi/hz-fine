@@ -1313,6 +1313,8 @@ public class DidCollectionAccountController {
             // 查询策略里面的微信群名固定词
             StrategyModel strategyGroupNameQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NAME.getStgType());
             StrategyModel strategyGroupNameModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupNameQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            String name = HodgepodgeMethod.randomGroupName(strategyGroupNameModel.getStgValue());
+
 
             // 查询策略里面的每个群最多允许收红包的数量
             StrategyModel strategyGroupRedPackNumQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_RED_PACK_NUM.getStgType());
@@ -1325,7 +1327,7 @@ public class DidCollectionAccountController {
 
             // 组装群名
             int groupNum = didModel.getGroupNum() + 1;
-            String groupName = String.valueOf(did) + strategyGroupNameModel.getStgValue() + groupNum;
+            String groupName = String.valueOf(did) + name + groupNum;
 
             int isOk = 0;
             // 查询此账号的最新的收款账号
@@ -1573,6 +1575,7 @@ public class DidCollectionAccountController {
             // 查询策略里面的微信群名固定词
             StrategyModel strategyGroupNameQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NAME.getStgType());
             StrategyModel strategyGroupNameModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupNameQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+            String name = HodgepodgeMethod.randomGroupName(strategyGroupNameModel.getStgValue());
 
             // 查询策略里面的每个群最多允许收红包的数量
             StrategyModel strategyGroupRedPackNumQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_RED_PACK_NUM.getStgType());
@@ -1612,7 +1615,7 @@ public class DidCollectionAccountController {
 
             // 组装群名
             int groupNum = didModel.getGroupNum() + 1;
-            String groupName = String.valueOf(did) + strategyGroupNameModel.getStgValue() + groupNum;
+            String groupName = String.valueOf(did) + name + groupNum;
 
             int isOk = 0;
             // 查询此账号的最新的收款账号
