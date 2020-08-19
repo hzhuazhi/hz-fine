@@ -609,9 +609,9 @@ public class DidCollectionAccountController {
                             WxClerkModel wxClerkUpdate = HodgepodgeMethod.assembleWxClerkUpdateData(didCollectionAccountModel.getId());
                             ComponentUtil.wxClerkService.manyOperation(wxClerkUpdate);
                         }
-                        // 添加纪录小微需要解绑店员的数据（手机上面关系解绑）
-                        WxClerkUnboundModel wxClerkUnboundModel = HodgepodgeMethod.assembleWxClerkUnbound(wxClerkData.getWxId(), didCollectionAccountModel);
-                        ComponentUtil.wxClerkUnboundService.add(wxClerkUnboundModel);
+//                        // 添加纪录小微需要解绑店员的数据（手机上面关系解绑）
+//                        WxClerkUnboundModel wxClerkUnboundModel = HodgepodgeMethod.assembleWxClerkUnbound(wxClerkData.getWxId(), didCollectionAccountModel);
+//                        ComponentUtil.wxClerkUnboundService.add(wxClerkUnboundModel);
                     }
                 }
 
