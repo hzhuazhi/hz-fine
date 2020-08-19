@@ -155,6 +155,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private PoolOriginService poolOriginService;
 
+    @Autowired
+    private CatDataAnalysisService catDataAnalysisService;
+
 
 
 
@@ -208,6 +211,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.poolOpenService = poolOpenService;
         ComponentUtil.poolWaitService = poolWaitService;
         ComponentUtil.poolOriginService = poolOriginService;
+        ComponentUtil.catDataAnalysisService = catDataAnalysisService;
 
         runThread = new RunThread();
         runThread.start();

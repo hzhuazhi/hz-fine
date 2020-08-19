@@ -68,6 +68,9 @@
             <if test="fromName != null and fromName != '' " >
                 and a.from_name = #{fromName}
             </if>
+            <if test="robotWxid != null and robotWxid != '' " >
+                and a.robot_wxid = #{robotWxid}
+            </if>
             <if test="groupWxid != null and groupWxid != '' " >
                 and a.group_wxid = #{groupWxid}
             </if>
@@ -139,6 +142,7 @@
         <include refid="Base_Column_List" />
         from tb_fn_cat_data_analysis a
         <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
         limit 1
     </select>
 
@@ -477,6 +481,9 @@
             </if>
             <if test="runStatus != null and runStatus != '' " >
                 a.run_status = #{runStatus},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
             </if>
             a.update_time = NOW(),
         </trim>

@@ -52,6 +52,7 @@ public class ComponentUtil {
     public static PoolOpenService poolOpenService;
     public static PoolWaitService poolWaitService;
     public static PoolOriginService poolOriginService;
+    public static CatDataAnalysisService catDataAnalysisService;
 
 
 

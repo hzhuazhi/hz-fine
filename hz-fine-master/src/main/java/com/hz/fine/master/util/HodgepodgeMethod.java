@@ -8,6 +8,7 @@ import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
 import com.hz.fine.master.core.common.utils.constant.ErrorCode;
 import com.hz.fine.master.core.common.utils.constant.ServerConstant;
 import com.hz.fine.master.core.model.bank.BankModel;
+import com.hz.fine.master.core.model.cat.CatDataAnalysisModel;
 import com.hz.fine.master.core.model.client.ClientCollectionDataModel;
 import com.hz.fine.master.core.model.consult.ConsultAskModel;
 import com.hz.fine.master.core.model.consult.ConsultAskReplyModel;
@@ -31,6 +32,7 @@ import com.hz.fine.master.core.model.wx.WxClerkModel;
 import com.hz.fine.master.core.model.wx.WxClerkUnboundModel;
 import com.hz.fine.master.core.model.wx.WxModel;
 import com.hz.fine.master.core.model.wx.WxOrderModel;
+import com.hz.fine.master.core.protocol.request.analysis.RequestAnalysis;
 import com.hz.fine.master.core.protocol.request.bank.RequestBank;
 import com.hz.fine.master.core.protocol.request.consult.RequestConsult;
 import com.hz.fine.master.core.protocol.request.did.RequestDid;
@@ -50,6 +52,8 @@ import com.hz.fine.master.core.protocol.request.strategy.RequestStrategy;
 import com.hz.fine.master.core.protocol.request.vcode.RequestVcode;
 import com.hz.fine.master.core.protocol.request.wx.RequestWx;
 import com.hz.fine.master.core.protocol.response.ResponseData;
+import com.hz.fine.master.core.protocol.response.analysis.Analysis;
+import com.hz.fine.master.core.protocol.response.analysis.ResponseAnalysis;
 import com.hz.fine.master.core.protocol.response.bank.Bank;
 import com.hz.fine.master.core.protocol.response.bank.BankMoney;
 import com.hz.fine.master.core.protocol.response.bank.BuyBank;
@@ -7213,6 +7217,7 @@ public class HodgepodgeMethod {
         }
     }
 
+
     /**
      * @Description: check用户是否有新建群的资格
      * @param balance - 用户余额
@@ -7289,6 +7294,106 @@ public class HodgepodgeMethod {
         int random = new Random().nextInt(strArr.length);
         String str = strArr[random];
         return str;
+    }
+
+
+    /**
+     * @Description: check校验获取要解析二维码数据时的请求数据
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/8/19 19:26
+    */
+    public static void checkGetAnalysisData(RequestAnalysis requestModel) throws Exception {
+        // 1.校验所有数据
+        if (requestModel == null) {
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00003.geteCode(), ErrorCode.ENUM_ERROR.H00003.geteDesc());
+        }
+
+        // 校验小微ID与微信原始ID的值
+        if ((requestModel.wxId == null || requestModel.wxId == 0) && StringUtils.isBlank(requestModel.toWxid)) {
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00004.geteCode(), ErrorCode.ENUM_ERROR.H00004.geteDesc());
+        }
+
+    }
+
+    /**
+     * @Description: 组装查询需要解析的二维码图片数据的查询条件
+     * @param requestAnalysis
+     * @return
+     * @author yoko
+     * @date 2020/8/19 19:35
+    */
+    public static CatDataAnalysisModel assembleCatDataAnalysisQuery(RequestAnalysis requestAnalysis){
+        CatDataAnalysisModel resBean = new CatDataAnalysisModel();
+        if (requestAnalysis.wxId != null && requestAnalysis.wxId > 0){
+            resBean.setWxId(requestAnalysis.wxId);
+        }
+
+        if (!StringUtils.isBlank(requestAnalysis.toWxid)){
+            resBean.setRobotWxid(requestAnalysis.toWxid);
+        }
+        resBean.setDataFrom(2);
+        resBean.setDataType(12);
+        resBean.setWorkType(3);
+        resBean.setRunStatus(2);
+        return resBean;
+    }
+
+    /**
+     * @Description: 客户端获取要解析二维码数据组装返回客户端的方法
+     * @param stime - 服务器的时间
+     * @param sign - 签名
+     * @param catDataAnalysisModel - 要进行图片解析的数据
+     * @return java.lang.String
+     * @author yoko
+     * @date 2019/11/25 22:45
+     */
+    public static String assembleGetAnalysisDataResult(long stime, String sign, CatDataAnalysisModel catDataAnalysisModel){
+        ResponseAnalysis dataModel = new ResponseAnalysis();
+        if (catDataAnalysisModel != null){
+            Analysis analysis = new Analysis();
+            if (catDataAnalysisModel.getId() != null && catDataAnalysisModel.getId() > 0){
+                analysis.analysisId = catDataAnalysisModel.getId();
+            }
+            if (catDataAnalysisModel.getWxId() != null && catDataAnalysisModel.getWxId() > 0){
+                analysis.wxId = catDataAnalysisModel.getWxId();
+            }
+            if (catDataAnalysisModel.getCollectionAccountId() != null && catDataAnalysisModel.getCollectionAccountId() > 0){
+                analysis.collectionAccountId = catDataAnalysisModel.getCollectionAccountId();
+            }
+            if (!StringUtils.isBlank(catDataAnalysisModel.getMsg())){
+                analysis.picturePath = catDataAnalysisModel.getMsg();
+            }
+            if (!StringUtils.isBlank(catDataAnalysisModel.getGuest())){
+                analysis.pictureName = catDataAnalysisModel.getGuest();
+            }
+            if (!StringUtils.isBlank(catDataAnalysisModel.getRobotWxid())){
+                analysis.toWxid = catDataAnalysisModel.getRobotWxid();
+            }
+            dataModel.dataModel = analysis;
+        }
+
+        dataModel.setStime(stime);
+        dataModel.setSign(sign);
+        return JSON.toJSONString(dataModel);
+    }
+
+    /**
+     * @Description: 组装更新解析的数据的运行状态
+     * @param id - 主键ID
+     * @param runStatus - 运行状态
+     * @param remark - 备注
+     * @return com.hz.fine.master.core.model.cat.CatDataAnalysisModel
+     * @author yoko
+     * @date 2020/8/19 19:57
+     */
+    public static CatDataAnalysisModel assembleCatDataAnalysisUpdate(long id, int runStatus, String remark){
+        CatDataAnalysisModel resBean = new CatDataAnalysisModel();
+        resBean.setId(id);
+        resBean.setRunStatus(runStatus);
+        resBean.setRemark(remark);
+        return resBean;
     }
 
 
