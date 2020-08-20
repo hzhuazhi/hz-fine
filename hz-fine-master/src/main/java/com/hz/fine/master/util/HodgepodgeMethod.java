@@ -6658,6 +6658,26 @@ public class HodgepodgeMethod {
 
 
     /**
+     * @Description: 组装更新收款账号微信群二维码
+     * @param id - 收款账号主键ID
+     * @param ddQrCode - 微信群二维码
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/8/20 11:10
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountUpdateGroupQrCodeByAnalysis(long id , String ddQrCode){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setId(id);
+        resBean.setDdQrCode(ddQrCode);
+        String invalidTime = DateUtil.increaseDayStr(new Date(), 5);
+        resBean.setInvalidTime(invalidTime);
+        resBean.setCheckStatus(3);
+        resBean.setCheckInfo("成功");
+        return resBean;
+    }
+
+
+    /**
      * @Description: check校验数据用户获取微信群收款账号信息-集合时
      * @param requestModel
      * @return
@@ -7396,6 +7416,51 @@ public class HodgepodgeMethod {
         return resBean;
     }
 
+
+    /**
+     * @Description: check校验数据解析更新用户收款账号二维码时
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkUpdateAnalysisData(RequestAnalysis requestModel) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00005.geteCode(), ErrorCode.ENUM_ERROR.H00005.geteDesc());
+        }
+
+        // 校验解析数据的ID值
+        if (requestModel.analysisId == null || requestModel.analysisId == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00006.geteCode(), ErrorCode.ENUM_ERROR.H00006.geteDesc());
+        }
+
+        // 校验wxId值
+        if (requestModel.wxId == null || requestModel.wxId == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00007.geteCode(), ErrorCode.ENUM_ERROR.H00007.geteDesc());
+        }
+
+        // 校验收款账号ID值
+        if (requestModel.collectionAccountId == null || requestModel.collectionAccountId == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00008.geteCode(), ErrorCode.ENUM_ERROR.H00008.geteDesc());
+        }
+
+        // 校验数据是否可正常解析
+        if (requestModel.isOk == null || requestModel.isOk == 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.H00009.geteCode(), ErrorCode.ENUM_ERROR.H00009.geteDesc());
+        }else{
+            if (requestModel.isOk == 1){
+                // 可正常解析
+                // 校验二维码地址
+                if (StringUtils.isBlank(requestModel.qrcodeAds)){
+                    throw new ServiceException(ErrorCode.ENUM_ERROR.H00010.geteCode(), ErrorCode.ENUM_ERROR.H00010.geteDesc());
+                }
+            }
+        }
+
+
+    }
 
 
 

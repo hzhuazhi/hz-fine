@@ -38,7 +38,60 @@ public class RequestAnalysis extends BaseRequest implements Serializable {
      */
     public String qrcodeAds;
 
+    /**
+     * 数据是否可正常解析：1正常解析，2解析有误（不是二维码图片）
+     */
+    public Integer isOk;
+
     public RequestAnalysis(){
 
+    }
+
+    public Long getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Long analysisId) {
+        this.analysisId = analysisId;
+    }
+
+    public Long getWxId() {
+        return wxId;
+    }
+
+    public void setWxId(Long wxId) {
+        this.wxId = wxId;
+    }
+
+    public Long getCollectionAccountId() {
+        return collectionAccountId;
+    }
+
+    public void setCollectionAccountId(Long collectionAccountId) {
+        this.collectionAccountId = collectionAccountId;
+    }
+
+    public String getToWxid() {
+        return toWxid;
+    }
+
+    public void setToWxid(String toWxid) {
+        this.toWxid = toWxid;
+    }
+
+    public String getQrcodeAds() {
+        return qrcodeAds;
+    }
+
+    public void setQrcodeAds(String qrcodeAds) {
+        this.qrcodeAds = qrcodeAds;
+    }
+
+    public Integer getIsOk() {
+        return isOk;
+    }
+
+    public void setIsOk(Integer isOk) {
+        this.isOk = isOk;
     }
 }

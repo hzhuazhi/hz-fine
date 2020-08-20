@@ -523,4 +523,23 @@
     </select>
 
 
+    <!-- 根据自动解析来更新收款账号的二维码信息 -->
+    <update id="updateQrCodeByAnalysis" parameterType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        UPDATE tb_fn_did_collection_account a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="ddQrCode != null and ddQrCode != '' " >
+                a.dd_qr_code = #{ddQrCode},
+            </if>
+            <if test="invalidTime != null and invalidTime != '' " >
+                a.invalid_time = #{invalidTime},
+            </if>
+            a.check_status = #{checkStatus},
+            a.check_info = #{checkInfo},
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+    </update>
+
+
 </mapper>

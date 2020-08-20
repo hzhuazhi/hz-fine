@@ -102,4 +102,13 @@ public interface DidCollectionAccountMapper<T> extends BaseDao<T> {
      * @date 2020/7/31 16:37
     */
     public List<DidCollectionAccountModel> getEffectiveDidCollectionAccountByWxGroup(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 根据自动解析来更新收款账号的二维码信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/8/20 11:17
+    */
+    public int updateQrCodeByAnalysis(DidCollectionAccountModel model);
 }

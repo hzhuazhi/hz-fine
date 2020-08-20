@@ -68,4 +68,9 @@ public class DidCollectionAccountServiceImpl<T> extends BaseServiceImpl<T> imple
     public List<DidCollectionAccountModel> getEffectiveDidCollectionAccountByWxGroup(DidCollectionAccountModel model) {
         return didCollectionAccountMapper.getEffectiveDidCollectionAccountByWxGroup(model);
     }
+
+    @Override
+    public int updateQrCodeByAnalysis(DidCollectionAccountModel model) {
+        return didCollectionAccountMapper.updateQrCodeByAnalysis(model);
+    }
 }
