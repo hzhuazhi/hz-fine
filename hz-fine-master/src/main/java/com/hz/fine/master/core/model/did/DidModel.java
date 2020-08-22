@@ -187,6 +187,11 @@ public class DidModel extends BasePage implements Serializable {
     private Integer groupNum;
 
     /**
+     * 同时操作群的个数：派单时同时操作群的个数
+     */
+    private Integer operateGroupNum;
+
+    /**
      * 个人出码开关：1打开状态，2暂停状态
      */
     private Integer switchType;
@@ -668,5 +673,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setIdList(List<Long> idList) {
         this.idList = idList;
+    }
+
+    public Integer getOperateGroupNum() {
+        return operateGroupNum;
+    }
+
+    public void setOperateGroupNum(Integer operateGroupNum) {
+        this.operateGroupNum = operateGroupNum;
     }
 }

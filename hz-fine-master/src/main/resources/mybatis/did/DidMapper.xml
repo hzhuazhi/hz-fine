@@ -11,7 +11,7 @@
         a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_consume_profit,a.total_team_consume_profit,
         a.trigger_quota_grade,a.total_trigger_quota_profit,a.team_consume_cumulative_grade,a.total_team_consume_cumulative_profit,a.total_team_direct_consume_profit,
         a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
-        a.is_notify,a.notify_url,a.is_team,a.own_id,a.group_num,a.switch_type,a.use_status,
+        a.is_notify,a.notify_url,a.is_team,a.own_id,a.group_num,a.operate_group_num,a.switch_type,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -424,7 +424,7 @@
         b.id as collection_account_id,b.ac_num as zfb_ac_num,b.user_id from (
         select a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
         a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
-        a.is_notify,a.notify_url,a.own_id,a.use_status,
+        a.is_notify,a.notify_url,a.own_id,a.use_status,a.operate_group_num,
         a.create_time,a.update_time,a.yn
         from tb_fn_did a
         where 1=1
@@ -458,7 +458,7 @@
         b.id as collection_account_id,b.mm_qr_code,b.dd_qr_code,b.payee,b.user_id from (
         select a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
         a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
-        a.is_notify,a.notify_url,a.own_id,a.use_status,
+        a.is_notify,a.notify_url,a.own_id,a.use_status,a.operate_group_num,
         a.create_time,a.update_time,a.yn
         from tb_fn_did a
         where 1=1
@@ -485,6 +485,7 @@
         </trim>
         where 1=1
         and a.id = #{id}
+        and a.yn = 0
     </update>
 
 
@@ -494,7 +495,7 @@
         a2.did,a2.count_group_num from (
         select a.id,a.nickname,a.ac_num,a.phone_num,a.pass_wd,a.operate_wd,a.icode,a.total_money,a.balance,a.lock_money,a.vip_type,a.total_recharge_profit,a.total_grade_profit,
         a.total_direct_profit,a.total_indirect_profit,a.total_team_profit,a.total_direct_num,a.total_indirect_num,a.total_profit,a.zfb_total_profit,
-        a.is_notify,a.notify_url,a.own_id,a.use_status,a.switch_type,
+        a.is_notify,a.notify_url,a.own_id,a.use_status,a.switch_type,a.operate_group_num,
         a.create_time,a.update_time,a.yn
         from tb_fn_did a
         where 1=1
@@ -525,6 +526,18 @@
         and a.balance >= #{money} and a.balance > 0 and a.use_status =1 and a.yn = 0
     </select>
 
-
+    <!-- 更新用户的操作群个数 -->
+    <update id="updateDidOperateGroupNum" parameterType="com.hz.fine.master.core.model.did.DidModel">
+        UPDATE tb_fn_did a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="operateGroupNum != null and operateGroupNum != '' " >
+                a.operate_group_num = #{operateGroupNum},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
 
 </mapper>

@@ -480,6 +480,9 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             if (orderByDidModel == null || orderByDidModel.getId() == null || orderByDidModel.getId() <= 0){
                 // 表示用户名下订单一切正常
                 // 筛选收款账号
+                if (didData.getOperateGroupNum() != null && didData.getOperateGroupNum() > 0){
+                    countGroupNum = didData.getOperateGroupNum();
+                }
                 didModel = getDidCollectionAccountByPool(didData, orderMoney, countGroupNum);
                 if (didModel != null && didModel.getId() > 0 && didModel.getCollectionAccountId() > 0){
                     break;

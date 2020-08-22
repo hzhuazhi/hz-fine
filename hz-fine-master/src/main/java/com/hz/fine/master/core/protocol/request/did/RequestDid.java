@@ -68,6 +68,11 @@ public class RequestDid extends BaseRequest implements Serializable {
      */
     public Integer switchType;
 
+    /**
+     * 同时操作群的个数：派单时同时操作群的个数
+     */
+    public Integer operateGroupNum;
+
 
 
     public RequestDid(){
@@ -161,5 +166,13 @@ public class RequestDid extends BaseRequest implements Serializable {
 
     public void setSwitchType(Integer switchType) {
         this.switchType = switchType;
+    }
+
+    public Integer getOperateGroupNum() {
+        return operateGroupNum;
+    }
+
+    public void setOperateGroupNum(Integer operateGroupNum) {
+        this.operateGroupNum = operateGroupNum;
     }
 }

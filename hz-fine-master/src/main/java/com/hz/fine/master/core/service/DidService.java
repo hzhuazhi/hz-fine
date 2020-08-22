@@ -101,4 +101,13 @@ public interface DidService<T> extends BaseService<T> {
      * @date 2020/8/16 19:23
     */
     public List<DidModel> getDidByWxGroupList(DidModel model);
+
+    /**
+     * @Description: 更新用户的操作群个数
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/7/30 19:57
+     */
+    public int updateDidOperateGroupNum(DidModel model);
 }

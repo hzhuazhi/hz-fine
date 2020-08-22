@@ -111,6 +111,9 @@ public class AnalysisController {
 
             // check校验数据
             HodgepodgeMethod.checkGetAnalysisData(requestModel);
+//            if (!StringUtils.isBlank(requestModel.toWxid)){
+//                log.info("-----------进来啦,时间:" + DateUtil.getNowLongTime() + ", 进来的微信原始ID:" + requestModel.toWxid);
+//            }
 
             // 客户端升级详情数据
             CatDataAnalysisModel catDataAnalysisQuery = HodgepodgeMethod.assembleCatDataAnalysisQuery(requestModel);
@@ -158,7 +161,7 @@ public class AnalysisController {
                 String sign = "";
                 String strData = HodgepodgeMethod.assembleGetAnalysisDataResult(stime, sign, catDataAnalysisModel);
                 // 数据加密
-                String encryptionData = DesCipher.encryptData(strData);
+                String encryptionData = StringUtil.mergeCodeBase64(strData);
                 ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
                 resultDataModel.jsonData = encryptionData;
                 // 添加流水
@@ -237,6 +240,9 @@ public class AnalysisController {
                     catDataAnalysisUpdate = HodgepodgeMethod.assembleCatDataAnalysisUpdate(requestModel.analysisId, 3, "根据收款账号ID查询收款账号数据为空");
 
                 }
+            }else{
+                // 更新解析数据的运行状态
+                catDataAnalysisUpdate = HodgepodgeMethod.assembleCatDataAnalysisUpdate(requestModel.analysisId, 3, "图片解析失败：可能不是正常图片");
             }
             if (catDataAnalysisUpdate != null){
                 ComponentUtil.catDataAnalysisService.update(catDataAnalysisUpdate);

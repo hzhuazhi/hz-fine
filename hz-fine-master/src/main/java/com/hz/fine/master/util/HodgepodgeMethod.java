@@ -852,6 +852,42 @@ public class HodgepodgeMethod {
 
 
     /**
+     * @Description: check校验数据当更新用户同时操作群的个数
+     * @param requestModel
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static long checkDidUpdateOperateGroupNum(RequestDid requestModel, int maxGroupNum) throws Exception{
+        long did;
+        // 1.校验所有数据
+        if (requestModel == null ){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00036.geteCode(), ErrorCode.ENUM_ERROR.D00036.geteDesc());
+        }
+
+        // 校验操作群的个数
+        if(requestModel.operateGroupNum == null || requestModel.operateGroupNum <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00037.geteCode(), ErrorCode.ENUM_ERROR.D00037.geteDesc());
+        }else{
+            if (requestModel.operateGroupNum > maxGroupNum){
+                throw new ServiceException("GROUP001", "操作群个数不能大于:" + maxGroupNum + "个群!");
+            }
+        }
+
+        // 校验token值
+        if (StringUtils.isBlank(requestModel.token)){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.D00001.geteCode(), ErrorCode.ENUM_ERROR.D00001.geteDesc());
+        }
+
+        // 校验用户是否登录
+        did = HodgepodgeMethod.checkIsLogin(requestModel.token);
+
+        return did;
+
+    }
+
+
+    /**
      * @Description: 组装根据用户账号，密码登录查询的查询方法
      * @param acNum - 登录账号
      * @param passWd - 用户的登录密码
@@ -903,6 +939,20 @@ public class HodgepodgeMethod {
         return resBean;
     }
 
+    /**
+     * @Description: 组装更新用户同时操作群的个数的方法
+     * @param did - 用户ID
+     * @param operateGroupNum - 同时要操作的群个数
+     * @return com.hz.fine.master.core.model.did.DidModel
+     * @author yoko
+     * @date 2020/7/30 20:09
+     */
+    public static DidModel assembleUpdateOperateGroupNumData(long did, int operateGroupNum){
+        DidModel resBean = new DidModel();
+        resBean.setId(did);
+        resBean.setOperateGroupNum(operateGroupNum);
+        return resBean;
+    }
 
     /**
      * @Description: check校验用户是否登录成功
@@ -3245,11 +3295,13 @@ public class HodgepodgeMethod {
      * @param todayProfit - 今日收益
      * @param todayExchange - 今日兑换
      * @param todayTeamDirectConsumeProfit - 今日团队长直推的用户消耗成功奖励
+     * @param maxGroupNum - 策略配置默认同时操作群的个数
      * @return java.lang.String
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange, String todayTeamConsume, String todayTeamDirectConsumeProfit){
+    public static String assembleDidBasicDataResult(long stime, String sign, DidModel didModel, String todayProfit, String todayExchange,
+                                                    String todayTeamConsume, String todayTeamDirectConsumeProfit, int maxGroupNum){
         ResponseDid dataModel = new ResponseDid();
         if (didModel != null && didModel.getId() > 0){
 
@@ -3311,6 +3363,10 @@ public class HodgepodgeMethod {
             }else{
                 didBasic.todayTeamDirectConsumeProfit = todayTeamDirectConsumeProfit;
             }
+            if(didModel.getOperateGroupNum() == null || didModel.getOperateGroupNum() <= 0){
+                didBasic.operateGroupNum = maxGroupNum;
+            }
+
 
 
 
