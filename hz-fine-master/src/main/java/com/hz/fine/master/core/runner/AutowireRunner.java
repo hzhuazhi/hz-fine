@@ -158,6 +158,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private CatDataAnalysisService catDataAnalysisService;
 
+    @Autowired
+    private DidWxMonitorService didWxMonitorService;
+
 
 
 

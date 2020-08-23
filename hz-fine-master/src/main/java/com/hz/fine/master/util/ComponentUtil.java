@@ -53,6 +53,7 @@ public class ComponentUtil {
     public static PoolWaitService poolWaitService;
     public static PoolOriginService poolOriginService;
     public static CatDataAnalysisService catDataAnalysisService;
+    public static DidWxMonitorService didWxMonitorService;
 
 
 
