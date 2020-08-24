@@ -11,10 +11,7 @@ import com.hz.fine.master.core.mapper.DidBalanceDeductMapper;
 import com.hz.fine.master.core.mapper.DidMapper;
 import com.hz.fine.master.core.mapper.OrderMapper;
 import com.hz.fine.master.core.mapper.TaskMapper;
-import com.hz.fine.master.core.model.did.DidBalanceDeductModel;
-import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
-import com.hz.fine.master.core.model.did.DidCollectionAccountQrCodeModel;
-import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.did.*;
 import com.hz.fine.master.core.model.operate.OperateModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.strategy.StrategyData;
@@ -483,7 +480,13 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 if (didData.getOperateGroupNum() != null && didData.getOperateGroupNum() > 0){
                     countGroupNum = didData.getOperateGroupNum();
                 }
-                didModel = getDidCollectionAccountByPool(didData, orderMoney, countGroupNum);
+
+                // 获取此用户被监控的微信ID集合
+                DidWxMonitorModel didWxMonitorQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didModel.getId(), "1", null);
+                List<String> toWxidList = ComponentUtil.didWxMonitorService.getToWxidList(didWxMonitorQuery);
+
+                // 筛选微信收款账号
+                didModel = getDidCollectionAccountByPool(didData, orderMoney, countGroupNum, toWxidList);
                 if (didModel != null && didModel.getId() > 0 && didModel.getCollectionAccountId() > 0){
                     break;
                 }
@@ -699,18 +702,19 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
      * @param didModel - 用户信息
      * @param orderMoney - 派单金额
      * @param countGroupNum - 微信群有效个数才允许正常出码
+     * @param toWxidList - 被限制的原始微信ID集合
      * @return
      * @author yoko
      * @date 2020/6/1 19:51
      */
-    public DidModel getDidCollectionAccountByPool(DidModel didModel, String orderMoney, int countGroupNum){
+    public DidModel getDidCollectionAccountByPool(DidModel didModel, String orderMoney, int countGroupNum, List<String> toWxidList){
         // 判断此用户是否被锁住
         String lockKey_did = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER, didModel.getId());
         boolean flagLock_did = ComponentUtil.redisIdService.lock(lockKey_did);
         if (flagLock_did){
 
             // 根据用户ID查询此用户下的有效微信群数据集合
-            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, countGroupNum, null);
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, countGroupNum, toWxidList);
             List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountQuery);
             if (didCollectionAccountList != null && didCollectionAccountList.size() > 0){
                 // 判断有效群是否是规定的数量
@@ -724,24 +728,10 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                         String strKeyCache_check_lock_did_collection_account_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING, didCollectionAccountModel.getId());
                         String strCache_check_strKeyCache_check_lock_did_collection_account_order_ing = (String) ComponentUtil.redisService.get(strKeyCache_check_lock_did_collection_account_order_ing);
                         if (StringUtils.isBlank(strCache_check_strKeyCache_check_lock_did_collection_account_order_ing)){
-                            // 查询此用户的收款账号的上一个订单的订单状态是否是否已回复
-                            log.info("");
-                            OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(didModel.getId(), 3, 1, didCollectionAccountModel.getId());
-                            OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
-                            if (orderModel != null && orderModel.getId() > 0){
-                                if (orderModel.getIsRedPack() == 1){
-                                    // 未发过红包
-                                    if (orderModel.getOrderStatus() == 1){
-                                        // 未发过红包，并且订单未超时
-                                        continue;
-                                    }
-                                }else {
-                                    // 发过红包
-                                    if (orderModel.getIsReply() < ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
-                                        // 发过红包，并且未回复结果
-                                        continue;
-                                    }
-                                }
+                            // 校验此用户的收款账号的上一个订单的订单状态是否是否已回复
+                            boolean check_order = checkOrderIsOk(didModel.getId(), didCollectionAccountModel.getId());
+                            if (!check_order){
+                                continue;
                             }
                             // 正式给码
 
@@ -767,7 +757,15 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                             String strKeyCache_lock_did_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING, didCollectionAccountModel.getId());
                             ComponentUtil.redisService.set(strKeyCache_lock_did_order_ing, String.valueOf(didCollectionAccountModel.getId()) + "," + orderMoney, FIVE_MIN);
                             return didModel;
+                        }else{
+                            // 有挂单， 判断此收款账号的微信ID是否属于被金额限制范围内的
 
+                            String strKeyCache_to_wxid_range_money_time = CachedKeyUtils.getCacheKey(CacheKey.TO_WXID_RANGE_MONEY_TIME, didModel.getId(), didCollectionAccountModel.getUserId());
+                            String strCache_strKeyCache_to_wxid_range_money_time = (String) ComponentUtil.redisService.get(strKeyCache_to_wxid_range_money_time);
+                            if (!StringUtils.isBlank(strCache_strKeyCache_to_wxid_range_money_time)){
+                                // 属于锁住的微信，每次只能给出一个码
+                                break;
+                            }
                         }
                     }
                     // 解锁
@@ -823,6 +821,35 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             str = strCache;
             return str;
         }
+    }
+
+    /**
+     * @Description: 校验次用户的收款账号是否有未回复的订单
+     * @return
+     * @author yoko
+     * @date 2020/8/24 16:14
+    */
+    public boolean checkOrderIsOk(long did, long collectionAccountId){
+        boolean flag = true;
+        // 查询此用户的收款账号的上一个订单的订单状态是否是否已回复
+        OrderModel orderQuery = HodgepodgeMethod.assembleOrderByNewest(did, 3, 1, collectionAccountId);
+        OrderModel orderModel = ComponentUtil.orderService.getNewestOrder(orderQuery);
+        if (orderModel != null && orderModel.getId() > 0){
+            if (orderModel.getIsRedPack() == 1){
+                // 未发过红包
+                if (orderModel.getOrderStatus() == 1){
+                    // 未发过红包，并且订单未超时
+                    flag = false;
+                }
+            }else {
+                // 发过红包
+                if (orderModel.getIsReply() < ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_THREE){
+                    // 发过红包，并且未回复结果
+                    flag = false;
+                }
+            }
+        }
+        return flag;
     }
 
 
