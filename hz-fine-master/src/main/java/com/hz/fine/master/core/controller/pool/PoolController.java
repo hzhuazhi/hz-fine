@@ -10,6 +10,7 @@ import com.hz.fine.master.core.model.RequestEncryptionJson;
 import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
+import com.hz.fine.master.core.model.did.DidWxMonitorModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.pool.PoolOpenModel;
 import com.hz.fine.master.core.model.pool.PoolWaitModel;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -204,7 +206,7 @@ public class PoolController {
      * local:http://localhost:8086/fine/pool/updatePoolStatus
      * 请求的属性类:RequestPool
      * 必填字段:{"actionStatus":1,"agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
-     * 加密字段:{"jsonData":"eyJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+     * 加密字段:{"jsonData":"eyJhY3Rpb25TdGF0dXMiOjEsImFndFZlciI6MSwiY2xpZW50VmVyIjoxLCJjbGllbnRUeXBlIjoxLCJjdGltZSI6MjAxOTExMDcxODAyOTU5LCJjY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwic2lnbiI6ImFiY2RlZmciLCJ0b2tlbiI6IjExMTExMSJ9"}
      * 客户端加密字段:ctime+秘钥=sign
      * 返回加密字段:stime+秘钥=sign
      * result={
@@ -267,7 +269,7 @@ public class PoolController {
                 HodgepodgeMethod.checkDidMoney(didModel, minMoney);
 
                 // 查询此用户的有效群
-                DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, 0);
+                DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, 0, null);
                 List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountQuery);
                 // 校验有效群
                 HodgepodgeMethod.checkDidCollectionAccountListEffective(didCollectionAccountList);
@@ -277,6 +279,25 @@ public class PoolController {
                 OrderModel orderModel = ComponentUtil.orderService.getOrderByNotIsReply(orderQuery);
                 // 校验订单已发过红包，但是没有回复的订单信息
                 HodgepodgeMethod.checkOrderByIsReply(orderModel);
+
+                // 获取用户的微信收款账号金额监控超过范围的微信ID集合
+                DidWxMonitorModel didWxMonitorQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didModel.getId(), "1", null);
+                List<String> toWxidList = ComponentUtil.didWxMonitorService.getToWxidList(didWxMonitorQuery);
+                if (toWxidList != null && toWxidList.size() > 0){
+                    List<DidWxMonitorModel> didWxMonitorList = new ArrayList<>();
+                    for (String toWxid : toWxidList){
+                        DidWxMonitorModel didWxMonitorByWxQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didModel.getId(), "1", toWxid);
+                        DidWxMonitorModel didWxMonitorModel = (DidWxMonitorModel)ComponentUtil.didWxMonitorService.findByObject(didWxMonitorByWxQuery);
+                        if (didWxMonitorModel != null && didWxMonitorModel.getId() != null && didWxMonitorModel.getId() > 0){
+                            didWxMonitorList.add(didWxMonitorModel);
+                        }
+                    }
+                    // 排除微信集合的其它微信用户是否拥有有效群
+                    DidCollectionAccountModel didCollectionAccountToWxQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, 0, toWxidList);
+                    List<DidCollectionAccountModel> didCollectionAccountToWxList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountToWxQuery);
+                    // 校验排除微信集合的其它微信用户是否拥有有效群
+                    HodgepodgeMethod.checkDidCollectionAccountListNotWxEffective(didCollectionAccountToWxList, didWxMonitorList);
+                }
 
                 // 添加数据到排队表中
                 PoolWaitModel poolWaitAdd = HodgepodgeMethod.assemblePoolWaitAdd(did, 1);

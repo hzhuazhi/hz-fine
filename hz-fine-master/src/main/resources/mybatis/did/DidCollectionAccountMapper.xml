@@ -75,6 +75,12 @@
             <if test="loginType != null and loginType != '' " >
                 and a.login_type = #{loginType}
             </if>
+            <if test="strList != null and strList.size()>0">
+                and a.user_id not in
+                <foreach item="item" index="index" collection="strList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
             and a.yn = 0
         </trim>
     </sql>

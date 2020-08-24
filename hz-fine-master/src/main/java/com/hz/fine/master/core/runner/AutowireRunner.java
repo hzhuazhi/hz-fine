@@ -215,6 +215,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.poolWaitService = poolWaitService;
         ComponentUtil.poolOriginService = poolOriginService;
         ComponentUtil.catDataAnalysisService = catDataAnalysisService;
+        ComponentUtil.didWxMonitorService = didWxMonitorService;
 
         runThread = new RunThread();
         runThread.start();

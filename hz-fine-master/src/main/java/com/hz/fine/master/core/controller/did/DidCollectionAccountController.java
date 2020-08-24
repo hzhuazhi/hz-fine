@@ -1594,7 +1594,7 @@ public class DidCollectionAccountController {
 
             // 获取用户已拥有的有效群
             int haveGroupNum = 0;// 用户已拥有的有效群
-            DidCollectionAccountModel didCollectionAccountHaveQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, 0);
+            DidCollectionAccountModel didCollectionAccountHaveQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, 0, null);
             List<DidCollectionAccountModel> didCollectionAccountHaveList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountHaveQuery);
             haveGroupNum = HodgepodgeMethod.getHaveGroupNum(didCollectionAccountHaveList);
             // 计算用户可以同时存在多少个有效群

@@ -78,6 +78,7 @@
         <include refid="Base_Column_List" />
         from tb_fn_did_wx_monitor a
         <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
         limit 1
     </select>
 
@@ -198,5 +199,13 @@
         </trim>
         <include refid="Example_Where_Clause_id"/>
     </update>
+
+    <!-- 根据条件获取去重复的微信原始ID集合 -->
+    <select id="getToWxidList" parameterType="com.hz.fine.master.core.model.did.DidWxMonitorModel" resultType="java.lang.String">
+        select
+        DISTINCT(a.to_wxid) as to_wxid
+        from tb_fn_did_wx_monitor a
+        <include refid="Example_Where_Clause"/>
+    </select>
 
 </mapper>

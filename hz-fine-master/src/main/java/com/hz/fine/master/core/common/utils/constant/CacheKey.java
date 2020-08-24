@@ -244,4 +244,12 @@ public interface CacheKey {
      */
     String WX_DAY_GROUP_NUM = "-37";
 
+    /**
+     * 微信每次只出一个群码的金额范围
+     * <p>
+     *     满足设定收款金额范围的微信ID进行redis纪录
+     * </p>
+     */
+    String TO_WXID_RANGE_MONEY_TIME = "-38";
+
 }

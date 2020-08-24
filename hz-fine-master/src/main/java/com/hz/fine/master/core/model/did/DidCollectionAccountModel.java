@@ -3,6 +3,7 @@ package com.hz.fine.master.core.model.did;
 import com.hz.fine.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description 用户的收款账号的实体属性Bean
@@ -174,6 +175,11 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
      * 有效微信群个数
      */
     private Integer countGroupNum;
+
+    /**
+     * 数据集合-SQL
+     */
+    private List<String> strList;
 
 
     public Long getId() {
@@ -430,5 +436,13 @@ public class DidCollectionAccountModel extends BasePage implements Serializable 
 
     public void setLoginType(Integer loginType) {
         this.loginType = loginType;
+    }
+
+    public List<String> getStrList() {
+        return strList;
+    }
+
+    public void setStrList(List<String> strList) {
+        this.strList = strList;
     }
 }

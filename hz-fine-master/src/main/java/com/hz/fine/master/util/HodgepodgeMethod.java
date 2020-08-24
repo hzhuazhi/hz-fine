@@ -7194,11 +7194,13 @@ public class HodgepodgeMethod {
      * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
      * @param loginType - 归属小微登录状态：1登出/未登录，2登入/已登录
      * @param countGroupNum - 有效微信群个数
+     * @param toWxidList - 原始微信ID集合
      * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
      * @author yoko
      * @date 2020/5/15 17:17
      */
-    public static DidCollectionAccountModel assembleDidCollectionAccountListEffective(long did, int acType, int isInvalid, int checkStatus,int useStatus, int loginType, int countGroupNum){
+    public static DidCollectionAccountModel assembleDidCollectionAccountListEffective(long did, int acType, int isInvalid, int checkStatus,int useStatus, int loginType, int countGroupNum,
+                                                                                      List<String> toWxidList){
         DidCollectionAccountModel resBean = new DidCollectionAccountModel();
         resBean.setDid(did);
         if(acType > 0){
@@ -7218,6 +7220,9 @@ public class HodgepodgeMethod {
         }
         if (countGroupNum > 0){
             resBean.setCountGroupNum(countGroupNum);
+        }
+        if (toWxidList != null && toWxidList.size() > 0){
+            resBean.setStrList(toWxidList);
         }
         return resBean;
     }
@@ -7516,6 +7521,51 @@ public class HodgepodgeMethod {
         }
 
 
+    }
+
+
+    /**
+     * @Description: 组装查询用户的微信收款账号金额监控的方法
+     * @param did - 用户ID
+     * @param invalidTime - 失效时间
+     * @param toWxid - 微信原始ID
+     * @return com.hz.task.master.core.model.did.DidWxMonitorModel
+     * @author yoko
+     * @date 2020/8/24 11:57
+     */
+    public static DidWxMonitorModel assembleDidWxMonitorByDidQuery(long did, String invalidTime, String toWxid){
+        DidWxMonitorModel resBean = new DidWxMonitorModel();
+        resBean.setDid(did);
+        if (!StringUtils.isBlank(invalidTime)){
+            resBean.setInvalidTimeStr(invalidTime);
+        }
+        if (!StringUtils.isBlank(toWxid)){
+            resBean.setToWxid(toWxid);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: check排除微信集合，用户有效群信息
+     * @param didCollectionAccountList - 有效群集合
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+     */
+    public static void checkDidCollectionAccountListNotWxEffective(List<DidCollectionAccountModel> didCollectionAccountList, List<DidWxMonitorModel> didWxMonitorList) throws Exception{
+        if (didCollectionAccountList == null || didCollectionAccountList.size() <= 0){
+            String str = "";
+            if (didWxMonitorList != null && didWxMonitorList.size() > 0){
+                for (DidWxMonitorModel didWxMonitorModel : didWxMonitorList){
+                    if (!StringUtils.isBlank(didWxMonitorModel.getWxNickname())){
+                        str += "微信:" + "《" + didWxMonitorModel.getWxNickname() + "》" + "于:" + didWxMonitorModel.getInvalidTime() + "才可收钱!";
+                    }else{
+                        str += "微信:" + "《》" + "于:" + didWxMonitorModel.getInvalidTime() + "才可收钱!";
+                    }
+                }
+            }
+            throw new ServiceException("POOL001", str + "抛开以上微信后,暂时没有群可用,请耐心等待!");
+        }
     }
 
 

@@ -710,7 +710,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
         if (flagLock_did){
 
             // 根据用户ID查询此用户下的有效微信群数据集合
-            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, countGroupNum);
+            DidCollectionAccountModel didCollectionAccountQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffective(didModel.getId(), 3, 1, 3,1,2, countGroupNum, null);
             List<DidCollectionAccountModel> didCollectionAccountList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByWxGroup(didCollectionAccountQuery);
             if (didCollectionAccountList != null && didCollectionAccountList.size() > 0){
                 // 判断有效群是否是规定的数量
