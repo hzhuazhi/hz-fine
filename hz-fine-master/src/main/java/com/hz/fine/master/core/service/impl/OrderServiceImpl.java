@@ -482,7 +482,7 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 }
 
                 // 获取此用户被监控的微信ID集合
-                DidWxMonitorModel didWxMonitorQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didModel.getId(), "1", null);
+                DidWxMonitorModel didWxMonitorQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didData.getId(), "1", null);
                 List<String> toWxidList = ComponentUtil.didWxMonitorService.getToWxidList(didWxMonitorQuery);
 
                 // 筛选微信收款账号
