@@ -3421,12 +3421,12 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderListByDid(RequestOrder requestModel, long did){
         OrderModel resBean = BeanUtils.copy(requestModel, OrderModel.class);
         resBean.setDid(did);
-        if (resBean.getOrderStatus() != null && resBean.getOrderStatus() > 0){
-            if (resBean.getOrderStatus() == 4){
-                resBean.setOrderStatus(null);
-                resBean.setOrderStatusStr("1");
-            }
-        }
+//        if (resBean.getOrderStatus() != null && resBean.getOrderStatus() > 0){
+//            if (resBean.getOrderStatus() == 4){
+//                resBean.setOrderStatus(null);
+//                resBean.setOrderStatusStr("1");
+//            }
+//        }
 
         return resBean;
     }
@@ -5028,6 +5028,7 @@ public class HodgepodgeMethod {
         resBean.setInvalidTime(invalidTime);
         resBean.setUserId(didModel.getUserId());
         resBean.setWxNickname(didModel.getPayee());
+        resBean.setWxId(didModel.getWxId());
         resBean.setQrCode(didModel.getDdQrCode());
         if (!StringUtils.isBlank(didModel.getZfbAcNum())){
             resBean.setZfbAcNum(didModel.getZfbAcNum());
