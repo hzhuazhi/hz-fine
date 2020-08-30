@@ -3280,8 +3280,8 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderByTodayExchange(long did){
         OrderModel resBean = new OrderModel();
         resBean.setDid(did);
-//        resBean.setOrderStatus(4);
-        resBean.setOrderStatusStr("1");
+        resBean.setOrderStatus(4);
+//        resBean.setOrderStatusStr("1");
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         return resBean;
     }
