@@ -3,6 +3,7 @@ package com.hz.fine.master.core.runner;
 import com.hz.fine.master.core.common.redis.RedisIdService;
 import com.hz.fine.master.core.common.redis.RedisService;
 import com.hz.fine.master.core.common.utils.constant.LoadConstant;
+import com.hz.fine.master.core.model.did.DidWxSortModel;
 import com.hz.fine.master.core.service.*;
 import com.hz.fine.master.util.ComponentUtil;
 import org.slf4j.Logger;
@@ -161,6 +162,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private DidWxMonitorService didWxMonitorService;
 
+    @Autowired
+    private DidWxSortService didWxSortService;
+
 
 
 
@@ -216,6 +220,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.poolOriginService = poolOriginService;
         ComponentUtil.catDataAnalysisService = catDataAnalysisService;
         ComponentUtil.didWxMonitorService = didWxMonitorService;
+        ComponentUtil.didWxSortService = didWxSortService;
 
         runThread = new RunThread();
         runThread.start();
@@ -238,6 +243,10 @@ public class AutowireRunner implements ApplicationRunner {
         @Override
         public void run() {
             log.info("启动啦............");
+//            DidWxSortModel didWxSortQuery = new DidWxSortModel();
+//            didWxSortQuery.setDid(2L);
+//            didWxSortQuery.setOrderType(1);
+//            ComponentUtil.didWxSortService.findByCondition(didWxSortQuery);
         }
     }
 

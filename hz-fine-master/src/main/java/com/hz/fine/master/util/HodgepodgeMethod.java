@@ -3280,8 +3280,8 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderByTodayExchange(long did){
         OrderModel resBean = new OrderModel();
         resBean.setDid(did);
-        resBean.setOrderStatus(4);
-//        resBean.setOrderStatusStr("1");
+//        resBean.setOrderStatus(4);
+        resBean.setOrderStatusStr("1");
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         return resBean;
     }
@@ -3421,12 +3421,13 @@ public class HodgepodgeMethod {
     public static OrderModel assembleOrderListByDid(RequestOrder requestModel, long did){
         OrderModel resBean = BeanUtils.copy(requestModel, OrderModel.class);
         resBean.setDid(did);
-//        if (resBean.getOrderStatus() != null && resBean.getOrderStatus() > 0){
-//            if (resBean.getOrderStatus() == 4){
-//                resBean.setOrderStatus(null);
-//                resBean.setOrderStatusStr("1");
-//            }
-//        }
+        if (resBean.getOrderStatus() != null && resBean.getOrderStatus() > 0){
+            if (resBean.getOrderStatus() == 4){
+                resBean.setOrderStatus(null);
+                resBean.setOrderStatusStr("1");
+            }
+        }
+        resBean.setReplenishType(1);
 
         return resBean;
     }

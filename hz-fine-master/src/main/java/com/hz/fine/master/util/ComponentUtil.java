@@ -54,6 +54,7 @@ public class ComponentUtil {
     public static PoolOriginService poolOriginService;
     public static CatDataAnalysisService catDataAnalysisService;
     public static DidWxMonitorService didWxMonitorService;
+    public static DidWxSortService didWxSortService;
 
 
 
