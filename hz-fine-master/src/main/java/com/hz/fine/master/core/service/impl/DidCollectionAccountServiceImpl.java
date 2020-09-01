@@ -73,4 +73,9 @@ public class DidCollectionAccountServiceImpl<T> extends BaseServiceImpl<T> imple
     public int updateQrCodeByAnalysis(DidCollectionAccountModel model) {
         return didCollectionAccountMapper.updateQrCodeByAnalysis(model);
     }
+
+    @Override
+    public List<DidCollectionAccountModel> getEffectiveDidCollectionAccountByUserId(DidCollectionAccountModel model) {
+        return didCollectionAccountMapper.getEffectiveDidCollectionAccountByUserId(model);
+    }
 }

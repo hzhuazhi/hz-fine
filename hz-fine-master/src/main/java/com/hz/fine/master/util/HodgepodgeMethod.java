@@ -7570,7 +7570,199 @@ public class HodgepodgeMethod {
         }
     }
 
+    /**
+     * @Description: 切割成两部分数据
+     * <p>
+     *     切割点：上一次给码的抢单池的主键ID作为切割点；
+     *     切割成两部分数据：第一部分数据是已经给过码的用户集合；第二部分数据是没有给过码的用户集合
+     * </p>
+     * @param didList - 抢单池的用户详细的集合
+     * @return 
+     * @author yoko
+     * @date 2020/8/31 20:58 
+    */
+    public static Map<String, Object> getCuttingDidList(List<DidModel> didList){
+        Map<String, Object> map = new HashMap<>();
+        List<DidModel> noList = new ArrayList<>();// 没有给出过出码的用户集合
+        List<DidModel> yesList = new ArrayList<>();// 有给出过出码的用户集合
+        long poolOpenId = 0;
+        String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.QR_CODE_POOL_OPEN_ID);
+        String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
+        if (!StringUtils.isBlank(strCache)){
+            poolOpenId = Long.parseLong(strCache);
+        }
+        if (poolOpenId > 0){
+            for (DidModel didModel : didList){
+                if (didModel.getPoolOpenId() > poolOpenId){
+                    // 集合的池子ID大于上次给出的池子ID
+                    noList.add(didModel);
+                }else{
+                    // 集合的池子ID小于等于上次给出的池子ID
+                    yesList.add(didModel);
+                }
+            }
+            if (noList != null && noList.size() > 0){
+                map.put("noList", noList);
+            }
+            if (yesList != null && yesList.size() > 0){
+                map.put("yesList", yesList);
+            }
+        }else{
+            noList = didList;
+            map.put("noList", noList);
+        }
 
+        return map;
+    }
+
+
+    /**
+     * @Description: 获取用户集合
+     * <p>
+     *     两部分用户集合：1未出码的用户集合，2已出码的用户集合
+     * </p>
+     * @param map - 切割的用户
+     * @param mapKey - 获取的mapKey里面的值的key
+     * @return java.util.List<com.hz.fine.master.core.model.did.DidModel>
+     * @author yoko
+     * @date 2020/8/31 21:30
+     */
+    public static List<DidModel> getDidListByMap(Map<String, Object> map, String mapKey){
+        if (map != null){
+            if (map.get(mapKey) != null){
+                List<DidModel> didList = (List<DidModel>) map.get(mapKey);
+                if (didList != null && didList.size() > 0){
+                    return didList;
+                }else {
+                    return null;
+                }
+            }else {
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * @Description: check校验数据当派发订单的时候：是否有可以派单的用户数据
+     * <p>
+     *     check校验未出码用户集合与已出码的用户集合的数据
+     * </p>
+     * @param noList - 未出码集合
+     * @param yesList - 已出码集合
+     * @return
+     * @author yoko
+     * @date 2020/05/14 15:57
+     */
+    public static void checkEffectiveDidDataByPool(List<DidModel> noList, List<DidModel> yesList) throws Exception{
+        if (noList == null && noList.size() <= 0 && yesList == null && yesList.size() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.OR00024.geteCode(), ErrorCode.ENUM_ERROR.OR00024.geteDesc());
+        }
+    }
+
+    /**
+     * @Description: 组装两部分出码用户集合数据
+     * @param noList - 未出码的集合
+     * @param yesList - 已出码的集合
+     * @return java.util.List<com.hz.fine.master.core.model.did.DidModel>
+     * @author yoko
+     * @date 2020/8/31 21:51
+     */
+    public static List<DidModel> assembleAllDidList(List<DidModel> noList, List<DidModel> yesList){
+        List<DidModel> resList = new ArrayList<>();
+        if (noList != null && noList.size() > 0){
+            resList.addAll(noList);
+        }
+        if (yesList != null && yesList.size() > 0){
+            resList.addAll(yesList);
+        }
+        return resList;
+    }
+
+
+    /**
+     * @Description: 组装用户微信排序的数据
+     * @param id - 主键ID
+     * @param did - 用户ID
+     * @param toWxid - 原始微信ID
+     * @param sort - 排序
+     * @param inUse - 正在使用状态
+     * @param upInUse - 要更新的使用状态
+     * @param startSort - 查询条件>
+     * @param endSort - 查询条件 <
+     * @return com.hz.fine.master.core.model.did.DidWxSortModel
+     * @author yoko
+     * @date 2020/8/31 23:48
+     */
+    public static DidWxSortModel assembleDidWxSortData(long id, long did, String toWxid, int sort, int inUse, int upInUse, int startSort, int endSort){
+        DidWxSortModel resBean = new DidWxSortModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (did > 0){
+            resBean.setDid(did);
+        }
+        if (!StringUtils.isBlank(toWxid)){
+            resBean.setToWxid(toWxid);
+        }
+        if (sort > 0){
+            resBean.setSort(sort);
+        }
+        if (inUse > 0){
+            resBean.setInUse(inUse);
+        }
+        if (upInUse > 0){
+            resBean.setUpInUse(upInUse);
+        }
+        if (startSort > 0){
+            resBean.setStartSort(startSort);
+        }
+        if (endSort > 0){
+            resBean.setEndSort(endSort);
+        }
+        return resBean;
+
+    }
+
+    /**
+     * @Description: 根据条件查询用户获取微信群收款账号信息-有效
+     * @param did - 用户ID
+     * @param acType - 收款账号类型
+     * @param isInvalid - 是否失效：1未失效，2已失效
+     * @param checkStatus - 收款账号审核：1初始化，2审核失败，3审核成功
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param loginType - 归属小微登录状态：1登出/未登录，2登入/已登录
+     * @param toWxid - 原始微信ID
+     * @return com.hz.fine.master.core.model.did.DidCollectionAccountModel
+     * @author yoko
+     * @date 2020/5/15 17:17
+     */
+    public static DidCollectionAccountModel assembleDidCollectionAccountListEffectiveByToWxid(long did, int acType, int isInvalid, int checkStatus,int useStatus, int loginType,
+                                                                                      String toWxid){
+        DidCollectionAccountModel resBean = new DidCollectionAccountModel();
+        resBean.setDid(did);
+        if(acType > 0){
+            resBean.setAcType(acType);
+        }
+        resBean.setIsInvalid(isInvalid);
+        if (isInvalid == 1){
+            // 未失效
+            resBean.setInvalidTimeStart("1");
+        }
+        if(!StringUtils.isBlank(toWxid)){
+            resBean.setUserId(toWxid);
+        }
+        resBean.setCheckStatus(checkStatus);
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        if (loginType > 0){
+            resBean.setLoginType(loginType);
+        }
+
+        return resBean;
+    }
 
 
     public static void main(String [] args){
@@ -7638,6 +7830,45 @@ public class HodgepodgeMethod {
         System.out.println("fg_msg[0]:" + fg_msg[0]);
         System.out.println("fg_msg[1]:" + fg_msg[1]);
         System.out.println("fg_msg.length:" + fg_msg.length);
+
+        Map<String, Object> map1 = new HashMap<>();
+        List<DidModel> noList = new ArrayList<>();
+        DidModel d1 = new DidModel();
+        d1.setId(4L);
+        DidModel d2 = new DidModel();
+        d2.setId(5L);
+        DidModel d3 = new DidModel();
+        d3.setId(6L);
+        noList.add(d1);
+        noList.add(d2);
+        noList.add(d3);
+
+        List<DidModel> yesList = new ArrayList<>();
+        DidModel d4 = new DidModel();
+        d4.setId(1L);
+        DidModel d5 = new DidModel();
+        d5.setId(2L);
+        DidModel d6 = new DidModel();
+        d6.setId(3L);
+        yesList.add(d4);
+        yesList.add(d5);
+        yesList.add(d6);
+        map1.put("yesList", yesList);
+        if (map1.get("noList") != null){
+            System.out.println("哈哈");
+            List<DidModel> map_noList = (List<DidModel>) map1.get("noList");
+            if (map_noList != null && map_noList.size() > 0){
+                System.out.println("map_noList:" + map_noList.size());
+            }
+        }
+        if (map1.get("yesList") != null){
+            System.out.println("哈哈1");
+        }
+
+        List<DidModel> allList = assembleAllDidList(noList, yesList);
+        for (DidModel didModel : allList){
+            System.out.println("id:" + didModel.getId());
+        }
 
     }
 

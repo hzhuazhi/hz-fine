@@ -76,4 +76,9 @@ public class DidServiceImpl<T> extends BaseServiceImpl<T> implements DidService<
     public int updateDidOperateGroupNum(DidModel model) {
         return didMapper.updateDidOperateGroupNum(model);
     }
+
+    @Override
+    public List<DidModel> getDidByPoolList(DidModel model) {
+        return didMapper.getDidByPoolList(model);
+    }
 }

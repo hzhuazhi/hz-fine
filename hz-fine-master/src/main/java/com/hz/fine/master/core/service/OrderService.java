@@ -197,4 +197,19 @@ public interface OrderService<T> extends BaseService<T> {
      * @date 2020/5/26 15:58
      */
     public DidModel screenCollectionAccountByPool(List<DidModel> didList, String orderMoney, int countGroupNum);
+
+
+    /**
+     * @Description: 根据池子用户筛选池子中可给码的收款账号
+     * <p>
+     *     版本二
+     *     这里didList的数据排序：未出码并且按照池子ID升序排序；已出码排在未出吗后面
+     * </p>
+     * @param didList - 未出码与出码的集合数据
+     * @param orderMoney - 订单金额
+     * @return
+     * @author yoko
+     * @date 2020/5/26 15:58
+     */
+    public DidModel screenCollectionAccountByPoolTwo(List<DidModel> didList, String orderMoney);
 }

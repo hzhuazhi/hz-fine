@@ -252,4 +252,12 @@ public interface CacheKey {
      */
     String TO_WXID_RANGE_MONEY_TIME = "-38";
 
+    /**
+     * 给过码的池子的主键ID
+     * <p>
+     *     用于切割抢单池的用户
+     * </p>
+     */
+    String QR_CODE_POOL_OPEN_ID = "-39";
+
 }

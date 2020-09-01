@@ -547,5 +547,22 @@
         and a.id = #{id}
     </update>
 
+    <!-- 根据用户以及用户的原始微信ID获取有效群集合 -->
+    <select id="getEffectiveDidCollectionAccountByUserId" parameterType="Object" resultType="com.hz.fine.master.core.model.did.DidCollectionAccountModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fn_did_collection_account a
+        where 1=1
+        and a.did = #{did}
+        and a.ac_type = #{acType}
+        and a.user_id = #{userId}
+        and a.is_invalid = #{isInvalid}
+        and a.check_status = #{checkStatus}
+        and a.use_status = #{useStatus}
+        and a.login_type = #{loginType}
+        and a.invalid_time > now()
+        order by a.id asc
+    </select>
+
 
 </mapper>

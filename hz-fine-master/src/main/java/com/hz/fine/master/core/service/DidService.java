@@ -110,4 +110,16 @@ public interface DidService<T> extends BaseService<T> {
      * @date 2020/7/30 19:57
      */
     public int updateDidOperateGroupNum(DidModel model);
+    
+    /**
+     * @Description: 获取抢单池中的用户的详细信息
+     * <p>
+     *     从抢单池中获取信息
+     * </p>
+     * @param model
+     * @return 
+     * @author yoko
+     * @date 2020/8/31 20:31
+    */
+    public List<DidModel> getDidByPoolList(DidModel model);
 }

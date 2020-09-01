@@ -3,6 +3,8 @@ package com.hz.fine.master.core.service;
 import com.hz.fine.master.core.common.service.BaseService;
 import com.hz.fine.master.core.model.did.DidWxSortModel;
 
+import java.util.List;
+
 /**
  * @Description 用户的微信出码排序的Service层
  * @Author yoko
@@ -52,4 +54,14 @@ public interface DidWxSortService<T> extends BaseService<T> {
      * @date 2020/8/31 17:39
      */
     public int addByExist(DidWxSortModel model);
+
+    /**
+     * @Description: 筛选出正在使用的微信
+     * @param did -
+     * @param monitorWxList - 被监控的原始微信ID集合
+     * @return
+     * @author yoko
+     * @date 2020/8/31 22:16
+    */
+    public DidWxSortModel screenDidWxSort(long did, List<String> monitorWxList);
 }

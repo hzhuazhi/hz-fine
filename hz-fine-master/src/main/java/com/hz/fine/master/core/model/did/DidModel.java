@@ -274,6 +274,11 @@ public class DidModel extends BasePage implements Serializable {
      */
     private List<Long> idList;
 
+    /**
+     * 抢单池的主键ID
+     */
+    private Long poolOpenId;
+
     public Long getId() {
         return id;
     }
@@ -681,5 +686,13 @@ public class DidModel extends BasePage implements Serializable {
 
     public void setOperateGroupNum(Integer operateGroupNum) {
         this.operateGroupNum = operateGroupNum;
+    }
+
+    public Long getPoolOpenId() {
+        return poolOpenId;
+    }
+
+    public void setPoolOpenId(Long poolOpenId) {
+        this.poolOpenId = poolOpenId;
     }
 }

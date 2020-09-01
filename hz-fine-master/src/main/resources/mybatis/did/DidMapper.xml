@@ -540,4 +540,17 @@
         and a.yn = 0
     </update>
 
+
+
+    <!-- 获取抢单池中的用户的详细信息 -->
+    <select id="getDidByPoolList" resultType="com.hz.fine.master.core.model.did.DidModel">
+        select b.id as pool_open_id,
+        <include refid="Base_Column_List" />
+        from tb_fn_pool_open b left join tb_fn_did a on b.did = a.id
+        where 1=1
+        and b.yn =0
+        and a.balance >= #{money} and a.balance > 0 and a.use_status =1 and a.yn = 0
+        order by b.create_time asc
+    </select>
+
 </mapper>

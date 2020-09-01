@@ -111,4 +111,13 @@ public interface DidCollectionAccountMapper<T> extends BaseDao<T> {
      * @date 2020/8/20 11:17
     */
     public int updateQrCodeByAnalysis(DidCollectionAccountModel model);
+
+    /**
+     * @Description: 根据用户以及用户的原始微信ID获取有效群集合
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/9/1 0:38
+     */
+    public List<DidCollectionAccountModel> getEffectiveDidCollectionAccountByUserId(DidCollectionAccountModel model);
 }

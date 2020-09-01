@@ -1381,4 +1381,147 @@ public class OrderController {
     }
 
 
+
+
+//    /**
+//     * @Description: 派发订单-微信群接口
+//     * <p>
+//     *
+//     * 1.从策略中获取目前是否属于开放出码时间
+//     * 2.用户余额是否满足此次派单的金额。
+//     * 3.用户抢单开始的状态是在上线状态。
+//     * 3.用户的支付宝收款账号是否正常。
+//     * 4.已经派单过的用户并且名下有订单没有过失效期的用户不派单。
+//     * 5.派单进行中：需要从余额里面剔除相对应的订单金额，把剔除到的存放到表《用户扣减余额流水表》里面。
+//     * </p>
+//     * @param request
+//     * @param response
+//     * @return com.gd.chain.common.utils.JsonResult<java.lang.Object>
+//     * @author yoko
+//     * @date 2019/11/25 22:58
+//     * local:http://localhost:8086/fine/order/groupQrCode
+//     * 请求的属性类:RequestOrder
+//     * 必填字段:{"money":"1111","payType":3,"outTradeNo":"outTradeNo1","notifyUrl":"notify_url","returnUrl":"http://www.baidu.com","agtVer":1,"clientVer":1,"clientType":1,"ctime":201911071802959,"cctime":201911071802959,"sign":"abcdefg","token":"111111"}
+//     * 加密字段:{"jsonData":"eyJtb25leSI6IjExMTEiLCJwYXlUeXBlIjoyLCJvdXRUcmFkZU5vIjoib3V0VHJhZGVObzEiLCJub3RpZnlVcmwiOiJub3RpZnlfdXJsIiwicmV0dXJuVXJsIjoiaHR0cDovL3d3dy5iYWlkdS5jb20iLCJhZ3RWZXIiOjEsImNsaWVudFZlciI6MSwiY2xpZW50VHlwZSI6MSwiY3RpbWUiOjIwMTkxMTA3MTgwMjk1OSwiY2N0aW1lIjoyMDE5MTEwNzE4MDI5NTksInNpZ24iOiJhYmNkZWZnIiwidG9rZW4iOiIxMTExMTEifQ=="}
+//     * 客户端加密字段:ctime+cctime+秘钥=sign
+//     * 服务端加密字段:stime+秘钥=sign
+//     * result={
+//     *     "resultCode": "0",
+//     *     "message": "success",
+//     *     "data": {
+//     *         "jsonData": "eyJvcmRlciI6eyJpbnZhbGlkU2Vjb25kIjoiMjk5IiwiaW52YWxpZFRpbWUiOiIyMDIwLTA3LTIxIDE0OjE1OjU5Iiwib3JkZXJNb25leSI6IjEwMC4wMCIsIm9yZGVyTm8iOiIyMDIwMDcyMTE0MTA1ODAwMDAwMDEiLCJxckNvZGUiOiIiLCJxckNvZGVVcmwiOiJodHRwJTNBJTJGJTJGd3d3LnliemZtLmNvbSUzQTgwMDIlMkZ3eCUyRmluZGV4Lmh0bWwlM0ZvcmRlck5vJTNEMjAyMDA3MjExNDEwNTgwMDAwMDAxJTI2cmV0dXJuVXJsJTNEaHR0cCUzQSUyRiUyRnd3dy5iYWlkdS5jb20ifSwic2lnbiI6IiIsInN0aW1lIjoxNTk1MzExODU5NTcxfQ=="
+//     *     },
+//     *     "sgid": "202007211410580000001",
+//     *     "cgid": ""
+//     * }
+//     */
+//    @RequestMapping(value = "/groupQrCode", method = {RequestMethod.POST})
+//    public JsonResult<Object> groupQrCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestEncryptionJson requestData) throws Exception{
+//        String sgid = ComponentUtil.redisIdService.getNewId();
+//        String cgid = "";
+//        String token = "";
+//        String ip = StringUtil.getIpAddress(request);
+//        String data = "";
+//        long did = 0;
+//        RegionModel regionModel = HodgepodgeMethod.assembleRegionModel(ip);
+//
+//        RequestOrder requestModel = new RequestOrder();
+//        try{
+//            // 解密
+//            data = StringUtil.decoderBase64(requestData.jsonData);
+//            requestModel  = JSON.parseObject(data, RequestOrder.class);
+//
+//            // check校验数据
+//            HodgepodgeMethod.checkOrderAdd(requestModel);
+//
+//            if (requestModel.money.indexOf(".") <= -1){
+//                requestModel.money = requestModel.money + ".00";
+//            }
+//            log.info("");
+//
+//
+//            // 策略数据：出码开关
+//            StrategyModel strategyQrCodeSwitchQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.QR_CODE_SWITCH.getStgType());
+//            StrategyModel strategyQrCodeSwitchModel = ComponentUtil.strategyService.getStrategyModel(strategyQrCodeSwitchQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+//            HodgepodgeMethod.checkStrategyByQrCodeSwitch(strategyQrCodeSwitchModel);
+//
+//            // 策略数据：微信群有效个数才允许正常出码
+//            StrategyModel strategyGroupNumQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.GROUP_NUM.getStgType());
+//            StrategyModel strategyGroupNumModel = ComponentUtil.strategyService.getStrategyModel(strategyGroupNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+//            HodgepodgeMethod.checkStrategyByGroupNum(strategyGroupNumModel);
+//
+//
+//            // 获取可派单的用户集合
+//            DidModel didQuery = HodgepodgeMethod.assembleEffectiveDidGroup(requestModel, 0);
+//            List<DidModel> didList = ComponentUtil.didService.getDidByPoolList(didQuery);
+//            // check校验是否有有效的用户
+//            HodgepodgeMethod.checkEffectiveDidData(didList);
+//
+//            // 切换成两部分数据集合
+//            Map<String, Object> map = HodgepodgeMethod.getCuttingDidList(didList);
+//            // 获取两部分用户集合
+//            List<DidModel> noList = HodgepodgeMethod.getDidListByMap(map, "noList");
+//            List<DidModel> yesList = HodgepodgeMethod.getDidListByMap(map, "yesList");
+//            // 校验两个集合是否同时数据为空
+//            HodgepodgeMethod.checkEffectiveDidDataByPool(noList, yesList);
+//            List<DidModel> allDidList = HodgepodgeMethod.assembleAllDidList(noList, yesList);
+//
+//
+//            // 循环筛选有效
+//            DidModel didModel = ComponentUtil.orderService.screenCollectionAccountByPool(didList, requestModel.money, strategyGroupNumModel.getStgNumValue());
+//            // check校验
+//            HodgepodgeMethod.checkDidAndByAddWxGroupCollectionAccountOrder(didModel);
+//
+//            did = didModel.getId();
+//
+//            // 查询策略里面的消耗金额范围内的奖励规则列表
+//            StrategyModel strategyQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.WX_GROUP_CONSUME_MONEY_LIST.getStgType());
+//            StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+//            // 解析奖励规则的值
+//            List<StrategyData> wxGroupConsumeMoneyList = JSON.parseArray(strategyModel.getStgBigValue(), StrategyData.class);
+//
+//            // 查询策略里面的派单的超时时间
+//            StrategyModel strategyInvalidTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.DELIVERY_ORDER_INVALID_TIME.getStgType());
+//            StrategyModel strategyInvalidTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+//
+//            // 查询策略里面的用户无操作状态锁定金额时间
+//            StrategyModel strategyLockTimeQuery = HodgepodgeMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.LOCK_MONEY_TIME.getStgType());
+//            StrategyModel strategyLockTimeModel = ComponentUtil.strategyService.getStrategyModel(strategyLockTimeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+//
+//            // 组装派发订单的数据
+//            OrderModel orderModel = HodgepodgeMethod.assembleOrderByWxGroupAdd(did, sgid, requestModel.money, requestModel.notifyUrl, requestModel.outTradeNo, didModel, requestModel.payType, wxGroupConsumeMoneyList, strategyInvalidTimeModel.getStgNumValue());
+//
+//            // 组装用户扣除余额流水的数据
+//            DidBalanceDeductModel didBalanceDeductModel = HodgepodgeMethod.assembleDidBalanceDeductAdd(did, sgid, requestModel.money, strategyLockTimeModel.getStgNumValue());
+//
+//            // 组装扣除用户余额
+//            DidModel updateBalance = HodgepodgeMethod.assembleUpdateDidBalance(did, requestModel.money);
+//
+//            // 正式处理派单的逻辑
+//            ComponentUtil.orderService.handleOrder(orderModel, didBalanceDeductModel, updateBalance);
+//
+//            // 添加小微给出订单记录
+//            WxOrderModel wxOrderModel = HodgepodgeMethod.assembleWxOrderAdd(didModel, sgid);
+//            ComponentUtil.wxOrderService.add(wxOrderModel);
+//            // 组装返回客户端的数据
+//            long stime = System.currentTimeMillis();
+//            String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
+//            String strData = HodgepodgeMethod.assembleOrderGroupQrCodeDataResult(stime, token, orderModel, requestModel.returnUrl, ComponentUtil.loadConstant.wxGroupQrCodeUrl);
+//            // 数据加密
+//            String encryptionData = StringUtil.mergeCodeBase64(strData);
+//            ResponseEncryptionJson resultDataModel = new ResponseEncryptionJson();
+//            resultDataModel.jsonData = encryptionData;
+//            // 返回数据给客户端
+//            return JsonResult.successResult(resultDataModel, cgid, sgid);
+//        }catch (Exception e){
+//            Map<String,String> map = ExceptionMethod.getException(e, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+//            log.error(String.format("this OrderController.groupQrCode() is error , the cgid=%s and sgid=%s and all data=%s!", cgid, sgid, data));
+//            if (!StringUtils.isBlank(map.get("dbCode"))){
+//                log.error(String.format("this OrderController.groupQrCode() is error codeInfo, the dbCode=%s and dbMessage=%s !", map.get("dbCode"), map.get("dbMessage")));
+//            }
+//            e.printStackTrace();
+//            return JsonResult.failedResult(map.get("message"), map.get("code"), cgid, sgid);
+//        }
+//    }
+
 }
