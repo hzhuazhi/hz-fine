@@ -7671,7 +7671,7 @@ public class HodgepodgeMethod {
      * @date 2020/05/14 15:57
      */
     public static void checkEffectiveDidDataByPool(List<DidModel> noList, List<DidModel> yesList) throws Exception{
-        if (noList == null && noList.size() <= 0 && yesList == null && yesList.size() <= 0){
+        if ((noList == null || noList.size() <= 0) && (yesList == null || yesList.size() <= 0)){
             throw new ServiceException(ErrorCode.ENUM_ERROR.OR00024.geteCode(), ErrorCode.ENUM_ERROR.OR00024.geteDesc());
         }
     }
@@ -7831,6 +7831,25 @@ public class HodgepodgeMethod {
             resBean.setLoginType(loginType);
         }
 
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装更新发送指令到redis的微信排序内容
+     * @param did - 用户ID
+     * @param toWxid - 用户微信ID
+     * @param limitType - 被限制的类型：1在金额范围内限制，2超过金额上限被限制，3被微信限制时间
+     * @param delayTime - 延迟要使用的时间
+     * @return com.hz.task.master.core.model.did.DidWxSortModel
+     * @author yoko
+     * @date 2020/9/3 16:28
+     */
+    public static DidWxSortModel assembleDidWxSortSend(long did, String toWxid, int limitType, String delayTime){
+        DidWxSortModel resBean = new DidWxSortModel();
+        resBean.setDid(did);
+        resBean.setToWxid(toWxid);
+        resBean.setLimitType(limitType);
+        resBean.setDelayTime(delayTime);
         return resBean;
     }
 

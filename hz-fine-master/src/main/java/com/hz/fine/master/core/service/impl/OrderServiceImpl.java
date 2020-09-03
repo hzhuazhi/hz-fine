@@ -1,8 +1,11 @@
 package com.hz.fine.master.core.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hz.fine.master.core.common.dao.BaseDao;
 import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.service.impl.BaseServiceImpl;
+import com.hz.fine.master.core.common.utils.DateUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
 import com.hz.fine.master.core.common.utils.constant.CachedKeyUtils;
@@ -506,18 +509,17 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
             if (orderByDidModel == null || orderByDidModel.getId() == null || orderByDidModel.getId() <= 0){
                 // 表示用户名下订单一切正常
 
-                // 获取此用户被监控的微信ID集合
-                DidWxMonitorModel didWxMonitorQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didData.getId(), "1", null);
-                List<String> toWxidList = ComponentUtil.didWxMonitorService.getToWxidList(didWxMonitorQuery);
+                // 查询此用户正在使用的微信
+                DidWxSortModel didWxSortQuery = HodgepodgeMethod.assembleDidWxSortData(0, didData.getId(), null,
+                        0, 2, 0, 0, 0, null, null, null);
+                DidWxSortModel didWxSortModel = (DidWxSortModel)ComponentUtil.didWxSortService.findByObject(didWxSortQuery);
+                if (didWxSortModel == null || didWxSortModel.getId() == null || didWxSortModel.getId() <= 0){
+                    continue;
+                }
 
-//                // 查询此用户下未被监控微信排序并且正在使用的原始微信ID
-//                DidWxSortModel didWxSortModel = ComponentUtil.didWxSortService.screenDidWxSort(didData.getId(), toWxidList);
-//                if (didWxSortModel == null || didWxSortModel.getId() == null && didWxSortModel.getId() <= 0){
-//                    continue;
-//                }
 
                 // 筛选微信收款账号
-//                didModel = getDidCollectionAccountByPool(didData, orderMoney, countGroupNum, toWxidList);
+                didModel = getDidCollectionAccountByPoolTwo(didData, orderMoney, didWxSortModel.getToWxid());
                 if (didModel != null && didModel.getId() > 0 && didModel.getCollectionAccountId() > 0){
                     break;
                 }
@@ -863,12 +865,13 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                             if (!StringUtils.isBlank(didCollectionAccountModel.getUserId())){
                                 didModel.setUserId(didCollectionAccountModel.getUserId());
                             }
-                            if (!StringUtils.isBlank(didCollectionAccountModel.getPayee())){
-                                didModel.setPayee(didCollectionAccountModel.getPayee());
-                            }
                             if (!StringUtils.isBlank(didCollectionAccountModel.getAcName())){
                                 didModel.setZfbAcNum(didCollectionAccountModel.getAcName());
                             }
+                            if (!StringUtils.isBlank(didCollectionAccountModel.getPayee())){
+                                didModel.setPayee(didCollectionAccountModel.getPayee());
+                            }
+
 
                             // redis存储-用户收款账号
                             String strKeyCache_lock_did_order_ing = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_COLLECTION_ACCOUNT_ORDER_ING, didCollectionAccountModel.getId());
@@ -881,6 +884,12 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                             String strCache_strKeyCache_to_wxid_range_money_time = (String) ComponentUtil.redisService.get(strKeyCache_to_wxid_range_money_time);
                             if (!StringUtils.isBlank(strCache_strKeyCache_to_wxid_range_money_time)){
                                 // 属于锁住的微信，每次只能给出一个码
+
+                                // 发送微信排序优先级调控：金额范围被限制
+                                String delayTime = strCache_strKeyCache_to_wxid_range_money_time;
+                                DidWxSortModel didWxSortModel = HodgepodgeMethod.assembleDidWxSortSend(didModel.getId(), toWxid, 4, delayTime);
+                                String strKeyCache_didWxSort = CachedKeyUtils.getCacheKey(CacheKey.DID_WX_SORT, didModel.getId(), toWxid);
+                                ComponentUtil.redisService.set(strKeyCache_didWxSort, JSON.toJSONString(didWxSortModel, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullStringAsEmpty));
                                 break;
                             }
                         }
@@ -890,6 +899,18 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 }
             }else {
                 // 没有查询到有效的微信群数据
+
+                // 发送微信排序优先级调控
+                String delayTime = "";
+                try{
+                    delayTime = DateUtil.getNowPlusTime();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                DidWxSortModel didWxSortModel = HodgepodgeMethod.assembleDidWxSortSend(didModel.getId(), toWxid, 4, delayTime);
+                String strKeyCache_didWxSort = CachedKeyUtils.getCacheKey(CacheKey.DID_WX_SORT, didModel.getId(), toWxid);
+                ComponentUtil.redisService.set(strKeyCache_didWxSort, JSON.toJSONString(didWxSortModel, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullStringAsEmpty));
+
                 return null;
             }
             // 解锁
