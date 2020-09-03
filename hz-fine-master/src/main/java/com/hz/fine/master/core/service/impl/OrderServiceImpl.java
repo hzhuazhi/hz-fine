@@ -510,11 +510,11 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
                 DidWxMonitorModel didWxMonitorQuery = HodgepodgeMethod.assembleDidWxMonitorByDidQuery(didData.getId(), "1", null);
                 List<String> toWxidList = ComponentUtil.didWxMonitorService.getToWxidList(didWxMonitorQuery);
 
-                // 查询此用户下未被监控微信排序并且正在使用的原始微信ID
-                DidWxSortModel didWxSortModel = ComponentUtil.didWxSortService.screenDidWxSort(didData.getId(), toWxidList);
-                if (didWxSortModel == null || didWxSortModel.getId() == null && didWxSortModel.getId() <= 0){
-                    continue;
-                }
+//                // 查询此用户下未被监控微信排序并且正在使用的原始微信ID
+//                DidWxSortModel didWxSortModel = ComponentUtil.didWxSortService.screenDidWxSort(didData.getId(), toWxidList);
+//                if (didWxSortModel == null || didWxSortModel.getId() == null && didWxSortModel.getId() <= 0){
+//                    continue;
+//                }
 
                 // 筛选微信收款账号
 //                didModel = getDidCollectionAccountByPool(didData, orderMoney, countGroupNum, toWxidList);

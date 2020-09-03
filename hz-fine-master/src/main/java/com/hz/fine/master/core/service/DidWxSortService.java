@@ -58,10 +58,10 @@ public interface DidWxSortService<T> extends BaseService<T> {
     /**
      * @Description: 筛选出正在使用的微信
      * @param did -
-     * @param monitorWxList - 被监控的原始微信ID集合
+     * @param didWxSortModel - 当前使用的微信
      * @return
      * @author yoko
      * @date 2020/8/31 22:16
     */
-    public DidWxSortModel screenDidWxSort(long did, List<String> monitorWxList);
+    public DidWxSortModel screenDidWxSort(long did, DidWxSortModel didWxSortModel);
 }

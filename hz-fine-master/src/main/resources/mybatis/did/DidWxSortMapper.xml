@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.did,a.wx_nickname,a.to_wxid,a.sort,a.in_use,
+        a.id,a.did,a.wx_nickname,a.to_wxid,a.sort,a.in_use,a.delay_time,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -38,6 +38,13 @@
             </if>
             <if test="endSort != null and endSort != '' " >
                 and a.sort &lt; #{endSort}
+            </if>
+            <if test="startDelayTime != null and startDelayTime != '' " >
+                and a.delay_time > now()
+            </if>
+            <if test="endDelayTime != null and endDelayTime != '' " >
+                <!--and a.delay_time &lt; now()-->
+                and (a.delay_time &lt; now() or delay_time is null)
             </if>
             <if test="startCreateTime != null and startCreateTime != '' " >
                 and a.create_time > #{startCreateTime}
@@ -156,6 +163,9 @@
             <if test="inUse != null and inUse != '' " >
                 in_use,
             </if>
+            <if test="delayTime != null and delayTime != '' " >
+                delay_time,
+            </if>
             create_time,
         </trim>
         values
@@ -174,6 +184,9 @@
             </if>
             <if test="inUse != null and inUse != '' " >
                 <![CDATA[  #{inUse}, ]]>
+            </if>
+            <if test="delayTime != null and delayTime != '' " >
+                <![CDATA[  #{delayTime}, ]]>
             </if>
             NOW(),
         </trim>
@@ -197,6 +210,9 @@
             </if>
             <if test="inUse != null and inUse != '' " >
                 a.in_use = #{inUse},
+            </if>
+            <if test="delayTime != null and delayTime != '' " >
+                a.delay_time = #{delayTime},
             </if>
             a.update_time = NOW(),
         </trim>

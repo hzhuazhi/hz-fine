@@ -44,6 +44,11 @@ public class DidWxSortModel extends BasePage implements Serializable {
     private Integer inUse;
 
     /**
+     * 延迟/限制的时间：什么时候可以正常使用
+     */
+    private String delayTime;
+
+    /**
      * 创建时间
      */
     private String createTime;
@@ -73,6 +78,15 @@ public class DidWxSortModel extends BasePage implements Serializable {
      * 更新使用状态时使用的值-SQL
      */
     private Integer upInUse;
+
+
+    /**
+     * 被限制的类型：1在金额范围内限制，2超过金额上限被限制，3被微信限制时间
+     */
+    private Integer limitType;
+
+    private String startDelayTime;
+    private String endDelayTime;
 
 
     public Long getId() {
@@ -194,5 +208,38 @@ public class DidWxSortModel extends BasePage implements Serializable {
 
     public void setUpInUse(Integer upInUse) {
         this.upInUse = upInUse;
+    }
+
+
+    public String getDelayTime() {
+        return delayTime;
+    }
+
+    public void setDelayTime(String delayTime) {
+        this.delayTime = delayTime;
+    }
+
+    public Integer getLimitType() {
+        return limitType;
+    }
+
+    public void setLimitType(Integer limitType) {
+        this.limitType = limitType;
+    }
+
+    public String getStartDelayTime() {
+        return startDelayTime;
+    }
+
+    public void setStartDelayTime(String startDelayTime) {
+        this.startDelayTime = startDelayTime;
+    }
+
+    public String getEndDelayTime() {
+        return endDelayTime;
+    }
+
+    public void setEndDelayTime(String endDelayTime) {
+        this.endDelayTime = endDelayTime;
     }
 }

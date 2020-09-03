@@ -561,6 +561,7 @@
         and a.use_status = #{useStatus}
         and a.login_type = #{loginType}
         and a.invalid_time > now()
+        and a.red_pack_num > 0
         order by a.id asc
     </select>
 

@@ -7570,6 +7570,21 @@ public class HodgepodgeMethod {
         }
     }
 
+
+    /**
+     * @Description: check是否筛选出正在使用的微信
+     * @param didWxSortModel - 正在使用的微信
+     * @return
+     * @author yoko
+     * @date 2020/8/13 20:02
+     */
+    public static void checkDidWxSortUse(DidWxSortModel didWxSortModel) throws Exception{
+        if (didWxSortModel == null || didWxSortModel.getId() == null || didWxSortModel.getId() <= 0){
+            throw new ServiceException(ErrorCode.ENUM_ERROR.P00010.geteCode(), ErrorCode.ENUM_ERROR.P00010.geteDesc());
+        }
+    }
+
+
     /**
      * @Description: 切割成两部分数据
      * <p>
@@ -7720,6 +7735,61 @@ public class HodgepodgeMethod {
         }
         if (endSort > 0){
             resBean.setEndSort(endSort);
+        }
+        return resBean;
+
+    }
+
+
+    /**
+     * @Description: 组装用户微信排序的数据
+     * @param id - 主键ID
+     * @param did - 用户ID
+     * @param toWxid - 原始微信ID
+     * @param sort - 排序
+     * @param inUse - 正在使用状态
+     * @param upInUse - 要更新的使用状态
+     * @param startSort - 查询条件>
+     * @param endSort - 查询条件 <
+     * @return com.hz.fine.master.core.model.did.DidWxSortModel
+     * @author yoko
+     * @date 2020/8/31 23:48
+     */
+    public static DidWxSortModel assembleDidWxSortData(long id, long did, String toWxid, int sort, int inUse, int upInUse, int startSort, int endSort,
+                                                       String startDelayTime, String endDelayTime, String delayTime){
+        DidWxSortModel resBean = new DidWxSortModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (did > 0){
+            resBean.setDid(did);
+        }
+        if (!StringUtils.isBlank(toWxid)){
+            resBean.setToWxid(toWxid);
+        }
+        if (sort > 0){
+            resBean.setSort(sort);
+        }
+        if (inUse > 0){
+            resBean.setInUse(inUse);
+        }
+        if (upInUse > 0){
+            resBean.setUpInUse(upInUse);
+        }
+        if (startSort > 0){
+            resBean.setStartSort(startSort);
+        }
+        if (endSort > 0){
+            resBean.setEndSort(endSort);
+        }
+        if (!StringUtils.isBlank(startDelayTime)){
+            resBean.setStartDelayTime(startDelayTime);
+        }
+        if (!StringUtils.isBlank(endDelayTime)){
+            resBean.setEndDelayTime(endDelayTime);
+        }
+        if (!StringUtils.isBlank(delayTime)){
+            resBean.setDelayTime(delayTime);
         }
         return resBean;
 

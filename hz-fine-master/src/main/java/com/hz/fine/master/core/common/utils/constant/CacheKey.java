@@ -260,4 +260,10 @@ public interface CacheKey {
      */
     String QR_CODE_POOL_OPEN_ID = "-39";
 
+    /**
+     * 用户微信排序规则使用
+     * 信息储存，给task使用
+     */
+    String DID_WX_SORT = "-40";
+
 }

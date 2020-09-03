@@ -124,7 +124,13 @@ public class ServerConstant {
         POOL_OPEN_MIN_MONEY(39,""),
         GROUP_MIN_MONEY(40,""),
         POOL_MIN_MONEY(41,""),
-
+        POOL_MIN_NUM(42,""),
+        POOL_MIN_GROUP_NUM(43,""),
+        TO_WXID_TIME(44,""),
+        TO_WXID_RANGE_MONEY(45,""),
+        TO_WXID_MAX_MONEY(46,""),
+        TO_WXID_RELIEVE_TIME(47,""),
+        WX_LIMIT_DAY_NUM(48,""),
 
 
 

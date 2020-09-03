@@ -11,6 +11,7 @@ import com.hz.fine.master.core.model.ResponseEncryptionJson;
 import com.hz.fine.master.core.model.did.DidCollectionAccountModel;
 import com.hz.fine.master.core.model.did.DidModel;
 import com.hz.fine.master.core.model.did.DidWxMonitorModel;
+import com.hz.fine.master.core.model.did.DidWxSortModel;
 import com.hz.fine.master.core.model.order.OrderModel;
 import com.hz.fine.master.core.model.pool.PoolOpenModel;
 import com.hz.fine.master.core.model.pool.PoolWaitModel;
@@ -233,11 +234,11 @@ public class PoolController {
             data = StringUtil.decoderBase64(requestData.jsonData);
             requestModel  = JSON.parseObject(data, RequestPool.class);
             //#临时数据
-//            if (!StringUtils.isBlank(requestModel.token)){
-//                if (requestModel.token.equals("111111")){
-//                    ComponentUtil.redisService.set(requestModel.token, "1");
-//                }
-//            }
+            if (!StringUtils.isBlank(requestModel.token)){
+                if (requestModel.token.equals("111111")){
+                    ComponentUtil.redisService.set(requestModel.token, "1");
+                }
+            }
 
             // check校验请求的数据
             did = HodgepodgeMethod.checkUpdatePoolStatusData(requestModel);
@@ -298,6 +299,29 @@ public class PoolController {
                     // 校验排除微信集合的其它微信用户是否拥有有效群
                     HodgepodgeMethod.checkDidCollectionAccountListNotWxEffective(didCollectionAccountToWxList, didWxMonitorList);
                 }
+
+                // 获取此用户正在使用的微信
+                DidWxSortModel didWxSortUseModel = null;
+                DidWxSortModel didWxSortQuery = HodgepodgeMethod.assembleDidWxSortData(0, did, null,
+                        0, 2, 0, 0, 0, null, null, null);
+                DidWxSortModel didWxSortModel = (DidWxSortModel)ComponentUtil.didWxSortService.findByObject(didWxSortQuery);
+                if (didWxSortModel != null){
+                    // 判断此微信下是否有有效群
+
+                    // 查询此微信是否有有效群
+                    DidCollectionAccountModel didCollectionAccountToWxQuery = HodgepodgeMethod.assembleDidCollectionAccountListEffectiveByToWxid(did, 3, 1, 3,1,2, didWxSortModel.getToWxid());
+                    List<DidCollectionAccountModel> didCollectionAccountToWxList = ComponentUtil.didCollectionAccountService.getEffectiveDidCollectionAccountByUserId(didCollectionAccountToWxQuery);
+                    if (didCollectionAccountToWxList == null || didCollectionAccountToWxList.size() <= 0){
+                        // 需要从微信中筛选确定出一个可使用的微信
+                        didWxSortUseModel = ComponentUtil.didWxSortService.screenDidWxSort(did, didWxSortModel);
+                    }
+                }else{
+                    // 需要从微信中筛选确定出一个可使用的微信
+                    didWxSortUseModel = ComponentUtil.didWxSortService.screenDidWxSort(did, null);
+                }
+
+                HodgepodgeMethod.checkDidWxSortUse(didWxSortUseModel);
+
 
                 // 添加数据到排队表中
                 PoolWaitModel poolWaitAdd = HodgepodgeMethod.assemblePoolWaitAdd(did, 1);
