@@ -33,6 +33,11 @@ public class RechargeInfo implements Serializable {
     public String accountName;
 
     /**
+     * 银行码
+     */
+    public String bankCode;
+
+    /**
      * 订单号
      */
     public String orderNo;
@@ -71,6 +76,11 @@ public class RechargeInfo implements Serializable {
      * 存款账号尾号
      */
     public String lastNum;
+
+    /**
+     * 短链
+     */
+    public String shortChain;
 
     public RechargeInfo(){
 
@@ -170,5 +180,21 @@ public class RechargeInfo implements Serializable {
 
     public void setDepositMoney(String depositMoney) {
         this.depositMoney = depositMoney;
+    }
+
+    public String getShortChain() {
+        return shortChain;
+    }
+
+    public void setShortChain(String shortChain) {
+        this.shortChain = shortChain;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
     }
 }

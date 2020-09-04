@@ -45,6 +45,11 @@ public class BankModel extends BasePage implements Serializable {
     private String accountName;
 
     /**
+     * 银行码
+     */
+    private String bankCode;
+
+    /**
      * 开户地省份/所在省份
      */
     private String province;
@@ -355,5 +360,13 @@ public class BankModel extends BasePage implements Serializable {
 
     public void setInDayMoney(String inDayMoney) {
         this.inDayMoney = inDayMoney;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
     }
 }

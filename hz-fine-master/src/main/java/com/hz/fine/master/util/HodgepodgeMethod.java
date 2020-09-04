@@ -2053,7 +2053,7 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleDidRechargeAddDataResult(long stime, String sign, BankModel bankModel, String orderNo, String orderMoney, String distributionMoney, String invalidTime){
+    public static String assembleDidRechargeAddDataResult(long stime, String sign, BankModel bankModel, String orderNo, String orderMoney, String distributionMoney, String invalidTime, String shortChain){
         ResponseDidRecharge dataModel = new ResponseDidRecharge();
         RechargeInfo data = new RechargeInfo();
         if (bankModel != null){
@@ -2068,6 +2068,9 @@ public class HodgepodgeMethod {
         data.depositMoney = "";
         data.depositTime = "";
         data.lastNum = "";
+        if (!StringUtils.isBlank(shortChain)){
+            data.shortChain = shortChain;
+        }
         dataModel.setStime(stime);
         dataModel.setSign(sign);
         return JSON.toJSONString(dataModel);
@@ -2091,6 +2094,12 @@ public class HodgepodgeMethod {
         }else{
             return null;
         }
+    }
+
+
+    public static BankModel assembleBankByRechargeInfo(RechargeInfo recharge){
+        BankModel resBean = BeanUtils.copy(recharge, BankModel.class);
+        return resBean;
     }
 
     /**
@@ -5373,7 +5382,7 @@ public class HodgepodgeMethod {
      * @author yoko
      * @date 2019/11/25 22:45
      */
-    public static String assembleDidRechargeHaveOrderByQueryDataResult(long stime, String sign, DidRechargeModel didRechargeModel, BankModel bankModel, int haveType){
+    public static String assembleDidRechargeHaveOrderByQueryDataResult(long stime, String sign, DidRechargeModel didRechargeModel, BankModel bankModel, int haveType, String shortChain){
         ResponseDidRecharge dataModel = new ResponseDidRecharge();
         if (didRechargeModel != null && didRechargeModel.getId() > 0 && bankModel != null && bankModel.getId() > 0){
             RechargeInfo recharge = BeanUtils.copy(didRechargeModel, RechargeInfo.class);
@@ -5388,6 +5397,12 @@ public class HodgepodgeMethod {
             }
             if (!StringUtils.isBlank(bankModel.getAccountName())){
                 recharge.accountName = bankModel.getAccountName();
+            }
+            if (!StringUtils.isBlank(bankModel.getBankCode())){
+                recharge.bankCode = bankModel.getBankCode();
+            }
+            if (!StringUtils.isBlank(shortChain)){
+                recharge.shortChain = shortChain;
             }
             dataModel.recharge = recharge;
         }

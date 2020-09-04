@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.hz.fine.master.core.common.exception.ExceptionMethod;
 import com.hz.fine.master.core.common.exception.ServiceException;
 import com.hz.fine.master.core.common.utils.JsonResult;
+import com.hz.fine.master.core.common.utils.ShortChainUtil;
 import com.hz.fine.master.core.common.utils.SignUtil;
 import com.hz.fine.master.core.common.utils.StringUtil;
 import com.hz.fine.master.core.common.utils.constant.CacheKey;
@@ -208,7 +209,7 @@ public class DidRechargeController {
                 // 组装返回客户端的数据
                 long stime = System.currentTimeMillis();
                 String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-                strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, (BankModel) map.get("bankModel"), sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime());
+                strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, (BankModel) map.get("bankModel"), sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime(), null);
 
                 // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
@@ -319,7 +320,7 @@ public class DidRechargeController {
                 // 组装返回客户端的数据
                 long stime = System.currentTimeMillis();
                 String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-                strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime());
+                strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeModel.getDistributionMoney(), didRechargeModel.getInvalidTime(),null);
 
                 // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
@@ -396,11 +397,11 @@ public class DidRechargeController {
 //                    ComponentUtil.redisService.set(requestModel.token, "1");
 //                }
 //            }
-            //#临时数据
+//            //#临时数据
 //            if (!StringUtils.isBlank(requestModel.order)){
 //                if (requestModel.order.equals("111111")){
 //                    String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ID_BY_SGID, 1, requestModel.order);
-//                    ComponentUtil.redisService.set(strKeyCache, "29");
+//                    ComponentUtil.redisService.set(strKeyCache, "31");
 //                }
 //            }
 
@@ -442,7 +443,10 @@ public class DidRechargeController {
                     // 组装返回客户端的数据
                     long stime = System.currentTimeMillis();
                     String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
-                    strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime());
+
+                    // 生成短链
+                    String shortChain = ShortChainUtil.getH5Url(bankData);
+                    strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime(), shortChain);
 
                     // 缓存挂单- 表示这个银行卡的这个金额已经给出去了
                     String strKeyCache_bank_money = CachedKeyUtils.getCacheKey(CacheKey.HANG_MONEY, bankData.getId(), didRechargeAdd.getDistributionMoney());
@@ -461,6 +465,15 @@ public class DidRechargeController {
                 String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
                 ResponseDidRecharge responseDidRecharge = JSON.parseObject(strData, ResponseDidRecharge.class);
                 if (StringUtils.isBlank(responseDidRecharge.recharge.depositor)){
+                    // 生成短链
+                    String shortChain = "";
+                    BankModel redis_bankModel = HodgepodgeMethod.assembleBankByRechargeInfo(responseDidRecharge.recharge);
+                    if (redis_bankModel != null && !StringUtils.isBlank(redis_bankModel.getBankCard())){
+                        shortChain = ShortChainUtil.getH5Url(redis_bankModel);
+                        if (!StringUtils.isBlank(shortChain)){
+                            responseDidRecharge.recharge.shortChain = shortChain;
+                        }
+                    }
                     strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, responseDidRecharge, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
                 }else {
                     // 因为提交了存款人，则可以继续进行充值：如果用户没有充值，又乱填写存款人，排查数据会受到处罚；所以这里规定了提交了存款人信息，可以继续拉起充值订单
@@ -487,8 +500,11 @@ public class DidRechargeController {
                         // 组装添加用处充值记录的最初数据
                         DidRechargeModel didRechargeAdd = HodgepodgeMethod.assembleDidRechargeBuy(requestModel.orderMoney, bankData.getId(), did, sgid, 0, requestModel.orderMoney, strategyInvalidTimeModel.getStgNumValue());
                         ComponentUtil.didRechargeService.add(didRechargeAdd);
+
+                        // 生成短链
+                        String shortChain = ShortChainUtil.getH5Url(bankData);
                         // 组装返回客户端的数据
-                        strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime());
+                        strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime(), shortChain);
 
                         // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                         String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
@@ -578,6 +594,19 @@ public class DidRechargeController {
             // 更新之后，把redis缓存里面的数据也更新一下：更新存款人的一些信息
             String redis_data = HodgepodgeMethod.checkDidOrderByRedis(did);
             if (!StringUtils.isBlank(redis_data)){
+
+                // 生成短链
+                String shortChain = "";
+                ResponseDidRecharge responseDidRecharge = JSON.parseObject(redis_data, ResponseDidRecharge.class);
+                BankModel redis_bankModel = HodgepodgeMethod.assembleBankByRechargeInfo(responseDidRecharge.recharge);
+                if (redis_bankModel != null && !StringUtils.isBlank(redis_bankModel.getBankCard())){
+                    shortChain = ShortChainUtil.getH5Url(redis_bankModel);
+                    if (!StringUtils.isBlank(shortChain)){
+                        responseDidRecharge.recharge.shortChain = shortChain;
+                        redis_data = JSON.toJSONString(responseDidRecharge);
+                    }
+                }
+
                 String resRedis = HodgepodgeMethod.assembleDidRechargeUpdateRedisByDeposit(redis_data, requestModel);
                 // 记录订单信息的失效时间：用于check用户是否还有在有效期的订单未处理完毕
                 String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.LOCK_DID_ORDER_INVALID_TIME, did);
@@ -679,11 +708,22 @@ public class DidRechargeController {
                     BankModel bankQuery = HodgepodgeMethod.assembleBankById(didRechargeModel.getBankId());
                     BankModel bankData = (BankModel) ComponentUtil.bankService.findByObject(bankQuery);
                     HodgepodgeMethod.checkBank(bankData);
-                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderByQueryDataResult(stime, sign, didRechargeModel, bankData, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
+                    // 生成短链
+                    String shortChain = ShortChainUtil.getH5Url(bankData);
+                    strData = HodgepodgeMethod.assembleDidRechargeHaveOrderByQueryDataResult(stime, sign, didRechargeModel, bankData, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO, shortChain);
                 }
             }else{
                 ResponseDidRecharge responseDidRecharge = JSON.parseObject(strData, ResponseDidRecharge.class);
                 if (StringUtils.isBlank(responseDidRecharge.recharge.depositor)){
+                    // 生成短链
+                    String shortChain = "";
+                    BankModel redis_bankModel = HodgepodgeMethod.assembleBankByRechargeInfo(responseDidRecharge.recharge);
+                    if (redis_bankModel != null && !StringUtils.isBlank(redis_bankModel.getBankCard())){
+                        shortChain = ShortChainUtil.getH5Url(redis_bankModel);
+                        if (!StringUtils.isBlank(shortChain)){
+                            responseDidRecharge.recharge.shortChain = shortChain;
+                        }
+                    }
                     strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, responseDidRecharge, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO);
                 }else {
                     strData = HodgepodgeMethod.assembleDidRechargeHaveOrderDataResult(stime, sign, null, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);

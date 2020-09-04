@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.mobile_card_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.province,a.city,a.bank_type,
+        a.id,a.mobile_card_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,a.bank_type,
         a.sms_num,a.last_num,a.sms_content,a.start_key,a.end_key,a.special_type,a.open_type,a.in_day_money,
         a.day_switch,a.month_switch,a.total_switch,a.use_status,
         a.create_time,a.update_time,a.yn
