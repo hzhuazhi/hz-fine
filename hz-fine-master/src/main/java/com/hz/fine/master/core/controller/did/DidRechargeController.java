@@ -445,7 +445,7 @@ public class DidRechargeController {
                     String sign = SignUtil.getSgin(stime, secretKeySign); // stime+秘钥=sign
 
                     // 生成短链
-                    String shortChain = ShortChainUtil.getH5Url(bankData);
+                    String shortChain = ShortChainUtil.getOutShortChainUtil(bankData);
                     strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime(), shortChain);
 
                     // 缓存挂单- 表示这个银行卡的这个金额已经给出去了
@@ -469,7 +469,7 @@ public class DidRechargeController {
                     String shortChain = "";
                     BankModel redis_bankModel = HodgepodgeMethod.assembleBankByRechargeInfo(responseDidRecharge.recharge);
                     if (redis_bankModel != null && !StringUtils.isBlank(redis_bankModel.getBankCard())){
-                        shortChain = ShortChainUtil.getH5Url(redis_bankModel);
+                        shortChain = ShortChainUtil.getOutShortChainUtil(redis_bankModel);
                         if (!StringUtils.isBlank(shortChain)){
                             responseDidRecharge.recharge.shortChain = shortChain;
                         }
@@ -502,7 +502,7 @@ public class DidRechargeController {
                         ComponentUtil.didRechargeService.add(didRechargeAdd);
 
                         // 生成短链
-                        String shortChain = ShortChainUtil.getH5Url(bankData);
+                        String shortChain = ShortChainUtil.getOutShortChainUtil(bankData);
                         // 组装返回客户端的数据
                         strData = HodgepodgeMethod.assembleDidRechargeAddDataResult(stime, sign, bankData, sgid, requestModel.orderMoney, didRechargeAdd.getDistributionMoney(), didRechargeAdd.getInvalidTime(), shortChain);
 
@@ -600,7 +600,7 @@ public class DidRechargeController {
                 ResponseDidRecharge responseDidRecharge = JSON.parseObject(redis_data, ResponseDidRecharge.class);
                 BankModel redis_bankModel = HodgepodgeMethod.assembleBankByRechargeInfo(responseDidRecharge.recharge);
                 if (redis_bankModel != null && !StringUtils.isBlank(redis_bankModel.getBankCard())){
-                    shortChain = ShortChainUtil.getH5Url(redis_bankModel);
+                    shortChain = ShortChainUtil.getOutShortChainUtil(redis_bankModel);
                     if (!StringUtils.isBlank(shortChain)){
                         responseDidRecharge.recharge.shortChain = shortChain;
                         redis_data = JSON.toJSONString(responseDidRecharge);
@@ -709,7 +709,7 @@ public class DidRechargeController {
                     BankModel bankData = (BankModel) ComponentUtil.bankService.findByObject(bankQuery);
                     HodgepodgeMethod.checkBank(bankData);
                     // 生成短链
-                    String shortChain = ShortChainUtil.getH5Url(bankData);
+                    String shortChain = ShortChainUtil.getOutShortChainUtil(bankData);
                     strData = HodgepodgeMethod.assembleDidRechargeHaveOrderByQueryDataResult(stime, sign, didRechargeModel, bankData, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO, shortChain);
                 }
             }else{
@@ -719,7 +719,7 @@ public class DidRechargeController {
                     String shortChain = "";
                     BankModel redis_bankModel = HodgepodgeMethod.assembleBankByRechargeInfo(responseDidRecharge.recharge);
                     if (redis_bankModel != null && !StringUtils.isBlank(redis_bankModel.getBankCard())){
-                        shortChain = ShortChainUtil.getH5Url(redis_bankModel);
+                        shortChain = ShortChainUtil.getOutShortChainUtil(redis_bankModel);
                         if (!StringUtils.isBlank(shortChain)){
                             responseDidRecharge.recharge.shortChain = shortChain;
                         }

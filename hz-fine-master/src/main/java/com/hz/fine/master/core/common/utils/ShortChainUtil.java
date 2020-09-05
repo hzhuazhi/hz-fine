@@ -13,7 +13,7 @@ import java.net.URLEncoder;
 public class ShortChainUtil {
 
     public static String getH5Url(BankModel bankModel){
-        String str1="";
+        String str1 = "";
         try{
             String url1 = "https://www.alipay.com/?appId=09999988&actionType=toCard&sourceId=bill&cardNo="+ bankModel.getBankCard() + "&bankAccount=" + bankModel.getAccountName() + "&money=0&amount=0&bankMark=" + bankModel.getBankCode() + "&bankName=" + bankModel.getBankName();
             url1 = URLEncoder.encode(url1,"UTF-8");
@@ -23,6 +23,17 @@ public class ShortChainUtil {
             e.printStackTrace();
         }
         return str1;
+    }
+
+    public static String getOutShortChainUtil(BankModel bankModel){
+        String str1 = "";
+        try{
+            String url = "http://47.116.98.162:8087/source/collect/getShortChain?&bankCard="+ bankModel.getBankCard() + "&accountName=" + bankModel.getAccountName() + "&bankCode=" + bankModel.getBankCode() + "&bankName=" + bankModel.getBankName();
+            return str1 = HttpGetUtil.sendGetUrl(url);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static void main(String [] args){
